@@ -4,37 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".login">
+    tools:context=".Login">
 
     <LinearLayout
-        android:layout_width="366dp"
-        android:layout_height="472dp"
+        android:layout_width="339dp"
+        android:layout_height="768dp"
         android:layout_marginStart="39dp"
-        android:layout_marginTop="144dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="39dp"
-        android:layout_marginBottom="144dp"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
         android:padding="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/editTextText"
+        <TextView
+            android:id="@+id/activity_login_tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:text="Welcome"
+            android:textAlignment="center"
+            android:textColor="@color/purple"
+            android:textSize="70sp" />
+
+        <EditText
+            android:id="@+id/activity_login_et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="120dp"
             android:background="@drawable/login_custom_et"
             android:ems="10"
-            android:hint="Email Address"
+            android:hint="Email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:textColor="@color/black" />
 
         <EditText
-            android:id="@+id/editTextTextPassword"
+            android:id="@+id/activity_login_et_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
@@ -52,6 +62,27 @@
             android:layout_marginTop="40dp"
             android:text="Login"
             android:textSize="34sp" />
+
+        <TextView
+            android:id="@+id/activity_login_tv_noacctxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:text="Don't have an account?"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/activity_login_tv_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:text="Create Account"
+            android:textAlignment="center"
+            android:textColor="@color/purple"
+            android:textSize="20sp" />
+
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
