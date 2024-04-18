@@ -16,5 +16,8 @@ public class User {
         }
         return instance;
     }
-}
 
+    public static void follow(User usr) {
+
+    }
+}
