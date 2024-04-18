@@ -3,7 +3,9 @@ package com.example.app_2100;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +25,7 @@ public class Login extends AppCompatActivity {
     // password: test123
 
     private FirebaseAuth mAuth;
-    private static final String TAG = "EmailPassword";
+    private static final String TAG = "Login_Screen";
 
     @Override
     public void onStart() {
@@ -33,6 +35,7 @@ public class Login extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             // reload();
+            Log.d(TAG, "logged in already");
         }
     }
 
@@ -52,7 +55,12 @@ public class Login extends AppCompatActivity {
         loginBt.setOnClickListener(v -> {
             String emailText = email.getText().toString();
             String passwordText = password.getText().toString();
-            signIn(emailText, passwordText);
+            if (!TextUtils.isEmpty(emailText) && !TextUtils.isEmpty(passwordText)){
+                signIn(emailText, passwordText);
+            } else {
+                Toast.makeText(Login.this, "Please enter your email/password",
+                        Toast.LENGTH_LONG).show();
+            }
         });
 
         signupTv.setOnClickListener(v -> {
@@ -61,7 +69,6 @@ public class Login extends AppCompatActivity {
     }
 
     private void signIn(String email, String password) {
-        // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -70,12 +77,14 @@ public class Login extends AppCompatActivity {
                         Toast.makeText(Login.this, "Authentication succeeded.",
                                 Toast.LENGTH_LONG).show();
                         FirebaseUser user = mAuth.getCurrentUser();
+
+                        startActivity(new Intent(Login.this, HomeFeed.class));
 //                            updateUI(user);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
                         Toast.makeText(Login.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
+                                Toast.LENGTH_LONG).show();
 //                            updateUI(null);
                     }
                 });
