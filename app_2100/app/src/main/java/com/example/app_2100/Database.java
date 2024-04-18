@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class Database {
     private static Database dbInstance = null;
     private static ArrayList<String> itemsList = new ArrayList<>();
-    private static ArrayList<Observer> observers = new ArrayList<>();
+    //TODO implement observer
+//    private static ArrayList<Observer> observers = new ArrayList<>();
 
     private Database(){
 
