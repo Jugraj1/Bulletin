@@ -8,8 +8,9 @@
         <RelativeLayout
             android:id="@+id/activity_home_feed_rl_header"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_height="70dp"
+            android:padding="16dp"
+            >
 
             <TextView
                 android:id="@+id/activity_home_feed_tv_title"
@@ -18,18 +19,32 @@
                 android:text="Homepage"
                 android:textSize="20sp"
                 android:layout_alignParentStart="true"
-                android:gravity="start" />
+                android:gravity="start"
+                android:layout_centerVertical="true"/>
 
             <Button
                 android:id="@+id/activity_home_feed_bt_search"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:gravity="end"
-                app:cornerRadius="15dp"
-                android:drawableTop="@drawable/baseline_search_24_shift"
-                android:drawablePadding="-100dp"/>
+                app:cornerRadius="10dp"
+                android:drawableTop="@drawable/baseline_search_24"
+                android:drawablePadding="-100dp"
+                android:layout_marginEnd="50dp"
+                android:layout_centerVertical="true"/>
 
+            <ImageButton
+                android:id="@+id/activity_home_feed_ib_profile"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="5dp"
+                android:gravity="end"
+                android:background="@drawable/default_profile_pic"
+                android:contentDescription="Profile picture"
+                android:scaleType="centerCrop"
+                android:layout_centerVertical="true"/>
 
         </RelativeLayout>
 
