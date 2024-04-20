@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".HomeFeed">
 
         <!-- Header -->
         <RelativeLayout
@@ -15,7 +17,7 @@
 
             <TextView
                 android:id="@+id/activity_home_feed_tv_title"
-                android:text="Homepage"
+                android:text="Trending"
                 android:layout_alignParentStart="true"
                 android:gravity="start"
                 android:layout_centerVertical="true"
@@ -75,24 +77,24 @@
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"
             android:gravity="center_horizontal"
-            android:background="@drawable/home_feed_footer_line">
+            android:background="@drawable/universal_feed_footer_line">
 
             <Button
                 android:id="@+id/activity_home_feed_bt_home_feed"
                 android:drawableTop="@drawable/baseline_home_24"
-                style="@style/HomeFeedFooterButtonStyle"/>
+                style="@style/UniversalFeedFooterButtonStyle"/>
 
             <Button
                 android:id="@+id/activity_home_feed_bt_create_post"
                 app:cornerRadius="15dp"
                 android:drawableTop="@drawable/baseline_add_24"
-                style="@style/HomeFeedFooterButtonStyle"/>
+                style="@style/UniversalFeedFooterButtonStyle"/>
 
             <Button
                 android:id="@+id/activity_home_feed_bt_following_feed"
                 app:cornerRadius="15dp"
-                android:drawableTop="@drawable/baseline_groups_24"
-                style="@style/HomeFeedFooterButtonStyle"/>
+                android:drawableTop="@drawable/universal_feed_footer_groups_icons"
+                style="@style/UniversalFeedFooterButtonStyle"/>
 
 
         </LinearLayout>

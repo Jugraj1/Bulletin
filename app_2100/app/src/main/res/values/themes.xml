@@ -12,12 +12,12 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="HomeFeedFooterButtonStyle" parent="Widget.AppCompat.Button">
+    <style name="UniversalFeedFooterButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:textSize">12sp</item>
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">60dp</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="android:background">@drawable/home_feed_bt_footer_bg</item>
+        <item name="android:background">@drawable/universal_feed_bt_footer_bg</item>
     </style>
 
     <style name="CreatePostSubmitButtonStyle" parent="Widget.AppCompat.Button">

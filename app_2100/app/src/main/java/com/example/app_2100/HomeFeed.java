@@ -37,6 +37,11 @@ public class HomeFeed extends AppCompatActivity {
         createPostBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, CreatePost.class));
         });
+
+        Button followingFeedBt = (Button) findViewById(R.id.activity_home_feed_bt_following_feed);
+        followingFeedBt.setOnClickListener(v -> {
+            startActivity(new Intent(HomeFeed.this, FollowingFeed.class));
+        });
     }
 
     private void createProfilePic(){
