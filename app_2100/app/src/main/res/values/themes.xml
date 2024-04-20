@@ -6,4 +6,9 @@
     </style>
 
     <style name="Theme.App_2100" parent="Base.Theme.App_2100" />
+
+    <style name="CreateAccSelectableItemBackground">
+        <item name="android:colorControlHighlight">#5677FC</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
 </resources>

@@ -64,7 +64,7 @@ public class Login extends AppCompatActivity {
         });
 
         signupTv.setOnClickListener(v -> {
-            createAccount("email@email.com", "password"); // leave it as does nothing
+            createAccount("email1@email.com", "password"); // leave it as does nothing
         });
     }
 
@@ -96,14 +96,14 @@ public class Login extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "createUserWithEmail:success");
-                        Toast.makeText(Login.this, "Authentication succeeded.",
+                        Toast.makeText(Login.this, "Account Successfully Created!",
                                 Toast.LENGTH_SHORT).show();
                         FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(Login.this, "Authentication failed.",
+                        Toast.makeText(Login.this, "Account Creation Failed.",
                                 Toast.LENGTH_SHORT).show();
 //                            updateUI(null);
                     }
