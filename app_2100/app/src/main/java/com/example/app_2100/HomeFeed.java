@@ -2,6 +2,7 @@ package com.example.app_2100;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,8 +10,12 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class HomeFeed extends AppCompatActivity {
     private static final String TAG = "HomeFeed_Screen";
@@ -26,6 +31,12 @@ public class HomeFeed extends AppCompatActivity {
             Log.d(TAG, "profile pib ib clicked");
         });
         createProfilePic();
+
+        Button createPostBt = (Button) findViewById(R.id.activity_home_feed_bt_create_post);
+        Log.d(TAG, "Clicked createPost bt");
+        createPostBt.setOnClickListener(v -> {
+            startActivity(new Intent(HomeFeed.this, CreatePost.class));
+        });
     }
 
     private void createProfilePic(){

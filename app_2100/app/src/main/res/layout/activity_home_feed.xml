@@ -9,8 +9,8 @@
             android:id="@+id/activity_home_feed_rl_header"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:padding="16dp"
-            >
+
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/activity_home_feed_tv_title"
@@ -24,15 +24,15 @@
 
             <Button
                 android:id="@+id/activity_home_feed_bt_search"
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="45dp"
                 android:layout_alignParentEnd="true"
-                android:gravity="end"
+                android:gravity="center"
                 app:cornerRadius="10dp"
                 android:drawableTop="@drawable/baseline_search_24"
-                android:drawablePadding="-100dp"
                 android:layout_marginEnd="50dp"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                />
 
             <ImageButton
                 android:id="@+id/activity_home_feed_ib_profile"
@@ -49,55 +49,51 @@
         </RelativeLayout>
 
         <!-- post content (scrollable) -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/activity_home_feed_rl_header">
 
-            <LinearLayout
-                android:id="@+id/activity_home_feed_ll_posts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+    <!-- footer -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/activity_home_feed_rl_header"
+        android:layout_marginTop="227dp">
 
-                <!-- add posts here (dynamically) -->
-
-            </LinearLayout>
-
-        </ScrollView>
-
-        <!-- footer -->
         <LinearLayout
+            android:id="@+id/activity_home_feed_ll_posts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- add posts here (dynamically) -->
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
             android:id="@+id/activity_home_feed_ll_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"
-            android:gravity="center_horizontal">
-
-            <Button
-                android:id="@+id/activity_home_feed_bt_create_post"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_margin="8dp"
-                app:cornerRadius="15dp"
-                android:drawableTop="@drawable/baseline_home_24"/>
+            android:gravity="center_horizontal"
+            android:background="@drawable/home_feed_footer_line">
 
             <Button
                 android:id="@+id/activity_home_feed_bt_home_feed"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_margin="8dp"
+                android:drawableTop="@drawable/baseline_home_24"
+                style="@style/HomeFeedFooterButtonStyle"/>
+
+            <Button
+                android:id="@+id/activity_home_feed_bt_create_post"
                 app:cornerRadius="15dp"
-                android:drawableTop="@drawable/baseline_add_24"/>
+                android:drawableTop="@drawable/baseline_add_24"
+                style="@style/HomeFeedFooterButtonStyle"/>
 
             <Button
                 android:id="@+id/activity_home_feed_bt_following_feed"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_margin="8dp"
                 app:cornerRadius="15dp"
-                android:drawableTop="@drawable/baseline_groups_24"/>
+                android:drawableTop="@drawable/baseline_groups_24"
+                style="@style/HomeFeedFooterButtonStyle"/>
 
 
         </LinearLayout>
