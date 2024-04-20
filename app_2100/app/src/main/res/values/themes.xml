@@ -19,4 +19,20 @@
         <item name="android:layout_margin">8dp</item>
         <item name="android:background">@drawable/home_feed_bt_footer_bg</item>
     </style>
+
+    <style name="CreatePostSubmitButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:background">@drawable/create_post_bt_submit_bg</item>
+    </style>
+
+    <style name="UniversalTitleTextView">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- Add more attributes as needed -->
+    </style>
 </resources>
