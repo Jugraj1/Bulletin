@@ -11,9 +11,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +51,32 @@ public class HomeFeed extends AppCompatActivity {
      * populates FollowingFeed with relevant posts
      */
     private void populateFeed(){
+        // query  posts from database
 
+        // dynamically add children to the linear layout ("@+id/activity_home_feed_ll_posts")
+//        List<Post> postsData = getPostsData();
+
+        LinearLayout linearLayout = findViewById(R.id.activity_home_feed_ll_posts);
+
+        for (Post post : postsData) {
+            // Inflate the post thumbnail layout
+            View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
+
+            // Populate the post thumbnail with post data
+            TextView titleTextView = postThumbnail.findViewById(R.id.post_title);
+            TextView commentTextView = postThumbnail.findViewById(R.id.post_comment);
+            Button likeButton = postThumbnail.findViewById(R.id.like_button);
+            Button commentButton = postThumbnail.findViewById(R.id.comment_button);
+            Button shareButton = postThumbnail.findViewById(R.id.share_button);
+
+            titleTextView.setText(post.getTitle());
+            commentTextView.setText(post.getComment());
+
+            // Set onClickListeners for buttons if needed
+
+            // Add the post thumbnail to the LinearLayout
+            linearLayout.addView(postThumbnail);
+        }
     }
 
     private void createProfilePic(){
