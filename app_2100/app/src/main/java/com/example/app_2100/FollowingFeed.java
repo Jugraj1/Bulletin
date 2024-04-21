@@ -29,24 +29,18 @@ public class FollowingFeed extends AppCompatActivity {
             Log.d(TAG, "profile pib ib clicked");
         });
 
-        populateFeed();
+
+        Button homeFeedButton = findViewById(R.id.activity_following_feed_bt_home_feed);
+        homeFeedButton.setOnClickListener(v -> {
+            startActivity(new Intent(FollowingFeed.this, HomeFeed.class));
+        });
+
 
         createProfilePic();
 
-        createFooter();
+//        createFooter();
     }
 
-    /***
-     * Populates the FollowingFeed with the relevant posts
-     */
-    private void populateFeed(){
-
-    }
-
-
-    /***
-     * Fill the footer with the correct icon (outlined/filled)
-     */
     private void createFooter(){
         Button followingFeedButton = findViewById(R.id.activity_following_feed_bt_following_feed);
         LayerDrawable layerDrawable = (LayerDrawable) followingFeedButton.getCompoundDrawables()[1]; // Assuming the drawable is on top
