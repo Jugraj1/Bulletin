@@ -35,10 +35,18 @@ public class FollowingFeed extends AppCompatActivity {
             startActivity(new Intent(FollowingFeed.this, HomeFeed.class));
         });
 
+        populateFeed();
 
         createProfilePic();
 
 //        createFooter();
+    }
+
+    /***
+     * populates FollowingFeed with relevant posts
+     */
+    private void populateFeed(){
+
     }
 
     private void createFooter(){

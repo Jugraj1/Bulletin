@@ -24,6 +24,7 @@ public class HomeFeed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_feed);
 
+        populateFeed();
 
         ImageButton profilePicIb = findViewById(R.id.activity_home_feed_ib_profile);
 
@@ -42,6 +43,13 @@ public class HomeFeed extends AppCompatActivity {
         followingFeedBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, FollowingFeed.class));
         });
+    }
+
+    /***
+     * populates FollowingFeed with relevant posts
+     */
+    private void populateFeed(){
+
     }
 
     private void createProfilePic(){
