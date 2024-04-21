@@ -28,9 +28,17 @@ public class FollowingFeed extends AppCompatActivity {
         profilePicIb.setOnClickListener(v -> {
             Log.d(TAG, "profile pib ib clicked");
         });
+
+
+        Button homeFeedButton = findViewById(R.id.activity_following_feed_bt_home_feed);
+        homeFeedButton.setOnClickListener(v -> {
+            startActivity(new Intent(FollowingFeed.this, HomeFeed.class));
+        });
+
+
         createProfilePic();
 
-        createFooter();
+//        createFooter();
     }
 
     private void createFooter(){
