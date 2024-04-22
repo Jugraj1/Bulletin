@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,8 +47,8 @@ public class Login extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        TextView email = (TextView) findViewById(R.id.activity_login_et_email);
-        TextView password = (TextView) findViewById(R.id.activity_login_et_password);
+        EditText email = (EditText) findViewById(R.id.activity_login_et_email);
+        EditText password = (EditText) findViewById(R.id.activity_login_et_password);
 
         Button loginBt = (Button) findViewById(R.id.activity_login_bt_login);
         TextView signupTv = (TextView) findViewById(R.id.activity_login_tv_signup);
