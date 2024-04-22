@@ -21,8 +21,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 //        startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
-        startActivity(new Intent(MainActivity.this, HomeFeed.class));
-//        startActivity(new Intent(MainActivity.this, PostViewActivity.class));
+//        startActivity(new Intent(MainActivity.this, HomeFeed.class));
+        startActivity(new Intent(MainActivity.this, PostViewActivity.class));
 
         // create instance of firestore DB
         FirebaseFirestore db = FirebaseFirestore.getInstance();

@@ -69,7 +69,7 @@
         </LinearLayout>
 
     </ScrollView>
-
+<!--https://stackoverflow.com/questions/10316743/detect-end-of-scrollview-->
     <LinearLayout
             android:id="@+id/activity_home_feed_ll_footer"
             android:layout_width="match_parent"
