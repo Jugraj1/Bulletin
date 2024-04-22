@@ -7,9 +7,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,8 +55,9 @@ public class CreatePost extends AppCompatActivity {
             post.put("title", title);
             post.put("publisher", publisher);
             post.put("url", url);
-            post.put("content", content);
+            post.put("body", content);
             post.put("author", User.getCurrent().Id);
+            post.put("unixTimeStamp", new Timestamp(new Date()));
 
 
             // Add to "posts" collection in firestore

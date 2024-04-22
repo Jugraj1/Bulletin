@@ -28,6 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFeed extends AppCompatActivity {
     private static final String TAG = "HomeFeed_Screen";
@@ -60,54 +61,86 @@ public class HomeFeed extends AppCompatActivity {
     /***
      * populates FollowingFeed with relevant posts
      */
-    private void populateFeed(){
+    private void populateFeed() {
         // query  posts from database
 
         // dynamically add children to the linear layout ("@+id/activity_home_feed_ll_posts")
-        List<Post> postsData = getPosts();
+        getPosts(new OnPostsLoadedListener() {
+            @Override
+            public void onPostsLoaded(List<Post> loadedPosts) {
+                Log.d(TAG, String.valueOf(loadedPosts.size()));
 
-        LinearLayout linearLayout = findViewById(R.id.activity_home_feed_ll_posts);
+                LinearLayout linearLayout = findViewById(R.id.activity_home_feed_ll_posts);
 
-        for (Post post : postsData) {
-            // Inflate the post thumbnail layout
-            View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
+                for (Post post : loadedPosts) {
+                    // Inflate the post thumbnail layout
+                    View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
 
-            // Populate the post thumbnail with post data
-//            TextView titleTextView = postThumbnail.findViewById(R.id.post_title);
-//            TextView commentTextView = postThumbnail.findViewById(R.id.post_comment);
-//            Button likeButton = postThumbnail.findViewById(R.id.like_button);
-//            Button commentButton = postThumbnail.findViewById(R.id.comment_button);
-//            Button shareButton = postThumbnail.findViewById(R.id.share_button);
-//
-//            titleTextView.setText(post.getTitle());
-//            commentTextView.setText(post.getComment());
+                    // Populate the post thumbnail with post data
 
-            // Set onClickListeners for buttons if needed
+//                    Button likeButton = postThumbnail.findViewById(R.id.like_button);
+//                    Button commentButton = postThumbnail.findViewById(R.id.comment_button);
+//                    Button shareButton = postThumbnail.findViewById(R.id.share_button);
+                    //
+                    TextView titleTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_title);
+                    TextView authorTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
+                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
+                    TextView dateTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
+                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
+                    TextView bodyTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_body);
 
-            // Add the post thumbnail to the LinearLayout
-            linearLayout.addView(postThumbnail);
-        }
+
+                    titleTv.setText(post.getTitle());
+                    authorTv.setText(post.getAuthor());
+                    urlTv.setText(post.getSourceURL());
+                    dateTv.setText(post.getDateTime());
+                    publisherTv.setText(post.getPublisher());
+                    bodyTv.setText(post.getBody());
+
+
+                    // Set onClickListeners for buttons if needed
+
+                    // Add the post thumbnail to the LinearLayout
+                    linearLayout.addView(postThumbnail);
+                }
+            }
+        });
     }
 
-    private List<Post> getPosts(){
+    private void getPosts(final OnPostsLoadedListener listener) {
         List<Post> posts = new ArrayList<Post>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         db.collection("posts")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            Map<String, Object> currData;
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d("Firestore READ success", document.getId() + " => " + document.getData());
-//                                posts.add(new Post())
+                                currData = document.getData();
+                                posts.add(new Post(
+                                        currData.get("title"),
+                                        currData.get("body"),
+                                        currData.get("author"),
+                                        currData.get("publisher"),
+                                        currData.get("sourceURL"),
+                                        currData.get("timeStamp")
+                                ));
                             }
+                            // call listener with the loaded posts
+                            listener.onPostsLoaded(posts);
                         } else {
-                            Log.w("Firestore READ error", "Error getting documents.", task.getException());
+                            Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
                         }
                     }
                 });
-        return posts;
+    }
+
+    // Define an interface for the listener
+    public interface OnPostsLoadedListener {
+        void onPostsLoaded(List<Post> posts);
     }
 
     private void createProfilePic(){
