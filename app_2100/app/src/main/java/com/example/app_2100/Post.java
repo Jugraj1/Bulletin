@@ -9,20 +9,23 @@ public class Post {
 
     private String title;
     private String body;
-    private String author;
+    private String authorID;
+    private String authorName;
+    private String authorName;
     private String publisher;
     private String sourceURL;
     private Timestamp timeStamp;
     private Date dateTime;
 
-    public Post(Object title, Object body, Object author, Object publisher, Object sourceURL, Object timeStamp){
+    public Post(Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp){
         this.title = (String) title;
         this.body = (String) body;
-        this.author = (String) author;
+        this.authorID = (String) authorID;
         this.publisher = (String) publisher;
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
         this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
+        this.authorName = "author";
     }
 
     @Override
@@ -30,7 +33,8 @@ public class Post {
         return "Post {" +
                 "title='" + title + '\'' +
                 ", body='" + body + '\'' +
-                ", author='" + author + '\'' +
+                ", authorID='" + authorID + '\'' +
+                ", authorName='" + authorName + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", sourceURL='" + sourceURL + '\'' +
                 ", timeStamp=" + timeStamp +
@@ -46,8 +50,12 @@ public class Post {
         return body;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getAuthorID() {
+        return authorID;
+    }
+
+    public String getAuthorName() {
+        return authorName;
     }
 
     public String getPublisher() {
@@ -64,5 +72,9 @@ public class Post {
 
     public String getDateTime() {
         return dateTime.toString();
+    }
+
+    public String getFormattedDateTime() {
+        return DateFormatter.formatDate(dateTime);
     }
 }

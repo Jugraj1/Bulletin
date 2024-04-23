@@ -84,18 +84,19 @@ public class HomeFeed extends AppCompatActivity {
                     //
                     TextView titleTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_title);
                     TextView authorTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
-                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
+//                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
                     TextView dateTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
-                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
-                    TextView bodyTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_body);
+//                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
+                    TextView bodyTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
 
 
                     titleTv.setText(post.getTitle());
-                    authorTv.setText(post.getAuthor());
-                    urlTv.setText(post.getSourceURL());
-                    dateTv.setText(post.getDateTime());
-                    publisherTv.setText(post.getPublisher());
+                    authorTv.setText(post.getAuthorName());
+//                    urlTv.setText(post.getSourceURL());
+                    dateTv.setText(post.getFormattedDateTime());
+//                    publisherTv.setText(post.getPublisher());
                     bodyTv.setText(post.getBody());
+//                    Log.d(TAG+"post body", post.getBody());
 
 
                     // Set onClickListeners for buttons if needed

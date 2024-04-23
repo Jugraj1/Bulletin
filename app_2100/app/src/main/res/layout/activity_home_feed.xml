@@ -56,7 +56,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/activity_home_feed_rl_header"
-        android:layout_marginTop="227dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="85dp">
 
         <LinearLayout
             android:id="@+id/activity_home_feed_ll_posts"
@@ -77,6 +78,7 @@
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"
             android:gravity="center_horizontal"
+            android:paddingTop="5dp"
             android:background="@drawable/universal_feed_footer_line">
 
             <Button

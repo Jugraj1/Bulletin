@@ -56,8 +56,8 @@ public class CreatePost extends AppCompatActivity {
             post.put("publisher", publisher);
             post.put("url", url);
             post.put("body", content);
-            post.put("author", User.getCurrent().Id);
-            post.put("unixTimeStamp", new Timestamp(new Date()));
+            post.put("author", User.getCurrent().getUserID());
+            post.put("timeStamp", new Timestamp(new Date()));
 
 
             // Add to "posts" collection in firestore
