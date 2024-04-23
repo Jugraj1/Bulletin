@@ -75,19 +75,20 @@ public class HomeFeed extends AppCompatActivity {
                 for (Post post : loadedPosts) {
                     // Inflate the post thumbnail layout
                     View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
+                    postThumbnail.setTag(post.getID());
 
                     // Populate the post thumbnail with post data
 
-//                    Button likeButton = postThumbnail.findViewById(R.id.like_button);
-//                    Button commentButton = postThumbnail.findViewById(R.id.comment_button);
-//                    Button shareButton = postThumbnail.findViewById(R.id.share_button);
-                    //
+//                    Button likeButton = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
+//                    Button shareButton = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
+//                    Button commentButton = postThumbnail.findViewById(R.activity_home_feed_post_thumbnail_bt_comment);
+
                     TextView titleTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_title);
                     TextView authorTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
-//                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
                     TextView dateTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
-//                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
                     TextView bodyTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
+//                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
+//                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
 
 
                     titleTv.setText(post.getTitle());
@@ -96,12 +97,23 @@ public class HomeFeed extends AppCompatActivity {
                     dateTv.setText(post.getFormattedDateTime());
 //                    publisherTv.setText(post.getPublisher());
                     bodyTv.setText(post.getBody());
-//                    Log.d(TAG+"post body", post.getBody());
 
 
-                    // Set onClickListeners for buttons if needed
+                    // set onClickListeners for buttons if needed
 
-                    // Add the post thumbnail to the LinearLayout
+                    // make the thumbnail clickable - send to the post view
+                    postThumbnail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Define the behavior when a post thumbnail is clicked
+                            // For example, navigate to a detailed view of the post
+                            Intent intent = new Intent(HomeFeed.this, PostViewActivity.class);
+//                            intent.putExtra("postId", post.getId()); // send post id
+                            startActivity(intent);
+                        }
+                    });
+
+                    // add the post thumbnail to the LinearLayout
                     linearLayout.addView(postThumbnail);
                 }
             }
@@ -122,6 +134,7 @@ public class HomeFeed extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 currData = document.getData();
                                 posts.add(new Post(
+                                        document.getId(),
                                         currData.get("title"),
                                         currData.get("body"),
                                         currData.get("author"),

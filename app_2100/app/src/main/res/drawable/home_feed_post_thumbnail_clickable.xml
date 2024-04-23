@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- when thumbnail is clicked -->
+    <item android:drawable="@drawable/universal_pressed_background" android:state_pressed="true" />
+    <!-- default do nothing - transparent -->
+    <item android:drawable="@android:color/transparent" />
+</selector>
