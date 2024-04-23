@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:paddingStart="20dp"
     android:paddingEnd="0dp"
+    android:background="#4BE4D5FF"
     tools:context=".SearchActivity">
 
     <RelativeLayout
@@ -29,4 +30,56 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </RelativeLayout>
+
+    <EditText
+        android:id="@+id/editTextText"
+        android:layout_width="375dp"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:hint="What do you want to search?"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activity_search_rl_header" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="375dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextText">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="187.5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Date from" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="187.5dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="Date to" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="375dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
