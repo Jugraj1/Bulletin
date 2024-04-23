@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class Post {
 
+    private String ID;
     private String title;
     private String body;
     private String authorID;
@@ -16,7 +17,8 @@ public class Post {
     private Timestamp timeStamp;
     private Date dateTime;
 
-    public Post(Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp){
+    public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp){
+        this.ID = (String) ID;
         this.title = (String) title;
         this.body = (String) body;
         this.authorID = (String) authorID;
@@ -24,7 +26,7 @@ public class Post {
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
         this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
-        this.authorName = "author";
+        this.authorName = "author"; // set to the actual author
     }
 
     @Override
@@ -39,6 +41,10 @@ public class Post {
                 ", timeStamp=" + timeStamp +
                 ", dateTime=" + dateTime +
                 '}';
+    }
+
+    public String getID() {
+        return ID;
     }
 
     public String getTitle() {
