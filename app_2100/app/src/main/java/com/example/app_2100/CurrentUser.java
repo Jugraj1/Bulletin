@@ -1,20 +1,19 @@
 package com.example.app_2100;
 
-public class User {
-    private static User instance;
+public class CurrentUser {
+    private static CurrentUser instance;
     public String Name;
     public String Last;
     public String Id;
 
-    private User() {
+    private CurrentUser() {
         // Private constructor to prevent instantiation from outside
     }
 
-    public static User getCurrent() {
+    public static CurrentUser getCurrent() {
         if (instance == null) {
-            instance = new User();
+            instance = new CurrentUser();
         }
         return instance;
     }
 }
-

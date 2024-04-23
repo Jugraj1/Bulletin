@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.app_2100.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -55,7 +54,7 @@ public class CreatePost extends AppCompatActivity {
             post.put("publisher", publisher);
             post.put("url", url);
             post.put("content", content);
-            post.put("Author", User.getCurrent().Id);
+            post.put("Author", CurrentUser.getCurrent().Id);
 
 
             // Add to "posts" collection in firestore IDK if this works lmaoo
