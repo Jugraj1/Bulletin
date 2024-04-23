@@ -99,9 +99,21 @@ public class HomeFeed extends AppCompatActivity {
                     bodyTv.setText(post.getBody());
 
 
-                    // Set onClickListeners for buttons if needed
+                    // set onClickListeners for buttons if needed
 
-                    // Add the post thumbnail to the LinearLayout
+                    // make the thumbnail clickable - send to the post view
+                    postThumbnail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Define the behavior when a post thumbnail is clicked
+                            // For example, navigate to a detailed view of the post
+                            Intent intent = new Intent(HomeFeed.this, PostViewActivity.class);
+//                            intent.putExtra("postId", post.getId()); // send post id
+                            startActivity(intent);
+                        }
+                    });
+
+                    // add the post thumbnail to the LinearLayout
                     linearLayout.addView(postThumbnail);
                 }
             }
