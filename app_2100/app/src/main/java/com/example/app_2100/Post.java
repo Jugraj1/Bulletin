@@ -11,7 +11,6 @@ public class Post {
     private String body;
     private String authorID;
     private String authorName;
-    private String authorName;
     private String publisher;
     private String sourceURL;
     private Timestamp timeStamp;
