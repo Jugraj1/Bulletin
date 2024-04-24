@@ -2,6 +2,8 @@ package com.example.app_2100;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -32,27 +35,33 @@ import java.util.Map;
 
 public class HomeFeed extends AppCompatActivity {
     private static final String TAG = "HomeFeed_Screen";
+
+    RecyclerView recyclerView;
+    RecylerViewAdapter recylerViewAdapter;
+    List<Post> posts = new ArrayList<Post>();
+    boolean isLoading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_feed);
+        recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
 
-        populateFeed();
+        populateFeed(); // this does all the recycle view stuff
 
         ImageButton profilePicIb = findViewById(R.id.activity_home_feed_ib_profile);
-
         profilePicIb.setOnClickListener(v -> {
             Log.d(TAG, "profile pib ib clicked");
         });
+
         createProfilePic();
 
-        Button createPostBt = (Button) findViewById(R.id.activity_home_feed_bt_create_post);
-        Log.d(TAG, "Clicked createPost bt");
+        Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, CreatePost.class));
         });
 
-        Button followingFeedBt = (Button) findViewById(R.id.activity_home_feed_bt_following_feed);
+        Button followingFeedBt = findViewById(R.id.activity_home_feed_bt_following_feed);
         followingFeedBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, FollowingFeed.class));
         });
@@ -62,66 +71,14 @@ public class HomeFeed extends AppCompatActivity {
      * populates FollowingFeed with relevant posts
      */
     private void populateFeed() {
-        // query  posts from database
-
-        // dynamically add children to the linear layout ("@+id/activity_home_feed_ll_posts")
-        getPosts(new OnPostsLoadedListener() {
-            @Override
-            public void onPostsLoaded(List<Post> loadedPosts) {
-                Log.d(TAG, String.valueOf(loadedPosts.size()));
-
-                LinearLayout linearLayout = findViewById(R.id.activity_home_feed_ll_posts);
-
-                for (Post post : loadedPosts) {
-                    // Inflate the post thumbnail layout
-                    View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
-                    postThumbnail.setTag(post.getID());
-
-                    // Populate the post thumbnail with post data
-
-//                    Button likeButton = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
-//                    Button shareButton = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
-//                    Button commentButton = postThumbnail.findViewById(R.activity_home_feed_post_thumbnail_bt_comment);
-
-                    TextView titleTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_title);
-                    TextView authorTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
-                    TextView dateTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
-                    TextView bodyTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
-//                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
-//                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
-
-
-                    titleTv.setText(post.getTitle());
-                    authorTv.setText(post.getAuthorName());
-//                    urlTv.setText(post.getSourceURL());
-                    dateTv.setText(post.getFormattedDateTime());
-//                    publisherTv.setText(post.getPublisher());
-                    bodyTv.setText(post.getBody());
-
-
-                    // set onClickListeners for buttons if needed
-
-                    // make the thumbnail clickable - send to the post view
-                    postThumbnail.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Define the behavior when a post thumbnail is clicked
-                            // For example, navigate to a detailed view of the post
-                            Intent intent = new Intent(HomeFeed.this, PostViewActivity.class);
-//                            intent.putExtra("postId", post.getId()); // send post id
-                            startActivity(intent);
-                        }
-                    });
-
-                    // add the post thumbnail to the LinearLayout
-                    linearLayout.addView(postThumbnail);
-                }
-            }
+        getPosts(loadedPosts -> {
+            posts.addAll(loadedPosts);
         });
     }
 
+
     private void getPosts(final OnPostsLoadedListener listener) {
-        List<Post> posts = new ArrayList<Post>();
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("posts")
@@ -144,7 +101,10 @@ public class HomeFeed extends AppCompatActivity {
                                 ));
                             }
                             // call listener with the loaded posts
+
                             listener.onPostsLoaded(posts);
+                            initAdapter(); // put this here so it waits for posts to be queried
+                            initScrollListener();
                         } else {
                             Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
                         }
@@ -152,9 +112,56 @@ public class HomeFeed extends AppCompatActivity {
                 });
     }
 
-    // Define an interface for the listener
+    // interface for the post loaded listener
     public interface OnPostsLoadedListener {
         void onPostsLoaded(List<Post> posts);
+    }
+
+    // initiates RecyclerViewAdapter
+    private void initAdapter() {
+        recylerViewAdapter = new RecylerViewAdapter(posts);
+        recyclerView.setAdapter(recylerViewAdapter);
+    }
+
+    // initScrollListener() method is the method where we are checking
+    // the scrolled state of the RecyclerView and if bottom-most is visible
+    // we are showing the loading view and populating the next list
+    private void initScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+             @Override
+             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                 super.onScrollStateChanged(recyclerView, newState);
+             }
+             @Override
+             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                 super.onScrolled(recyclerView, dx, dy);
+
+                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                 if (!isLoading) {
+                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
+                         // bottom of list!
+                         loadMore();
+                         isLoading = true;
+                     }
+                 }
+             }
+        });
+    }
+
+    private void loadMore() {
+        posts.add(null);
+        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            posts.remove(posts.size() - 1);
+            int scrollPosition = posts.size();
+            recylerViewAdapter.notifyItemRemoved(scrollPosition);
+
+            populateFeed(); // get more posts - right now this just gets the same list of posts
+            isLoading = false;
+        }, 0); // delay, we set to 0 for now
     }
 
     private void createProfilePic(){
