@@ -16,16 +16,20 @@ public class DateFormatter {
         long months = weeks / 4;
 
         if (minutes < 60) {
-            return minutes + " minutes ago";
+            return formatTimeUnit(minutes, "minute");
         } else if (hours < 24) {
-            return hours + " hours ago";
+            return formatTimeUnit(hours, "hour");
         } else if (days < 7) {
-            return days + " days ago";
+            return formatTimeUnit(days, "day");
         } else if (weeks < 4) {
-            return weeks + " weeks ago";
+            return formatTimeUnit(weeks, "week");
         } else {
             return formatDateFull(date);
         }
+    }
+
+    private static String formatTimeUnit(long value, String unit) {
+        return value + " " + unit + (value == 1 ? "" : "s") + " ago";
     }
 
     private static String formatDateFull(Date date) {
