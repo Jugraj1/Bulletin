@@ -1,5 +1,7 @@
 package com.example.app_2100;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,6 +74,11 @@ public class CreatePost extends AppCompatActivity {
                         // boohoo
                         Toast.makeText(CreatePost.this, "Failed to create post", Toast.LENGTH_SHORT).show();
                     });
+        });
+
+        Button goBackBt = findViewById(R.id.activity_search_bt_go_back);
+        goBackBt.setOnClickListener(v -> {
+            startActivity(new Intent(CreatePost.this, HomeFeed.class));
         });
     }
 }
