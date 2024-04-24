@@ -65,6 +65,16 @@ public class HomeFeed extends AppCompatActivity {
         followingFeedBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, FollowingFeed.class));
         });
+
+        Button searchBt = findViewById(R.id.activity_home_feed_bt_search);
+        searchBt.setOnClickListener(v -> {
+            startActivity(new Intent(HomeFeed.this, SearchActivity.class));
+        });
+
+
+
+
+
     }
 
     /***
