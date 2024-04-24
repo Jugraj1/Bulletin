@@ -2,6 +2,7 @@ package com.example.app_2100;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +37,12 @@ public class SearchActivity extends AppCompatActivity {
         dateButton.setText(getTodaysDate());
         dateButtonTo = findViewById(R.id.datePickerButtonTo);
         dateButtonTo.setText(getTodaysDate());
+
+
+        Button goBackBt = findViewById(R.id.activity_search_bt_go_back);
+        goBackBt.setOnClickListener(v -> {
+            startActivity(new Intent(SearchActivity.this, HomeFeed.class));
+        });
     }
 
     private void initDatePicker() {
