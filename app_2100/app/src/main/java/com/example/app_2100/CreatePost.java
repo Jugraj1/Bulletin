@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.app_2100.User;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,7 +25,7 @@ public class CreatePost extends AppCompatActivity {
         setContentView(R.layout.activity_create_post);
 
         // Firestore init
-        db = FireStoreClass.getDb();
+        db = FirebaseFirestoreConnection.getDb();
 
         // Views init
         titleEditText = findViewById(R.id.editTextText);

@@ -1,20 +1,15 @@
 package com.example.app_2100;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -32,7 +27,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
 
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = FirebaseAuthClass.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
         if(currentUser != null){
             // reload();
             Log.d(TAG, "logged in already");
@@ -45,7 +40,7 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 //        Initialize Firebase Auth
-        mAuth = FirebaseAuthClass.getAuth();
+        mAuth = FirebaseAuthConnection.getAuth();
 
 
         TextView email = (TextView) findViewById(R.id.activity_login_et_email);
@@ -72,7 +67,7 @@ public class Login extends AppCompatActivity {
 
     private void signIn(String email, String password) {
 
-        FirebaseAuthClass.getInstance().signIn(email, password, new FirebaseAuthClass.AuthCallback() {
+        FirebaseAuthConnection.getInstance().signIn(email, password, new FirebaseAuthConnection.AuthCallback() {
             @Override
             public void onAuthentication(boolean success) {
                 if (success) {
@@ -94,7 +89,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void createAccount(String email, String password) {
-       FirebaseAuthClass.getInstance().createAccount(email, password, new FirebaseAuthClass.AuthCallback() {
+       FirebaseAuthConnection.getInstance().createAccount(email, password, new FirebaseAuthConnection.AuthCallback() {
            @Override
            public void onAuthentication(boolean success) {
                if (success) {

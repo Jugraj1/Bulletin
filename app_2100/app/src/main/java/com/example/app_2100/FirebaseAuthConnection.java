@@ -1,27 +1,26 @@
 package com.example.app_2100;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class FirebaseAuthClass {
+public class FirebaseAuthConnection {
     // A singleton class to handle all Firebase operations
-    private static FirebaseAuthClass instance = null;
+    private static FirebaseAuthConnection instance = null;
     private static FirebaseAuth mAuth;
 
-    private FirebaseAuthClass(){
+    private FirebaseAuthConnection(){
         mAuth = FirebaseAuth.getInstance();
     }
 
 
 //    DELETE THIS METHOD IF IT IS NOT NEEDED!!!!!!
     /**
-     * Returns the instance of the FirebaseAuthClass
+     * Returns the instance of the FirebaseAuthConnection
      * @return
      */
-    public static FirebaseAuthClass getInstance(){
+    public static FirebaseAuthConnection getInstance(){
         if (instance == null){
-            instance = new FirebaseAuthClass();
+            instance = new FirebaseAuthConnection();
         }
         return instance;
     }
@@ -32,7 +31,7 @@ public class FirebaseAuthClass {
      */
     public static FirebaseAuth getAuth(){
         if (instance == null){
-            instance = new FirebaseAuthClass();
+            instance = new FirebaseAuthConnection();
         }
         return mAuth;
     }
@@ -42,7 +41,7 @@ public class FirebaseAuthClass {
      * @return
      */
     public static FirebaseUser getCurrentUser(){
-        return FirebaseAuthClass.getAuth().getCurrentUser();
+        return FirebaseAuthConnection.getAuth().getCurrentUser();
     }
 
 
