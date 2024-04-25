@@ -1,5 +1,7 @@
 package com.example.app_2100;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -7,10 +9,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.app_2100.User;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,11 +32,11 @@ public class CreatePost extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // Views init
-        titleEditText = findViewById(R.id.editTextText);
-        publisherEditText = findViewById(R.id.editTextText2);
-        urlEditText = findViewById(R.id.editTextText3);
-        contentEditText = findViewById(R.id.editTextTextMultiLine2);
-        createButton = findViewById(R.id.button);
+        titleEditText = findViewById(R.id.activity_create_post_et_title);
+        publisherEditText = findViewById(R.id.activity_create_post_et_publisher);
+        urlEditText = findViewById(R.id.activity_create_post_et_url);
+        contentEditText = findViewById(R.id.activity_create_post_et_content);
+        createButton = findViewById(R.id.activity_create_post_bt_submit);
 
         // OnClick Listener
         createButton.setOnClickListener(v -> {
@@ -54,11 +57,12 @@ public class CreatePost extends AppCompatActivity {
             post.put("title", title);
             post.put("publisher", publisher);
             post.put("url", url);
-            post.put("content", content);
-            post.put("Author", User.getCurrent().Id);
+            post.put("body", content);
+            post.put("author", User.getCurrent().getUserID());
+            post.put("timeStamp", new Timestamp(new Date()));
 
 
-            // Add to "posts" collection in firestore IDK if this works lmaoo
+            // Add to "posts" collection in firestore
             CollectionReference postsCollection = db.collection("posts");
             postsCollection.add(post)
                     .addOnSuccessListener(documentReference -> {
@@ -70,6 +74,11 @@ public class CreatePost extends AppCompatActivity {
                         // boohoo
                         Toast.makeText(CreatePost.this, "Failed to create post", Toast.LENGTH_SHORT).show();
                     });
+        });
+
+        Button goBackBt = findViewById(R.id.activity_search_bt_go_back);
+        goBackBt.setOnClickListener(v -> {
+            startActivity(new Intent(CreatePost.this, HomeFeed.class));
         });
     }
 }

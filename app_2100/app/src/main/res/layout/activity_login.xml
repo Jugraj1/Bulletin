@@ -1,88 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Login">
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center_horizontal|center_vertical"
-        android:orientation="vertical"
-        android:padding="24dp"
+    <TextView
+        android:id="@+id/activity_login_tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="25dp"
+        android:text="Welcome"
+        android:textAlignment="center"
+        android:textColor="@color/purple"
+        android:textSize="70sp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/activity_login_et_email"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="25dp"
+        android:autofillHints="emailAddress"
+        android:background="@drawable/login_custom_et"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:padding="10dp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_login_tv_title" />
+
+    <EditText
+        android:id="@+id/activity_login_et_password"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="25dp"
+        android:autofillHints="password"
+        android:background="@drawable/login_custom_et"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="10dp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_login_et_email" />
+
+    <Button
+        android:id="@+id/activity_login_bt_login"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="45dp"
+        android:text="Login"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@id/activity_login_tv_noacctxt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_login_et_password" />
+
+    <TextView
+        android:id="@+id/activity_login_tv_noacctxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:text="Don't have an account?"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/activity_login_tv_signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/activity_login_tv_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Create Account"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/purple"
+        android:textSize="20sp"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/activity_login_tv_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:clickable="true"
-            android:text="Welcome"
-            android:textAlignment="center"
-            android:textColor="@color/purple"
-            android:textSize="70sp" />
-
-        <EditText
-            android:id="@+id/activity_login_et_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="120dp"
-            android:background="@drawable/login_custom_et"
-            android:ems="10"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:padding="10dp"
-            android:textColor="@color/black" />
-
-        <EditText
-            android:id="@+id/activity_login_et_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/login_custom_et"
-            android:ems="10"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:padding="10dp"
-            android:textColor="@color/black" />
-
-        <Button
-            android:id="@+id/activity_login_bt_login"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginTop="40dp"
-            android:text="Login"
-            android:textSize="34sp" />
-
-        <TextView
-            android:id="@+id/activity_login_tv_noacctxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
-            android:text="Don't have an account?"
-            android:textAlignment="center"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/activity_login_tv_signup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:clickable="true"
-            android:text="Create Account"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/purple"
-            android:textSize="20sp" />
-
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
