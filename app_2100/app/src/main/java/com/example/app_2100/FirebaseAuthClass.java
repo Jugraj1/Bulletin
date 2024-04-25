@@ -8,13 +8,13 @@ public class FirebaseAuthClass {
     // A singleton class to handle all Firebase operations
     private static FirebaseAuthClass instance = null;
     private static FirebaseAuth mAuth;
-    private static FirebaseUser currentUser;
 
     private FirebaseAuthClass(){
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
     }
 
+
+//    DELETE THIS METHOD IF IT IS NOT NEEDED!!!!!!
     /**
      * Returns the instance of the FirebaseAuthClass
      * @return
@@ -31,6 +31,9 @@ public class FirebaseAuthClass {
      * @return
      */
     public static FirebaseAuth getAuth(){
+        if (instance == null){
+            instance = new FirebaseAuthClass();
+        }
         return mAuth;
     }
 
@@ -39,6 +42,6 @@ public class FirebaseAuthClass {
      * @return
      */
     public static FirebaseUser getCurrentUser(){
-        return currentUser;
+        return FirebaseAuthClass.getAuth().getCurrentUser();
     }
 }

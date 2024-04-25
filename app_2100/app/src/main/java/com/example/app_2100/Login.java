@@ -32,7 +32,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
 
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuthClass.getCurrentUser();
         if(currentUser != null){
             // reload();
             Log.d(TAG, "logged in already");
@@ -44,7 +44,9 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
+//        Initialize Firebase Auth
+        mAuth = FirebaseAuthClass.getAuth();
+
 
         TextView email = (TextView) findViewById(R.id.activity_login_et_email);
         TextView password = (TextView) findViewById(R.id.activity_login_et_password);
@@ -76,6 +78,9 @@ public class Login extends AppCompatActivity {
                         Log.d(TAG, "signInWithEmail:success");
                         Toast.makeText(Login.this, "Authentication succeeded.",
                                 Toast.LENGTH_LONG).show();
+
+
+//                      TODO Do we need this??
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         startActivity(new Intent(Login.this, HomeFeed.class));

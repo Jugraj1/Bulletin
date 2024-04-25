@@ -20,4 +20,9 @@ public class Database {
         return dbInstance;
     }
 }
+
+
+
+// remove this????
+
 // private final ArrayList<String> listofstuff = Database.getInstance().getItemsList()
