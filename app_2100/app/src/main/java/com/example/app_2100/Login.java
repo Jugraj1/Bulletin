@@ -32,7 +32,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
 
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuthClass.getCurrentUser();
         if(currentUser != null){
             // reload();
             Log.d(TAG, "logged in already");
@@ -44,7 +44,9 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
+//        Initialize Firebase Auth
+        mAuth = FirebaseAuthClass.getAuth();
+
 
         TextView email = (TextView) findViewById(R.id.activity_login_et_email);
         TextView password = (TextView) findViewById(R.id.activity_login_et_password);
@@ -64,49 +66,72 @@ public class Login extends AppCompatActivity {
         });
 
         signupTv.setOnClickListener(v -> {
-            createAccount("email1@email.com", "password"); // leave it as does nothing
+            createAccount("email@email.com", "password"); // leave it as does nothing
         });
     }
 
     private void signIn(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success");
-                        Toast.makeText(Login.this, "Authentication succeeded.",
-                                Toast.LENGTH_LONG).show();
-                        FirebaseUser user = mAuth.getCurrentUser();
 
-                        startActivity(new Intent(Login.this, HomeFeed.class));
-//                            updateUI(user);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(Login.this, "Authentication failed.",
-                                Toast.LENGTH_LONG).show();
-//                            updateUI(null);
-                    }
-                });
+        FirebaseAuthClass.getInstance().signIn(email, password, new FirebaseAuthClass.AuthCallback() {
+            @Override
+            public void onAuthentication(boolean success) {
+                if (success) {
+
+                    // authentication success
+                    Log.d(TAG, "signInWithEmail:success");
+                    Toast.makeText(Login.this, "Authentication succeeded.",
+                            Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(Login.this, HomeFeed.class));
+
+                } else {
+                    // authentication failed
+                    Log.w(TAG, "signInWithEmail:failure");
+                    Toast.makeText(Login.this, "Authentication failed.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void createAccount(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "createUserWithEmail:success");
-                        Toast.makeText(Login.this, "Account Successfully Created!",
-                                Toast.LENGTH_SHORT).show();
-                        FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(Login.this, "Account Creation Failed.",
-                                Toast.LENGTH_SHORT).show();
-//                            updateUI(null);
-                    }
-                });
+       FirebaseAuthClass.getInstance().createAccount(email, password, new FirebaseAuthClass.AuthCallback() {
+           @Override
+           public void onAuthentication(boolean success) {
+               if (success) {
+                   // authentication success
+                   Log.d(TAG, "createUserWithEmail:success");
+                   Toast.makeText(Login.this, "Authentication succeeded.",
+                           Toast.LENGTH_LONG).show();
+               } else {
+                   // authentication failed
+                   Log.w(TAG, "createUserWithEmail:failure");
+                   Toast.makeText(Login.this, "Authentication failed.",
+                           Toast.LENGTH_LONG).show();
+               }
+           }
+       });
+
+
+
+
+
+
+//        mAuth.createUserWithEmailAndPassword(email, password)
+//                .addOnCompleteListener(this, task -> {
+//                    if (task.isSuccessful()) {
+//                        // Sign in success, update UI with the signed-in user's information
+//                        Log.d(TAG, "createUserWithEmail:success");
+//                        Toast.makeText(Login.this, "Authentication succeeded.",
+//                                Toast.LENGTH_SHORT).show();
+//                        FirebaseUser user = mAuth.getCurrentUser();
+////                            updateUI(user);
+//                    } else {
+//                        // If sign in fails, display a message to the user.
+//                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+//                        Toast.makeText(Login.this, "Authentication failed.",
+//                                Toast.LENGTH_SHORT).show();
+////                            updateUI(null);
+//                    }
+//                });
     }
 }
