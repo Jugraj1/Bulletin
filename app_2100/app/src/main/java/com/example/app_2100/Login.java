@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,6 +82,12 @@ public class Login extends AppCompatActivity {
                     Log.d(TAG, "signInWithEmail:success");
                     Toast.makeText(Login.this, "Authentication succeeded.",
                             Toast.LENGTH_LONG).show();
+
+                    FirebaseUser currUser = FirebaseAuthClass.getInstance().getAuth().getCurrentUser();
+                    if (currUser != null){
+                        User user = User.getCurrent();
+                        user.setUserID(currUser.getUid());
+                    }
                     startActivity(new Intent(Login.this, HomeFeed.class));
 
                 } else {

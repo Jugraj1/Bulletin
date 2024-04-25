@@ -55,6 +55,7 @@ public class HomeFeed extends AppCompatActivity {
         });
 
         createProfilePic();
+        Log.d(TAG, User.getCurrent().getUserID());
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
