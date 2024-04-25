@@ -1,3 +1,5 @@
+package com.example.app_2100.search;
+
 /**
  * To avoid null pointer errors (and because this implementation is immutable)
  * we have a class that represents an 'empty' tree.

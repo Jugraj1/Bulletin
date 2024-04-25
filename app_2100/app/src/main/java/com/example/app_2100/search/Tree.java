@@ -1,3 +1,5 @@
+package com.example.app_2100.search;
+
 import java.util.LinkedList;
 import java.util.List;
 

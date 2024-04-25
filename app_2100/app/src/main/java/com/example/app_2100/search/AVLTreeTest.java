@@ -1,3 +1,5 @@
+package com.example.app_2100.search;
+
 import org.junit.Test;
 
 import java.util.*;
@@ -405,7 +407,7 @@ public class AVLTreeTest {
         // Test empty
         System.out.println("Test empty");
         AVLTree<Integer> avl4 = new AVLTree<>(50);
-        if (avl4.delete(50) instanceof EmptyTree<Integer>) {
+        if (avl4.delete(50) instanceof EmptyTree) {
             EmptyTree<Integer> emptyTree = (EmptyTree<Integer>) avl4.delete(50);
             System.out.println("this is empty");
             System.out.println(emptyTree.display(1));

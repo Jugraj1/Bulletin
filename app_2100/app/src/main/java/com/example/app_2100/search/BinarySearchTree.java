@@ -1,3 +1,5 @@
+package com.example.app_2100.search;
+
 /**
  * An AVL tree is actually an extension of a Binary Search Tree
  * with self balancing properties. Hence, our AVL trees will 'extend'

@@ -1,3 +1,5 @@
+package com.example.app_2100.search;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -24,7 +26,7 @@ public class BinarySearchTreeTest {
 
         System.out.printf("\n");
         BinarySearchTree<Integer> bst2 = new BinarySearchTree<>(50);
-        if (bst2.delete(50) instanceof EmptyTree<Integer>) {
+        if (bst2.delete(50) instanceof EmptyTree) {
             EmptyTree<Integer> emptyTree = (EmptyTree<Integer>) bst2.delete(50);
             System.out.println("this is empty");
             System.out.println(emptyTree.display(1));

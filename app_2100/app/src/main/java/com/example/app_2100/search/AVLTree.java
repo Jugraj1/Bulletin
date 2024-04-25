@@ -1,3 +1,5 @@
+package com.example.app_2100.search;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,7 +135,7 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
             }
         }
 
-        if (! (tree instanceof EmptyTree<T>) ) {
+        if (! (tree instanceof EmptyTree) ) {
             if (Math.abs((new AVLTree<>(tree.value, tree.leftNode, tree.rightNode)).getBalanceFactor()) > 1) {
                 return reStructure(tree);
             }
@@ -192,7 +194,7 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
     }
 
     private void searchByRangeHelper(Tree<T> tree, T start, T end, List<T> result) {
-        if (tree instanceof EmptyTree<T>) {
+        if (tree instanceof EmptyTree) {
             return;
         }
 
