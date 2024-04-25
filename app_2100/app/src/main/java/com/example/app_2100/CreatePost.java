@@ -26,7 +26,7 @@ public class CreatePost extends AppCompatActivity {
         setContentView(R.layout.activity_create_post);
 
         // Firestore init
-        db = FirebaseFirestore.getInstance();
+        db = FireStoreClass.getDb();
 
         // Views init
         titleEditText = findViewById(R.id.editTextText);

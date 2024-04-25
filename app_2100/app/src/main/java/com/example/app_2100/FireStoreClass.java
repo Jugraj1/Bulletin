@@ -15,19 +15,12 @@ public class FireStoreClass {
      * Returns the instance of the FireStoreClass
      * @return
      */
-    public static FireStoreClass getInstance(){
-        if (instance == null){
+    public static FirebaseFirestore getDb(){
+        if(instance == null){
             instance = new FireStoreClass();
         }
-        return instance;
-    }
-
-
-    /**
-     * Returns the instance of the FireStoreClass
-     * @return
-     */
-    public static FirebaseFirestore getDb(){
         return db;
     }
+
+
 }
