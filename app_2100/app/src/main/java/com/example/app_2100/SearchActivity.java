@@ -1,12 +1,15 @@
 package com.example.app_2100;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +24,9 @@ public class SearchActivity extends AppCompatActivity {
     private DatePickerDialog datePickerDialogTo;
     private Button dateButton;
     private Button dateButtonTo;
+    private EditText searchField;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,17 @@ public class SearchActivity extends AppCompatActivity {
         goBackBt.setOnClickListener(v -> {
             startActivity(new Intent(SearchActivity.this, HomeFeed.class));
         });
+
+        searchField = findViewById(R.id.activity_search_et_search_field);
+        Button goSearchBt = findViewById(R.id.activity_search_bt_go);
+        goSearchBt.setOnClickListener(v -> {
+            // Log.d("searchField:", searchField.getText().toString());
+            Intent searchToSearchResultsActivity = new Intent(SearchActivity.this, SearchResultsActivity.class);
+            searchToSearchResultsActivity.putExtra("searchField", searchField.getText().toString());
+            searchToSearchResultsActivity.putExtra("dateButton", dateButton.getText().toString());
+            searchToSearchResultsActivity.putExtra("dateButtonTo", dateButtonTo.getText().toString());
+            startActivity(searchToSearchResultsActivity);
+        });
     }
 
     private void initDatePicker() {
@@ -52,6 +68,7 @@ public class SearchActivity extends AppCompatActivity {
                 month = month + 1;
                 String date = makeDateString(day, month, year);
                 dateButton.setText(date);
+                // Log.d("dateButton:", dateButton.getText().toString());
             }
         };
 
@@ -61,6 +78,7 @@ public class SearchActivity extends AppCompatActivity {
                 month = month + 1;
                 String date = makeDateString(day, month, year);
                 dateButtonTo.setText(date);
+                // Log.d("dateButtonTo:", dateButtonTo.getText().toString());
             }
         };
 
