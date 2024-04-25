@@ -1,3 +1,5 @@
+package com.example.app_2100;
+
 public class Query {
     String URL = "null";
     String ID = "null";

@@ -1,3 +1,5 @@
+package com.example.app_2100;
+
 import java.util.*;
 
 public class FinalSearchInterpreter {
