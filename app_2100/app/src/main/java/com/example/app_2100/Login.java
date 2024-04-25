@@ -39,9 +39,8 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        Initialize Firebase Auth
+        // initialise firebase auth
         mAuth = FirebaseAuthConnection.getAuth();
-
 
         TextView email = (TextView) findViewById(R.id.activity_login_et_email);
         TextView password = (TextView) findViewById(R.id.activity_login_et_password);
@@ -49,6 +48,7 @@ public class Login extends AppCompatActivity {
         Button loginBt = (Button) findViewById(R.id.activity_login_bt_login);
         TextView signupTv = (TextView) findViewById(R.id.activity_login_tv_signup);
 
+        // login button on click handling
         loginBt.setOnClickListener(v -> {
             String emailText = email.getText().toString();
             String passwordText = password.getText().toString();
@@ -60,32 +60,29 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        // sign up "text" (which is acting like a button) onclick handling
         signupTv.setOnClickListener(v -> {
             createAccount("email@email.com", "password"); // leave it as does nothing, but should link to create acc screen!?
         });
     }
 
     private void signIn(String email, String password) {
-
         FirebaseAuthConnection.getInstance().signIn(email, password, new FirebaseAuthConnection.AuthCallback() {
             @Override
             public void onAuthentication(boolean success) {
                 if (success) {
-
                     // authentication success
                     Log.d(TAG, "signInWithEmail:success");
                     Toast.makeText(Login.this, "Authentication succeeded.",
                             Toast.LENGTH_LONG).show();
 
-
+                    // we are logged in, so we can access currently logged in user using firebase
                     FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
                     if (currUser != null){
-                        User user = User.getCurrent();
-                        user.setUserID(currUser.getUid());
+                        User user = User.getCurrent(); // instantiate the user since it most likely does not exist
                     }
 
-
-                    startActivity(new Intent(Login.this, HomeFeed.class));
+                    startActivity(new Intent(Login.this, HomeFeed.class)); // go to home page since login validated
 
                 } else {
                     // authentication failed
