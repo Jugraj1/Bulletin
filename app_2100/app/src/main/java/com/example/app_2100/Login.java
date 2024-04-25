@@ -61,7 +61,7 @@ public class Login extends AppCompatActivity {
         });
 
         signupTv.setOnClickListener(v -> {
-            createAccount("email@email.com", "password"); // leave it as does nothing
+            createAccount("email@email.com", "password"); // leave it as does nothing, but should link to create acc screen!?
         });
     }
 
@@ -76,6 +76,15 @@ public class Login extends AppCompatActivity {
                     Log.d(TAG, "signInWithEmail:success");
                     Toast.makeText(Login.this, "Authentication succeeded.",
                             Toast.LENGTH_LONG).show();
+
+
+                    FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
+                    if (currUser != null){
+                        User user = User.getCurrent();
+                        user.setUserID(currUser.getUid());
+                    }
+
+
                     startActivity(new Intent(Login.this, HomeFeed.class));
 
                 } else {

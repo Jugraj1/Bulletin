@@ -21,10 +21,10 @@ public class User {
 
     private String userID;
     private static String TAG = "User";
-    FirebaseFirestore db = FireStoreClass.getDb().getInstance();
+    FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
 
     private User() { // Private constructor to prevent instantiation from outside
-        FirebaseUser currUser = FirebaseAuthClass.getInstance().getAuth().getCurrentUser();
+        FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
         if (currUser != null){
             this.userID = currUser.getUid();
         }
