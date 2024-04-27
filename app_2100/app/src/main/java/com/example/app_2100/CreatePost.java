@@ -58,7 +58,7 @@ public class CreatePost extends AppCompatActivity {
             post.put("publisher", publisher);
             post.put("url", url);
             post.put("body", content);
-            post.put("author", User.getCurrent().getUserID());
+            post.put("author", CurrentUser.getCurrent().getUserID());
             post.put("timeStamp", new Timestamp(new Date()));
 
 

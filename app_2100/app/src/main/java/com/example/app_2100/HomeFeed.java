@@ -138,24 +138,24 @@ public class HomeFeed extends AppCompatActivity {
     // we are showing the loading view and populating the next list
     private void initScrollListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-             @Override
-             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                 super.onScrollStateChanged(recyclerView, newState);
-             }
-             @Override
-             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                 super.onScrolled(recyclerView, dx, dy);
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                 if (!isLoading) {
-                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
-                         // bottom of list!
-                         loadMore();
-                         isLoading = true;
-                     }
-                 }
-             }
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
+                        // bottom of list!
+                        loadMore();
+                        isLoading = true;
+                    }
+                }
+            }
         });
     }
 

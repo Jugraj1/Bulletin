@@ -1,119 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-
-  <ScrollView
-      android:id="@+id/scrollView"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
-      android:layout_marginTop="15dp"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toTopOf="@+id/activity_postView_ll_add_comment_footer"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-      <TextView
-          android:id="@+id/activity_postView_tv_title"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="16dp"
-          android:layout_marginEnd="16dp"
-          android:lineSpacingExtra="4sp"
-          android:text="Title"
-          android:textColor="#000000"
-          android:textSize="22sp"
-          android:textStyle="bold" />
-
-      <View
-          android:id="@+id/view2"
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="8dp"
-          android:layout_marginEnd="16dp"
-          android:background="#2e2e2e" />
-
-      <TextView
-          android:id="@+id/activity_postView_tv_author"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="8dp"
-          android:layout_marginEnd="16dp"
-          android:text="22-04-2024 | By Raj Nitingar"
-          android:textSize="12sp" />
-
-      <TextView
-          android:id="@+id/activity_postView_tv_description"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="16dp"
-          android:layout_marginEnd="16dp"
-          android:lineSpacingExtra="8sp"
-          android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Massa sapien faucibus et molestie ac feugiat sed. Posuere sollicitudin aliquam ultrices sagittis. Risus in hendrerit gravida rutrum quisque. Malesuada proin libero nunc consequat interdum varius. Malesuada fames ac turpis egestas sed. Sed ullamcorper morbi tincidunt ornare massa eget. Sed enim ut sem viverra. Ipsum dolor sit amet consectetur adipiscing elit ut aliquam purus. Vel pharetra vel turpis nunc. Vulputate odio ut enim blandit volutpat maecenas volutpat blandit. Quis viverra nibh cras pulvinar mattis nunc sed blandit. Condimentum vitae sapien pellentesque habitant morbi tristique senectus et. Eu feugiat pretium nibh ipsum consequat nisl vel pretium lectus. Maecenas volutpat blandit aliquam etiam. Elementum nibh tellus molestie nunc non blandit massa enim nec. Tellus rutrum tellus pellentesque eu.
-
-Sit amet mauris commodo quis imperdiet. Tortor at auctor urna nunc id. At augue eget arcu dictum varius duis at. Egestas dui id ornare arcu odio ut sem nulla pharetra. Cursus sit amet dictum sit amet justo donec enim. Massa enim nec dui nunc mattis enim. Lobortis feugiat vivamus at augue. In eu mi bibendum neque. Pellentesque nec nam aliquam sem et. Adipiscing elit pellentesque habitant morbi tristique. Arcu dui vivamus arcu felis. Congue eu consequat ac felis. Massa massa ultricies mi quis hendrerit dolor magna. Amet porttitor eget dolor morbi non. Purus semper eget duis at tellus at. Orci a scelerisque purus semper eget duis at tellus. Amet purus gravida quis blandit turpis cursus in. Morbi tristique senectus et netus et malesuada fames. Vitae congue mauris rhoncus aenean vel elit"
-          android:textColor="#252525" />
-
-    </LinearLayout>
-  </ScrollView>
-
-<!-- Add comment sticky footer-->
-  <LinearLayout
-      android:id="@+id/activity_postView_ll_add_comment_footer"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      android:layout_marginTop="16dp"
-      android:paddingTop="10dp"
-      android:layout_marginBottom="16dp"
-      android:paddingStart="14dp"
-      android:paddingEnd="4dp"
-      android:gravity="center_vertical"
-      android:background="@drawable/universal_feed_footer_line">
-
-    <ImageView
-        android:id="@+id/activity_postView_iv_user"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/default_profile_pic"/>
-
-    <EditText
-        android:hint="Add a comment..."
-        android:id="@+id/activity_postView_et_comment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/plaintext_rounded_button_style"
-        android:ems="10"
-        android:inputType="text"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+    android:layout_height="match_parent"
+    tools:context=".PostView">
 
     <Button
-        android:id="@+id/activity_postView_btn_addCom"
+        android:id="@+id/ViewProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Post"
-        android:textSize="16sp"
-        app:cornerRadius="10dp"
-        style="@style/UniversalFeedFooterButtonStyle"/>
-  </LinearLayout>
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="16dp"
+        android:text="View Profile"
+        app:icon="@drawable/baseline_person_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="362dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Title"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ViewProfile" />
+
+    <TextView
+        android:id="@+id/Content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="128dp"
+        android:text="Content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/URL" />
+
+    <Button
+        android:id="@+id/Share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:text="Like"
+        app:icon="@drawable/baseline_favorite_border_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Content" />
+
+    <Button
+        android:id="@+id/Share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Comment"
+        app:icon="@drawable/baseline_add_comment_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Content" />
+
+    <Button
+        android:id="@+id/Share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:text="Share"
+        app:icon="@drawable/baseline_ios_share_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Content" />
+
+    <TextView
+        android:id="@+id/Author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="Author"
+        android:textColor="#673AB7"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ViewProfile"
+        app:layout_constraintEnd_toStartOf="@+id/ViewProfile"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ViewProfile"
+        app:layout_constraintVertical_bias="0.562" />
+
+    <Button
+        android:id="@+id/URL"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="128dp"
+        android:text="URL"
+        app:icon="@drawable/baseline_search_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/Publisher"
+        app:layout_constraintTop_toBottomOf="@+id/Title" />
+
+    <TextView
+        android:id="@+id/Publisher"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Publisher"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/Title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/Title"
+        tools:layout_editor_absoluteY="141dp" />
+
+    <TextView
+        android:id="@+id/Date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Date"
+        app:layout_constraintEnd_toEndOf="@+id/ID"
+        app:layout_constraintStart_toStartOf="@+id/ID"
+        app:layout_constraintTop_toBottomOf="@+id/ID" />
+
+    <TextView
+        android:id="@+id/ID"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="ID"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ViewProfile"
+        app:layout_constraintTop_toTopOf="@+id/ViewProfile" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
