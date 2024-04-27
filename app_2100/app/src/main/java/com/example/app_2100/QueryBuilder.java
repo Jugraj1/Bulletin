@@ -42,4 +42,3 @@ public class QueryBuilder {
         currentPosition++; // Move past word
     }
 }
-

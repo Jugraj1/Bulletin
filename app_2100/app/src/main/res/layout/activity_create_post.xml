@@ -4,41 +4,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#4B673AB7"
+    android:background="#4BE4D5FF"
     android:textAlignment="center"
     tools:context=".CreatePost">
 
+    <RelativeLayout
+        android:id="@+id/activity_home_feed_rl_header"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+
+        android:paddingStart="20dp"
+        android:paddingEnd="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/activity_create_post_tv_title"
+            style="@style/UniversalTitleTextView"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="start"
+            android:text="Create Post"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </RelativeLayout>
+
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/activity_create_post_et_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="#673AB7"
         android:ems="10"
+        android:hint="Title"
         android:inputType="text"
-        android:text="Title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
-
-    <Button
-        android:id="@+id/button"
-        style="@style/MaterialAlertDialog.Material3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="Create"
-        app:icon="@drawable/baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.945"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/activity_home_feed_rl_header" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine2"
+        android:id="@+id/activity_create_post_et_publisher"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:backgroundTint="#673AB7"
+        android:ems="10"
+        android:hint="Publisher"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="@+id/activity_create_post_et_title"
+        app:layout_constraintStart_toStartOf="@+id/activity_create_post_et_title"
+        app:layout_constraintTop_toBottomOf="@+id/activity_create_post_et_title" />
+
+    <EditText
+        android:id="@+id/activity_create_post_et_url"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:backgroundTint="#673AB7"
+        android:ems="10"
+        android:hint="Paste URL"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="@+id/activity_create_post_et_publisher"
+        app:layout_constraintStart_toStartOf="@+id/activity_create_post_et_publisher"
+        app:layout_constraintTop_toBottomOf="@+id/activity_create_post_et_publisher" />
+
+    <EditText
+        android:id="@+id/activity_create_post_et_content"
         style="@android:style/Widget.Holo.Light.EditText"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -46,61 +83,51 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/login_custom_et"
         android:backgroundTint="#FFFFFF"
-        android:contentDescription="Thoughts"
         android:defaultFocusHighlightEnabled="false"
         android:gravity="start|top"
+        android:hint="Share your Thoughts"
         android:hyphenationFrequency="normal"
         android:inputType="textMultiLine"
         android:lines="@integer/google_play_services_version"
-        android:text="Share your Thoughts:"
+        android:padding="8dp"
         android:textAlignment="gravity"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@color/black"
         app:barrierMargin="@dimen/cardview_compat_inset_shadow"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="@+id/editTextText3"
+        app:layout_constraintBottom_toTopOf="@+id/activity_create_post_bt_submit"
+        app:layout_constraintEnd_toEndOf="@+id/activity_create_post_et_url"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/editTextText3"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText3"
+        app:layout_constraintStart_toStartOf="@+id/activity_create_post_et_url"
+        app:layout_constraintTop_toBottomOf="@+id/activity_create_post_et_url"
         app:layout_constraintVertical_bias="0.0" />
 
-    <EditText
-        android:id="@+id/editTextText2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:backgroundTint="#673AB7"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Publisher"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="@+id/editTextText"
-        app:layout_constraintStart_toStartOf="@+id/editTextText"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
-
-    <EditText
-        android:id="@+id/editTextText3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:backgroundTint="#673AB7"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Paste URL"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="@+id/editTextText2"
-        app:layout_constraintStart_toStartOf="@+id/editTextText2"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText2" />
-
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/activity_create_post_bt_submit"
+        style="@style/CreatePostSubmitButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Home"
-        app:icon="@drawable/baseline_home_24"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="160dp"
+        android:text="Post"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/activity_search_bt_go_back"
+        style="@style/CreatePostSubmitButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Go Back"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

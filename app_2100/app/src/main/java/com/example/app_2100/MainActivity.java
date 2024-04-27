@@ -22,24 +22,25 @@ public class MainActivity extends AppCompatActivity {
 
 //        startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
         startActivity(new Intent(MainActivity.this, HomeFeed.class));
+//        startActivity(new Intent(MainActivity.this, PostViewActivity.class));
 
         // create instance of firestore DB
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // READ from the database in collection named "posts" - example code, put somewhere else later
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d("Firestore READ success", document.getId() + " => " + document.getData());
-                            }
-                        } else {
-                            Log.w("Firestore READ error", "Error getting documents.", task.getException());
-                        }
-                    }
-                });
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//
+//        // READ from the database in collection named "posts" - example code, put somewhere else later
+//        db.collection("posts")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                Log.d("Firestore READ success", document.getId() + " => " + document.getData());
+//                            }
+//                        } else {
+//                            Log.w("Firestore READ error", "Error getting documents.", task.getException());
+//                        }
+//                    }
+//                });
     }
 }
