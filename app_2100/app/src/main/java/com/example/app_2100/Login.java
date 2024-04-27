@@ -79,7 +79,7 @@ public class Login extends AppCompatActivity {
                     // we are logged in, so we can access currently logged in user using firebase
                     FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
                     if (currUser != null){
-                        User user = User.getCurrent(); // instantiate the user since it most likely does not exist
+                        CurrentUser currentUser = CurrentUser.getCurrent(); // instantiate the currentUser since it most likely does not exist
                     }
 
                     startActivity(new Intent(Login.this, HomeFeed.class)); // go to home page since login validated
