@@ -88,34 +88,34 @@ public class HomeFeed extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Map<String, Object> currData;
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                currData = document.getData();
-                                posts.add(new Post(
-                                        document.getId(),
-                                        currData.get("title"),
-                                        currData.get("body"),
-                                        currData.get("author"),
-                                        currData.get("publisher"),
-                                        currData.get("sourceURL"),
-                                        currData.get("timeStamp")
-                                ));
-                            }
-                            // call listener with the loaded posts
-
-                            listener.onPostsLoaded(posts);
-                            initAdapter(); // put this here so it waits for posts to be queried
-                            initScrollListener();
-                        } else {
-                            Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Map<String, Object> currData;
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            currData = document.getData();
+                            posts.add(new Post(
+                                    document.getId(),
+                                    currData.get("title"),
+                                    currData.get("body"),
+                                    currData.get("author"),
+                                    currData.get("publisher"),
+                                    currData.get("sourceURL"),
+                                    currData.get("timeStamp")
+                            ));
                         }
+                        // call listener with the loaded posts
+
+                        listener.onPostsLoaded(posts);
+                        initAdapter(); // put this here so it waits for posts to be queried
+                        initScrollListener();
+                    } else {
+                        Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
                     }
-                });
+                }
+            });
     }
 
     // interface for the post loaded listener

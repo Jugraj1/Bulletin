@@ -17,31 +17,22 @@ public class CurrentUser extends User{
     // The current user logged into the app
     private static CurrentUser instance;
     private static String TAG = "CurrentUser";
-    FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
+
+    private FirestoreCallback userCallback = new FirestoreCallback(){
+        @Override
+        public void onUserLoaded(String fName, String lName){
+            setFirstName(fName);
+            setLastName(lName);
+        }
+    };
 
     private CurrentUser() { // Private constructor to prevent instantiation from outside
         FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
         if (currUser != null){
-            this.setUserID(currUser.getUid());
+            this.setUserID(currUser.getUid()); // set current user id according to current logged in firebase user from auth
+            this.queryUserByID(getUserID(), userCallback);
         }
 
-        CollectionReference usersRef = db.collection("users");
-        db.collection("users")
-            .whereEqualTo(FieldPath.documentId(), this.getUserID())
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                        }
-
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                    }
-                }
-            });
     }
 
     public static CurrentUser getCurrent() {

@@ -17,6 +17,7 @@ public class Post {
     private Timestamp timeStamp;
     private Date dateTime;
 
+    private String TAG = "Post";
     public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp){
         this.ID = (String) ID;
         this.title = (String) title;
@@ -26,7 +27,22 @@ public class Post {
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
         this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
-        this.authorName = "author"; // set to the actual author
+
+        if (this.authorID != null){
+            FirestoreCallback userCallback = new FirestoreCallback(){
+                @Override
+                public void onUserLoaded(String fName, String lName){
+                    authorName = User.formatName(fName, lName);
+                }
+            };
+
+//            this.authorName = postAuthor.getFormattedName(); // set to the actual author
+            User postAuthor = new User(this.authorID, userCallback);
+
+            Log.d(TAG, postAuthor.toString());
+        } else {
+            this.authorName = "INVALID";
+        }
     }
 
     @Override
