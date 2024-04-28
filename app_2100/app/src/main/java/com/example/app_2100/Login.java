@@ -18,18 +18,15 @@ public class Login extends AppCompatActivity {
     // Test Login details:
     // email: test@gmail.com
     // password: test123
-
-    private FirebaseAuth mAuth;
     private static final String TAG = "Login_Screen";
 
     @Override
     public void onStart() {
         super.onStart();
-
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
-        if(currentUser != null){
-            // reload();
+        if(currentUser != null){ // user is logged in already
+            startActivity(new Intent(Login.this, HomeFeed.class));
             Log.d(TAG, "logged in already");
         }
     }
@@ -40,8 +37,6 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // initialise firebase auth
-        mAuth = FirebaseAuthConnection.getAuth();
-
         TextView email = (TextView) findViewById(R.id.activity_login_et_email);
         TextView password = (TextView) findViewById(R.id.activity_login_et_password);
 
@@ -79,11 +74,12 @@ public class Login extends AppCompatActivity {
                     // we are logged in, so we can access currently logged in user using firebase
                     FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
                     if (currUser != null){
-                        CurrentUser currentUser = CurrentUser.getCurrent(); // instantiate the currentUser since it most likely does not exist
+//                        CurrentUser currentUser = CurrentUser.getCurrent(); // instantiate the currentUser since it most likely does not exist yet
+                        startActivity(new Intent(Login.this, HomeFeed.class)); // go to home page since login validated
+                    } else {
+                        Log.w(TAG, "signInWithEmail: logged in account is null");
+                        // uh oh somethign that shouldnt happen has happened!
                     }
-
-                    startActivity(new Intent(Login.this, HomeFeed.class)); // go to home page since login validated
-
                 } else {
                     // authentication failed
                     Log.w(TAG, "signInWithEmail:failure");

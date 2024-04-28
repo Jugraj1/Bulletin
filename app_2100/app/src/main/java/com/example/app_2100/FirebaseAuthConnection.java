@@ -7,7 +7,6 @@ public class FirebaseAuthConnection {
     // A singleton class to handle all Firebase operations
     private static FirebaseAuthConnection instance = null;
     private static FirebaseAuth mAuth;
-
     private FirebaseAuthConnection(){
         mAuth = FirebaseAuth.getInstance();
     }
