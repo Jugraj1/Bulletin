@@ -122,7 +122,11 @@ public class HomeFeed extends AppCompatActivity implements RecylerViewAdapter.On
 
     @Override
     public void onItemClick(int position) {
+//        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
         Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+        postViewIntent.putExtra("post", posts.get(position));
+        Log.d(TAG, posts.get(position).toString());
+        startActivity(postViewIntent);
     }
 
     // interface for the post loaded listener
