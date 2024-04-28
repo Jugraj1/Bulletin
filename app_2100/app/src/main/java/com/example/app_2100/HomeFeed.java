@@ -33,13 +33,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeed extends AppCompatActivity {
+public class HomeFeed extends AppCompatActivity implements RecylerViewAdapter.OnItemClickListener {
     private static final String TAG = "HomeFeed_Screen";
 
     RecyclerView recyclerView;
     RecylerViewAdapter recylerViewAdapter;
+
     List<Post> posts = new ArrayList<Post>();
+
     boolean isLoading = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +73,6 @@ public class HomeFeed extends AppCompatActivity {
         searchBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
         });
-
-
-
-
-
     }
 
     /***
@@ -122,6 +120,11 @@ public class HomeFeed extends AppCompatActivity {
                 });
     }
 
+    @Override
+    public void onItemClick(int position) {
+        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+    }
+
     // interface for the post loaded listener
     public interface OnPostsLoadedListener {
         void onPostsLoaded(List<Post> posts);
@@ -130,6 +133,7 @@ public class HomeFeed extends AppCompatActivity {
     // initiates RecyclerViewAdapter
     private void initAdapter() {
         recylerViewAdapter = new RecylerViewAdapter(posts);
+        recylerViewAdapter.setOnItemClickListener(this);
         recyclerView.setAdapter(recylerViewAdapter);
     }
 

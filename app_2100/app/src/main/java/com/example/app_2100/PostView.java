@@ -34,7 +34,6 @@ public class PostView extends AppCompatActivity {
             String postURL = intent.getStringExtra("postURL");
             String postDate = intent.getStringExtra("postDate");
 
-
             // Display information in layout
             TextView titleTextView = findViewById(R.id.Title);
             TextView contentTextView = findViewById(R.id.Content);

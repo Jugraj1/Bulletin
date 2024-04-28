@@ -1,8 +1,10 @@
 package com.example.app_2100;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -55,11 +57,23 @@ public class RecylerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mPosts.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
-    private class PostThumbnailViewHolder extends RecyclerView.ViewHolder {
+    /////////////////// SERIOUS BUSINESS HERE
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+    private OnItemClickListener mListener;
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+
+    private class PostThumbnailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView titleTv;
         TextView authorTv;
         TextView dateTimeTv;
         TextView bodyTv;
+
 
         public PostThumbnailViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -67,7 +81,20 @@ public class RecylerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             authorTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
             dateTimeTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
             bodyTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    mListener.onItemClick(position);
+                }
+            }
+        }
+
     }
 
     private void populatePostThumbnails(PostThumbnailViewHolder viewHolder, int position) {
@@ -77,6 +104,15 @@ public class RecylerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.authorTv.setText(currPost.getAuthorName());
         viewHolder.dateTimeTv.setText(currPost.getFormattedDateTime());
         viewHolder.bodyTv.setText(currPost.getBody());
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemClick(position);
+                }
+            }
+        });
     }
 
     private class LoadingViewHolder extends RecyclerView.ViewHolder {
