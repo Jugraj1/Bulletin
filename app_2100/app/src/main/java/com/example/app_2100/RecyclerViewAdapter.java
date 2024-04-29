@@ -58,10 +58,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /////////////////// SERIOUS BUSINESS HERE
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
     private OnItemClickListener mListener;
 
     public void setOnItemClickListener(OnItemClickListener listener) {

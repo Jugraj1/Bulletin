@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeed extends AppCompatActivity implements RecyclerViewAdapter.OnItemClickListener {
+public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     private static final String TAG = "HomeFeed_Screen";
 
     RecyclerView recyclerView;
@@ -127,11 +127,6 @@ public class HomeFeed extends AppCompatActivity implements RecyclerViewAdapter.O
         postViewIntent.putExtra("post", posts.get(position));
         Log.d(TAG, posts.get(position).toString());
         startActivity(postViewIntent);
-    }
-
-    // interface for the post loaded listener
-    public interface OnPostsLoadedListener {
-        void onPostsLoaded(List<Post> posts);
     }
 
     // initiates RecyclerViewAdapter
