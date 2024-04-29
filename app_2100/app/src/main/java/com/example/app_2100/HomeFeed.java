@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeed extends AppCompatActivity implements RecylerViewAdapter.OnItemClickListener {
+public class HomeFeed extends AppCompatActivity implements RecyclerViewAdapter.OnItemClickListener {
     private static final String TAG = "HomeFeed_Screen";
 
     RecyclerView recyclerView;
-    RecylerViewAdapter recylerViewAdapter;
+    RecyclerViewAdapter recylerViewAdapter;
 
     List<Post> posts = new ArrayList<Post>();
 
@@ -136,7 +136,7 @@ public class HomeFeed extends AppCompatActivity implements RecylerViewAdapter.On
 
     // initiates RecyclerViewAdapter
     private void initAdapter() {
-        recylerViewAdapter = new RecylerViewAdapter(posts);
+        recylerViewAdapter = new RecyclerViewAdapter(posts);
         recylerViewAdapter.setOnItemClickListener(this);
         recyclerView.setAdapter(recylerViewAdapter);
     }
