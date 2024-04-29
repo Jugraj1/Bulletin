@@ -92,10 +92,5 @@ public class FirebaseAuthConnection {
                     }
                 });
     }
-    /**
-     * Callback interface for authentication
-     */
-    public interface AuthCallback {
-        void onAuthentication(boolean success);
-    }
+
 }

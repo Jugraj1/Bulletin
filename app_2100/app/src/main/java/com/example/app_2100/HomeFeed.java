@@ -32,7 +32,7 @@ public class HomeFeed extends AppCompatActivity {
     private static final String TAG = "HomeFeed_Screen";
 
     RecyclerView recyclerView;
-    RecylerViewAdapter recylerViewAdapter;
+    RecyclerViewAdapter recyclerViewAdapter;
     List<Post> posts = new ArrayList<Post>();
     boolean isLoading = false;
 
@@ -125,8 +125,8 @@ public class HomeFeed extends AppCompatActivity {
 
     // initiates RecyclerViewAdapter
     private void initAdapter() {
-        recylerViewAdapter = new RecylerViewAdapter(posts);
-        recyclerView.setAdapter(recylerViewAdapter);
+        recyclerViewAdapter = new RecyclerViewAdapter(posts);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 
     // initScrollListener() method is the method where we are checking
@@ -157,13 +157,13 @@ public class HomeFeed extends AppCompatActivity {
 
     private void loadMore() {
         posts.add(null);
-        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
+        recyclerViewAdapter.notifyItemInserted(posts.size() - 1);
 
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             posts.remove(posts.size() - 1);
             int scrollPosition = posts.size();
-            recylerViewAdapter.notifyItemRemoved(scrollPosition);
+            recyclerViewAdapter.notifyItemRemoved(scrollPosition);
 
             populateFeed(); // get more posts - right now this just gets the same list of posts
             isLoading = false;

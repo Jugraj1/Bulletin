@@ -57,12 +57,12 @@ public class Login extends AppCompatActivity {
 
         // sign up "text" (which is acting like a button) onclick handling
         signupTv.setOnClickListener(v -> {
-            createAccount("email@email.com", "password"); // leave it as does nothing, but should link to create acc screen!?
+            createAccount("email@email.com", "password","f","l"); // leave it as does nothing, but should link to create acc screen!?
         });
     }
 
     private void signIn(String email, String password) {
-        FirebaseAuthConnection.getInstance().signIn(email, password, new FirebaseAuthConnection.AuthCallback() {
+        FirebaseAuthConnection.getInstance().signIn(email, password, new AuthCallback() {
             @Override
             public void onAuthentication(boolean success) {
                 if (success) {
@@ -74,7 +74,6 @@ public class Login extends AppCompatActivity {
                     // we are logged in, so we can access currently logged in user using firebase
                     FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
                     if (currUser != null){
-//                        CurrentUser currentUser = CurrentUser.getCurrent(); // instantiate the currentUser since it most likely does not exist yet
                         startActivity(new Intent(Login.this, HomeFeed.class)); // go to home page since login validated
                     } else {
                         Log.w(TAG, "signInWithEmail: logged in account is null");
@@ -90,19 +89,21 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    private void createAccount(String email, String password) {
-       FirebaseAuthConnection.getInstance().createAccount(email, password, new FirebaseAuthConnection.AuthCallback() {
+    private void createAccount(String email, String password, String firstName, String lastName ) {
+       FirebaseAuthConnection.getInstance().createAccount(email, password, new AuthCallback() {
            @Override
            public void onAuthentication(boolean success) {
                if (success) {
-                   // authentication success
                    Log.d(TAG, "createUserWithEmail:success");
-                   Toast.makeText(Login.this, "Authentication succeeded.",
+
+
+
+                   Toast.makeText(Login.this, "Account Creation succeeded.",
                            Toast.LENGTH_LONG).show();
+                   startActivity(new Intent(Login.this, HomeFeed.class)); // user is automatically logged in - go to home feed
                } else {
-                   // authentication failed
                    Log.w(TAG, "createUserWithEmail:failure");
-                   Toast.makeText(Login.this, "Authentication failed.",
+                   Toast.makeText(Login.this, "Account Creation failed.",
                            Toast.LENGTH_LONG).show();
                }
            }
