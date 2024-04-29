@@ -1,11 +1,12 @@
 package com.example.app_2100;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
-
 import java.util.Date;
 
-public class Post {
+public class Post implements Parcelable {
 
     private String ID;
     private String title;
@@ -44,6 +45,7 @@ public class Post {
             this.authorName = "INVALID";
         }
     }
+
 
     @Override
     public String toString(){
@@ -98,4 +100,46 @@ public class Post {
     public String getFormattedDateTime() {
         return DateFormatter.formatDate(dateTime);
     }
+
+    // Stuff for parceling into intent:
+    protected Post(Parcel in) {
+        ID = in.readString();
+        title = in.readString();
+        body = in.readString();
+        authorID = in.readString();
+        authorName = in.readString();
+        publisher = in.readString();
+        sourceURL = in.readString();
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
+        dateTime = new Date(timeStamp.getSeconds()*1000);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(ID);
+        dest.writeString(title);
+        dest.writeString(body);
+        dest.writeString(authorID);
+        dest.writeString(authorName);
+        dest.writeString(publisher);
+        dest.writeString(sourceURL);
+        dest.writeParcelable(timeStamp, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
 }

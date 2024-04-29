@@ -14,9 +14,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,13 +33,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeed extends AppCompatActivity {
+public class HomeFeed extends AppCompatActivity implements RecylerViewAdapter.OnItemClickListener {
     private static final String TAG = "HomeFeed_Screen";
 
     RecyclerView recyclerView;
-    RecyclerViewAdapter recyclerViewAdapter;
+    RecylerViewAdapter recylerViewAdapter;
+
     List<Post> posts = new ArrayList<Post>();
+
     boolean isLoading = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,6 @@ public class HomeFeed extends AppCompatActivity {
         });
 
         createProfilePic();
-        Log.d(TAG, CurrentUser.getCurrent().getUserID());
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
@@ -66,11 +73,6 @@ public class HomeFeed extends AppCompatActivity {
         searchBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
         });
-
-
-
-
-
     }
 
     /***
@@ -88,34 +90,43 @@ public class HomeFeed extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("posts")
-            .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Map<String, Object> currData;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            currData = document.getData();
-                            posts.add(new Post(
-                                    document.getId(),
-                                    currData.get("title"),
-                                    currData.get("body"),
-                                    currData.get("author"),
-                                    currData.get("publisher"),
-                                    currData.get("sourceURL"),
-                                    currData.get("timeStamp")
-                            ));
-                        }
-                        // call listener with the loaded posts
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Map<String, Object> currData;
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                currData = document.getData();
+                                posts.add(new Post(
+                                        document.getId(),
+                                        currData.get("title"),
+                                        currData.get("body"),
+                                        currData.get("author"),
+                                        currData.get("publisher"),
+                                        currData.get("sourceURL"),
+                                        currData.get("timeStamp")
+                                ));
+                            }
+                            // call listener with the loaded posts
 
-                        listener.onPostsLoaded(posts);
-                        initAdapter(); // put this here so it waits for posts to be queried
-                        initScrollListener();
-                    } else {
-                        Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+                            listener.onPostsLoaded(posts);
+                            initAdapter(); // put this here so it waits for posts to be queried
+                            initScrollListener();
+                        } else {
+                            Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+                        }
                     }
-                }
-            });
+                });
+    }
+
+    @Override
+    public void onItemClick(int position) {
+//        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+        postViewIntent.putExtra("post", posts.get(position));
+        Log.d(TAG, posts.get(position).toString());
+        startActivity(postViewIntent);
     }
 
     // interface for the post loaded listener
@@ -125,8 +136,9 @@ public class HomeFeed extends AppCompatActivity {
 
     // initiates RecyclerViewAdapter
     private void initAdapter() {
-        recyclerViewAdapter = new RecyclerViewAdapter(posts);
-        recyclerView.setAdapter(recyclerViewAdapter);
+        recylerViewAdapter = new RecylerViewAdapter(posts);
+        recylerViewAdapter.setOnItemClickListener(this);
+        recyclerView.setAdapter(recylerViewAdapter);
     }
 
     // initScrollListener() method is the method where we are checking
@@ -134,36 +146,36 @@ public class HomeFeed extends AppCompatActivity {
     // we are showing the loading view and populating the next list
     private void initScrollListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-             @Override
-             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                 super.onScrollStateChanged(recyclerView, newState);
-             }
-             @Override
-             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                 super.onScrolled(recyclerView, dx, dy);
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                 if (!isLoading) {
-                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
-                         // bottom of list!
-                         loadMore();
-                         isLoading = true;
-                     }
-                 }
-             }
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
+                        // bottom of list!
+                        loadMore();
+                        isLoading = true;
+                    }
+                }
+            }
         });
     }
 
     private void loadMore() {
         posts.add(null);
-        recyclerViewAdapter.notifyItemInserted(posts.size() - 1);
+        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
 
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             posts.remove(posts.size() - 1);
             int scrollPosition = posts.size();
-            recyclerViewAdapter.notifyItemRemoved(scrollPosition);
+            recylerViewAdapter.notifyItemRemoved(scrollPosition);
 
             populateFeed(); // get more posts - right now this just gets the same list of posts
             isLoading = false;
