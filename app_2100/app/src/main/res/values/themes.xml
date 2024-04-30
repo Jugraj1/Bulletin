@@ -44,9 +44,6 @@
         <item name="android:background">@null</item>
     </style>
 
-   <style name="WhiteButton" parent="Widget.AppCompat.Button">
-       <item name="android:colorAccent">@color/white</item>
-   </style>
 
 
 </resources>

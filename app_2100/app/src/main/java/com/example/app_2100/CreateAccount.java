@@ -3,6 +3,13 @@ package com.example.app_2100;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CreateAccount extends AppCompatActivity {
 
@@ -10,5 +17,74 @@ public class CreateAccount extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
+
+
+        Button createAccountButton = findViewById(R.id.activity_create_account_bt_create_account);
+        createAccountButton.setOnClickListener(v -> createAccount());
+
+
+    }
+
+    private String emailString;
+    private String passwordString;
+    private String firstNameString;
+    private String lastNameString;
+
+    private Account account;
+
+    private void createAccount(){
+       account = validateAllFields();
+       if(account == null){
+           return;
+       } else{
+              // Create account
+              // Add account to database
+              // Redirect to login page
+       }
+    }
+
+
+    /**
+     * Validate all fields
+     * @return Account object if all fields are valid, null otherwise
+     */
+    private Account validateAllFields(){
+//        Get all the fields
+        EditText emailEditText = findViewById(R.id.activity_create_account_et_email);
+        EditText passwordEditText = findViewById(R.id.activity_create_account_et_password);
+        EditText firstNameEditText = findViewById(R.id.activity_create_account_et_first_name);
+        EditText lastNameEditText = findViewById(R.id.activity_create_account_et_last_name);
+
+        emailString = emailEditText.getText().toString();
+        passwordString = passwordEditText.getText().toString();
+        firstNameString = firstNameEditText.getText().toString();
+        lastNameString = lastNameEditText.getText().toString();
+
+
+//        Validate for empty fields
+        if (emailString.isEmpty() || passwordString.isEmpty() || firstNameString.isEmpty() || lastNameString.isEmpty()){
+//            Tell user to fill in all fields
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+//        validate emailString format
+        Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
+        Matcher mat = pattern.matcher(emailString);
+
+        if(!mat.matches()){
+//            Tell user email is invalid
+            Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+//        validate passwordString
+        if (passwordString.length() < 6){
+//          Tell user password is too short
+            Toast.makeText(this, "Password is too short", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+        return null;
     }
 }

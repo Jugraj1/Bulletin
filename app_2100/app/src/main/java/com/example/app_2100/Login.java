@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity {
@@ -42,10 +41,10 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // initialise firebase auth
-        TextView email = (TextView) findViewById(R.id.activity_login_et_email);
-        TextView password = (TextView) findViewById(R.id.activity_login_et_password);
+        TextView email = (TextView) findViewById(R.id.activity_create_account_et_email);
+        TextView password = (TextView) findViewById(R.id.activity_create_account_et_password);
 
-        Button loginBt = (Button) findViewById(R.id.activity_login_bt_login);
+        Button loginBt = (Button) findViewById(R.id.activity_create_account_bt_create_account);
         TextView signupTv = (TextView) findViewById(R.id.activity_login_tv_signup);
 
         // login button on click handling
