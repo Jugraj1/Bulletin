@@ -23,12 +23,17 @@ public class Login extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+
+
+
+//        Uncomment this code to automatically log in the user if they are already logged in
+//        this is just for testing purposes
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
-        if(currentUser != null){ // user is logged in already
-            startActivity(new Intent(Login.this, HomeFeed.class));
-            Log.d(TAG, "logged in already");
-        }
+//        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
+//        if(currentUser != null){ // user is logged in already
+//            startActivity(new Intent(Login.this, HomeFeed.class));
+//            Log.d(TAG, "logged in already");
+//        }
     }
 
     @Override
@@ -57,7 +62,8 @@ public class Login extends AppCompatActivity {
 
         // sign up "text" (which is acting like a button) onclick handling
         signupTv.setOnClickListener(v -> {
-            createAccount("email@email.com", "password","f","l"); // leave it as does nothing, but should link to create acc screen!?
+            startActivity(new Intent(Login.this, CreateAccount.class));
+//            createAccount("email@email.com", "password","f","l"); // leave it as does nothing, but should link to create acc screen!?
         });
     }
 
