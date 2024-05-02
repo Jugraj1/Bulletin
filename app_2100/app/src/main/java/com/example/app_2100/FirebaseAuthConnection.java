@@ -93,4 +93,16 @@ public class FirebaseAuthConnection {
                 });
     }
 
+    public void createAccount(String email, String password, String firstName, String lastName, AuthCallback callback){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // sign in success
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        callback.onAuthentication(true);
+                    } else {
+                        callback.onAuthentication(false);
+                    }
+                });
+    }
 }

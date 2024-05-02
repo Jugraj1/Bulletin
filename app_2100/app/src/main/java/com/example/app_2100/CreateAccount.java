@@ -2,16 +2,29 @@ package com.example.app_2100;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CreateAccount extends AppCompatActivity {
+
+
+    private String emailString;
+    private String passwordString;
+    private String firstNameString;
+    private String lastNameString;
+
+    private static final String TAG = "CreateAccount";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,27 +33,40 @@ public class CreateAccount extends AppCompatActivity {
 
 
         Button createAccountButton = findViewById(R.id.activity_create_account_bt_create_account);
-        createAccountButton.setOnClickListener(v -> createAccount());
-
-
+        createAccountButton.setOnClickListener(v -> createAccountButtonPressed());
     }
 
-    private String emailString;
-    private String passwordString;
-    private String firstNameString;
-    private String lastNameString;
 
-    private Account account;
-
-    private void createAccount(){
-       account = validateAllFields();
-       if(account == null){
-           return;
-       } else{
+    private void createAccountButtonPressed(){
+       if(validateAllFields()){
               // Create account
               // Add account to database
               // Redirect to login page
+
+              // Create account
+           createAccount();
        }
+    }
+
+    private void createAccount(){
+        Log.d(TAG, "createAccount() started");
+        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, new AuthCallback() {
+            @Override
+            public void onAuthentication(boolean success) {
+                if (success) {
+
+                    Log.w(TAG, "createUserWithEmail:success");
+                    Toast.makeText(CreateAccount.this, "Account Creation succeeded.", Toast.LENGTH_LONG).show();
+
+                    startActivity(new Intent(CreateAccount.this, HomeFeed.class));
+                } else {
+                    Log.w(TAG, "createUserWithEmail:failure");
+                    Toast.makeText(CreateAccount.this, "Account Creation failed.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
 
 
@@ -48,7 +74,7 @@ public class CreateAccount extends AppCompatActivity {
      * Validate all fields
      * @return Account object if all fields are valid, null otherwise
      */
-    private Account validateAllFields(){
+    private boolean validateAllFields(){
 //        Get all the fields
         EditText emailEditText = findViewById(R.id.activity_create_account_et_email);
         EditText passwordEditText = findViewById(R.id.activity_create_account_et_password);
@@ -65,7 +91,7 @@ public class CreateAccount extends AppCompatActivity {
         if (emailString.isEmpty() || passwordString.isEmpty() || firstNameString.isEmpty() || lastNameString.isEmpty()){
 //            Tell user to fill in all fields
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-            return null;
+            return false;
         }
 
 //        validate emailString format
@@ -75,16 +101,16 @@ public class CreateAccount extends AppCompatActivity {
         if(!mat.matches()){
 //            Tell user email is invalid
             Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT).show();
-            return null;
+            return false;
         }
 
 //        validate passwordString
         if (passwordString.length() < 6){
 //          Tell user password is too short
             Toast.makeText(this, "Password is too short", Toast.LENGTH_SHORT).show();
-            return null;
+            return false;
         }
 
-        return null;
+        return true;
     }
 }

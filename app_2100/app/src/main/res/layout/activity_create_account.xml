@@ -12,7 +12,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="44dp"
-        android:text="Login"
+        android:text="Sign up"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/activity_create_account_bt_cancel"
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_password" />
