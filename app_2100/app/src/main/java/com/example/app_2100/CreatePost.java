@@ -1,6 +1,5 @@
 package com.example.app_2100;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -29,7 +28,7 @@ public class CreatePost extends AppCompatActivity {
         setContentView(R.layout.activity_create_post);
 
         // Firestore init
-        db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestoreConnection.getDb();
 
         // Views init
         titleEditText = findViewById(R.id.activity_create_post_et_title);

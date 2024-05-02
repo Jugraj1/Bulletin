@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class RecylerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Post> mPosts;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
-    public RecylerViewAdapter(List<Post> posts) {
+    public RecyclerViewAdapter(List<Post> posts) {
         mPosts = posts;
     }
 
@@ -58,10 +58,6 @@ public class RecylerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     /////////////////// SERIOUS BUSINESS HERE
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
     private OnItemClickListener mListener;
 
     public void setOnItemClickListener(OnItemClickListener listener) {
