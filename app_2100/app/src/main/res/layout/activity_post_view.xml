@@ -45,14 +45,23 @@
           android:background="#2e2e2e" />
 
       <TextView
+          android:id="@+id/activity_postView_tv_timestamp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="8dp"
+          android:layout_marginEnd="16dp"
+          android:text="22-04-2024"
+          android:textSize="12sp" />
+
+      <TextView
           android:id="@+id/activity_postView_tv_author"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
           android:layout_marginTop="8dp"
           android:layout_marginEnd="16dp"
-          android:text="22-04-2024 | By Raj Nitingar"
-          android:textSize="12sp" />
+          android:text="Raj Nitinger" />
 
       <TextView
           android:id="@+id/activity_postView_tv_description"
