@@ -19,9 +19,6 @@
             android:name=".PostViewActivity"
             android:exported="false" />
         <activity
-            android:name=".PostView"
-            android:exported="false" />
-        <activity
             android:name=".ProfileViewer"
             android:exported="false" />
         <activity
