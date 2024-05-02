@@ -5,13 +5,18 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
+import java.util.List;
 
 public class Post implements Parcelable {
 
@@ -25,8 +30,14 @@ public class Post implements Parcelable {
     private Timestamp timeStamp;
     private Date dateTime;
 
+    private Boolean isLikedByCurrUser;
+    private Boolean isSharedByCurrUser;
+    private DocumentReference ref;
+    FirebaseFirestore db;
     private String TAG = "Post";
-    public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp){
+    private PostLoadCallback postLoadCallback;
+
+    public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp, PostLoadCallback callback){
         this.ID = (String) ID;
         this.title = (String) title;
         this.body = (String) body;
@@ -35,6 +46,38 @@ public class Post implements Parcelable {
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
         this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
+        db = FirebaseFirestoreConnection.getDb();
+        ref = db.collection("posts").document(this.ID);
+        isLikedByCurrUser = false;
+        ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        if (document.get("likes") != null){
+                            List<String> likerIDs = (List<String>) document.get("likes");
+                            isLikedByCurrUser = likerIDs.contains(CurrentUser.getCurrent().getUserID());
+                            Log.d(TAG, "liker by curr from db: "+String.valueOf(isLikedByCurrUser));
+//                            if (likerIDs != null){
+//
+//                            } else {
+//                                isLikedByCurrUser = false; // post doesnt have any likes - therefore this user cant be one of the likers
+//                            }
+                        } else {
+                            isLikedByCurrUser = false;
+                        }
+//
+                    } else {
+                        Log.d(TAG, "Document doesnt exist :(");
+                    }
+                } else {
+                    Log.d(TAG, "failed to get document: ", task.getException());
+                }
+
+                callback.onPostLoaded(Post.this);
+            }
+        });
 
         if (this.authorID != null){
             FirestoreCallback userCallback = new FirestoreCallback(){
@@ -47,29 +90,41 @@ public class Post implements Parcelable {
 //            this.authorName = postAuthor.getFormattedName(); // set to the actual author
             User postAuthor = new User(this.authorID, userCallback);
 
-            Log.d(TAG, postAuthor.toString());
+//            Log.d(TAG, postAuthor.toString());
         } else {
             this.authorName = "INVALID";
         }
     }
 
-    public void addLike(String likerID){
-        DocumentReference currPostRef = FirebaseFirestoreConnection.getDb()
-            .collection("posts").document(this.ID);
-        currPostRef
-            .update("likes", FieldValue.arrayUnion(likerID)) // append to the array of likers
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "Post 'likers' successfully updated!");
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, String.format("Error updating Post with new liker: %s", likerID), e);
-                }
-            });
+    public void toggleLike(String likerID){
+        Log.d(TAG, String.valueOf(isLikedByCurrUser));
+        if (isLikedByCurrUser){
+            ref.update("likes", FieldValue.arrayRemove(likerID))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, String.format("Error updating Post with removing liker: %s", likerID), e);
+                    }
+                });
+        } else {
+            ref.update("likes", FieldValue.arrayUnion(likerID)) // append to the array of likers
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, String.format("Error updating Post with new liker: %s", likerID), e);
+                    }
+                });
+        }
+
+        isLikedByCurrUser = !isLikedByCurrUser;
+    }
+
+    public Boolean getLikedByCurrUser() {
+        return isLikedByCurrUser;
+    }
+
+    public Boolean getSharedByCurrUser() {
+        return isSharedByCurrUser;
     }
 
     public void addShare(String likerID){
@@ -77,12 +132,19 @@ public class Post implements Parcelable {
                 .collection("posts").document(this.ID);
         currPostRef
                 .update("shares", FieldValue.arrayUnion(likerID)) // append to the array of likers
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Post 'likers' successfully updated!");
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, String.format("Error updating Post with new liker: %s", likerID), e);
                     }
-                })
+                });
+    }
+
+    public void removeShare(String likerID){
+        DocumentReference currPostRef = FirebaseFirestoreConnection.getDb()
+                .collection("posts").document(this.ID);
+        currPostRef
+                .update("shares", FieldValue.arrayUnion(likerID)) // append to the array of likers
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -104,6 +166,17 @@ public class Post implements Parcelable {
                 ", timeStamp=" + timeStamp +
                 ", dateTime=" + dateTime +
                 '}';
+    }
+
+    public void setPostLoadCallback(PostLoadCallback callback) {
+        postLoadCallback = callback;
+    }
+
+    // Invoke the callback method when the post is loaded
+    private void invokePostLoadCallback() {
+        if (postLoadCallback != null) {
+            postLoadCallback.onPostLoaded(this);
+        }
     }
 
     public String getID() {

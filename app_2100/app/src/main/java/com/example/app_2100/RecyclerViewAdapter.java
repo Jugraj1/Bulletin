@@ -23,7 +23,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     static final String TAG = "RecyclerViewAdapter";
 
     public RecyclerViewAdapter(List<Post> posts) {
+
         mPosts = posts;
+        loadPosts();
+    }
+
+    private void loadPosts() {
+        for (Post post : mPosts) {
+            postLoadCallback(post);
+        }
+    }
+
+    private void postLoadCallback(Post post) {
+        post.setPostLoadCallback(new PostLoadCallback() {
+            @Override
+            public void onPostLoaded(Post post) {
+                notifyDataSetChanged(); // Notify RecyclerViewAdapter when a post is loaded
+            }
+        });
     }
 
     // Based on the View type we are instantiating the ViewHolder in the onCreateViewHolder() method
@@ -76,15 +93,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Button likeBt;
         Button shareBt;
 
-
         public PostThumbnailViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_title);
             authorTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
             dateTimeTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
             bodyTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
-            likeBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
 
+            likeBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
             shareBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
 
             itemView.setOnClickListener(this);
@@ -112,6 +128,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         viewHolder.dateTimeTv.setText(currPost.getFormattedDateTime());
         viewHolder.bodyTv.setText(currPost.getBody());
 
+        // initialise the clicked state
+        if (currPost.getLikedByCurrUser()) // user has liked the post
+        {
+            viewHolder.likeBt.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+        } else { // user hasnt liked the post yet
+            viewHolder.likeBt.setBackground(null);
+        }
+
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +146,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
 
         viewHolder.likeBt.setOnClickListener(v -> {
-            currPost.addLike(CurrentUser.getCurrent().getUserID());
+            Log.d(TAG, String.valueOf(currPost.getLikedByCurrUser()));
+            if (currPost.getLikedByCurrUser()) // user has liked the post, now wants to unlike
+            {
+                viewHolder.likeBt.setBackground(null);
+            } else { // user hasnt liked the post yet, and wants to like
+                viewHolder.likeBt.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+            }
+            currPost.toggleLike(CurrentUser.getCurrent().getUserID());
         });
 
         viewHolder.shareBt.setOnClickListener(v -> {

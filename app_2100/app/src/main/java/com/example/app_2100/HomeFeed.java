@@ -43,6 +43,12 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
     boolean isLoading = false;
 
+    private PostLoadCallback postLoadCallback = new PostLoadCallback() {
+        @Override
+        public void onPostLoaded(Post post) {
+            recylerViewAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +111,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
                                         currData.get("author"),
                                         currData.get("publisher"),
                                         currData.get("sourceURL"),
-                                        currData.get("timeStamp")
+                                        currData.get("timeStamp"),
+                                        postLoadCallback
                                 ));
                             }
                             // call listener with the loaded posts
