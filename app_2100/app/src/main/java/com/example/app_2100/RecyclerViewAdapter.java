@@ -101,7 +101,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             bodyTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
 
             likeBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
-            shareBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
+//            shareBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
 
             itemView.setOnClickListener(this);
 
