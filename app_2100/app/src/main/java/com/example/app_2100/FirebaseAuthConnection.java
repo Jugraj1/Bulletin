@@ -5,6 +5,9 @@ import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FirebaseAuthConnection {
     // A singleton class to handle all Firebase operations
     private static FirebaseAuthConnection instance = null;
@@ -122,15 +125,17 @@ public class FirebaseAuthConnection {
     }
 
     /**
-     * Update the user with the given first name and last name
+     * Update the user with the given first name and last name and
+     * Add an empty array of Strings called following
      * @param userId
      * @param firstName
      * @param lastName
      */
     private void updateAccount(String userId, String firstName, String lastName){
         // update the user with the first name and last name
+        List<String> followingList = new ArrayList<>();
         FirebaseFirestoreConnection.getDb().collection("users").document(userId)
-                .update("firstName", firstName, "lastName", lastName)
+                .update("firstName", firstName, "lastName", lastName, "following", followingList)
                 .addOnSuccessListener(aVoid -> {
                     // update success
                     Log.d("FirebaseAuthConnection", "User updated successfully");
