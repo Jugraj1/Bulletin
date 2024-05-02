@@ -60,6 +60,10 @@ public class CreateAccount extends AppCompatActivity {
         FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, createAccountCallback());
     }
 
+    /**
+     * Callback for createAccount specify what happens after account creation
+     * @return
+     */
     private AuthCallback createAccountCallback (){
         return new AuthCallback() {
             @Override
@@ -69,6 +73,7 @@ public class CreateAccount extends AppCompatActivity {
                     Log.w(TAG, "createUserWithEmail:success");
                     Toast.makeText(CreateAccount.this, "Account Creation succeeded.", Toast.LENGTH_LONG).show();
 
+//                    Redirect to HomeFeed
                     startActivity(new Intent(CreateAccount.this, HomeFeed.class));
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure");

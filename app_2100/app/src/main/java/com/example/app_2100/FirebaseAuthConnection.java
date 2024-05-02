@@ -1,5 +1,7 @@
 package com.example.app_2100;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -108,8 +110,8 @@ public class FirebaseAuthConnection {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // sign in success
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        updateAccount(user, firstName, lastName);
+                        String currentUser = CurrentUser.getCurrent().getUserID();
+                        updateAccount(currentUser, firstName, lastName);
                         callback.onAuthentication(true);
 
                     } else {
@@ -117,15 +119,25 @@ public class FirebaseAuthConnection {
                         return;
                     }
                 });
-
-        // update the user with the first name and last name
-        FirebaseUser user = mAuth.getCurrentUser();
-
     }
 
-    private void updateAccount(FirebaseUser user, String firstName, String lastName){
+    /**
+     * Update the user with the given first name and last name
+     * @param userId
+     * @param firstName
+     * @param lastName
+     */
+    private void updateAccount(String userId, String firstName, String lastName){
         // update the user with the first name and last name
-
+        FirebaseFirestoreConnection.getDb().collection("users").document(userId)
+                .update("firstName", firstName, "lastName", lastName)
+                .addOnSuccessListener(aVoid -> {
+                    // update success
+                    Log.d("FirebaseAuthConnection", "User updated successfully");
+                }).addOnFailureListener(e -> {
+                    // update failed
+                    Log.d("FirebaseAuthConnection", "User update failed");
+                });
     }
 
 }
