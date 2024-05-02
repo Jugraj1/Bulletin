@@ -3,7 +3,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+
 import java.util.Date;
 
 public class Post implements Parcelable {
@@ -44,6 +51,44 @@ public class Post implements Parcelable {
         } else {
             this.authorName = "INVALID";
         }
+    }
+
+    public void addLike(String likerID){
+        DocumentReference currPostRef = FirebaseFirestoreConnection.getDb()
+            .collection("posts").document(this.ID);
+        currPostRef
+            .update("likes", FieldValue.arrayUnion(likerID)) // append to the array of likers
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Post 'likers' successfully updated!");
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, String.format("Error updating Post with new liker: %s", likerID), e);
+                }
+            });
+    }
+
+    public void addShare(String likerID){
+        DocumentReference currPostRef = FirebaseFirestoreConnection.getDb()
+                .collection("posts").document(this.ID);
+        currPostRef
+                .update("shares", FieldValue.arrayUnion(likerID)) // append to the array of likers
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Post 'likers' successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, String.format("Error updating Post with new liker: %s", likerID), e);
+                    }
+                });
     }
 
 

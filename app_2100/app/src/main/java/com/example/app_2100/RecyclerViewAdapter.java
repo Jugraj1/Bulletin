@@ -1,10 +1,12 @@
 package com.example.app_2100;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -18,6 +20,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<Post> mPosts;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
+    static final String TAG = "RecyclerViewAdapter";
 
     public RecyclerViewAdapter(List<Post> posts) {
         mPosts = posts;
@@ -70,6 +73,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView dateTimeTv;
         TextView bodyTv;
 
+        Button likeBt;
+        Button shareBt;
+
 
         public PostThumbnailViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,8 +83,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             authorTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
             dateTimeTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
             bodyTv = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
+            likeBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
+
+            shareBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
 
             itemView.setOnClickListener(this);
+
+
         }
 
         @Override
@@ -108,6 +119,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     mListener.onItemClick(position);
                 }
             }
+        });
+
+        viewHolder.likeBt.setOnClickListener(v -> {
+            currPost.addLike(CurrentUser.getCurrent().getUserID());
+        });
+
+        viewHolder.shareBt.setOnClickListener(v -> {
+            currPost.addShare(CurrentUser.getCurrent().getUserID());
         });
     }
 
