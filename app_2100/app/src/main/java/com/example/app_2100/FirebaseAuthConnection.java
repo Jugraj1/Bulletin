@@ -93,16 +93,39 @@ public class FirebaseAuthConnection {
                 });
     }
 
+    /**
+     * Create a new account with the given email, password, first name, and last name
+     * Since we are using Firebase, we can only create an account with email and password
+     * The user will be updated after creating account with the first name and last name
+     * @param email
+     * @param password
+     * @param firstName
+     * @param lastName
+     * @param callback
+     */
     public void createAccount(String email, String password, String firstName, String lastName, AuthCallback callback){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // sign in success
                         FirebaseUser user = mAuth.getCurrentUser();
+                        updateAccount(user, firstName, lastName);
                         callback.onAuthentication(true);
+
                     } else {
                         callback.onAuthentication(false);
+                        return;
                     }
                 });
+
+        // update the user with the first name and last name
+        FirebaseUser user = mAuth.getCurrentUser();
+
     }
+
+    private void updateAccount(FirebaseUser user, String firstName, String lastName){
+        // update the user with the first name and last name
+
+    }
+
 }

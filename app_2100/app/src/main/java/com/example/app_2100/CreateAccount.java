@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.rpc.context.AttributeContext;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,9 +49,19 @@ public class CreateAccount extends AppCompatActivity {
        }
     }
 
+    /**
+     * Create account with email and password
+     * Redirect to HomeFeed if successful
+     * Display error message if unsuccessful
+     */
     private void createAccount(){
+//        Can only create account with email and password.
         Log.d(TAG, "createAccount() started");
-        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, new AuthCallback() {
+        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, createAccountCallback());
+    }
+
+    private AuthCallback createAccountCallback (){
+        return new AuthCallback() {
             @Override
             public void onAuthentication(boolean success) {
                 if (success) {
@@ -65,8 +76,7 @@ public class CreateAccount extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 }
             }
-        });
-
+        };
     }
 
 
