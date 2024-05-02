@@ -6,6 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".CreateAccount">
 
+<!--    TODO: Let user upload picture
+        TODO: Cancel Button should go back to  login page, and change color-->
+
     <Button
         android:id="@+id/activity_create_account_bt_create_account"
         android:layout_width="137dp"
