@@ -156,9 +156,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             currPost.toggleLike(CurrentUser.getCurrent().getUserID());
         });
 
-        viewHolder.shareBt.setOnClickListener(v -> {
-            currPost.addShare(CurrentUser.getCurrent().getUserID());
-        });
+//        viewHolder.shareBt.setOnClickListener(v -> {
+//            currPost.addShare(CurrentUser.getCurrent().getUserID());
+//        });
     }
 
     private class LoadingViewHolder extends RecyclerView.ViewHolder {
