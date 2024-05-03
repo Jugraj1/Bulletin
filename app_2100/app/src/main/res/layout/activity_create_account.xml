@@ -9,6 +9,7 @@
 <!--    TODO: Let user upload picture
         TODO: Cancel Button should go back to  login page, and change color-->
 
+<!--    Create account Button-->
     <Button
         android:id="@+id/activity_create_account_bt_create_account"
         android:layout_width="137dp"
@@ -20,6 +21,7 @@
         app:layout_constraintStart_toEndOf="@+id/activity_create_account_bt_cancel"
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_password" />
 
+<!--    Cancel Button-->
     <Button
         android:id="@+id/activity_create_account_bt_cancel"
         android:layout_width="137dp"
@@ -34,6 +36,7 @@
         app:strokeColor="@color/black"
         app:strokeWidth="5px" />
 
+<!--    Password Text Field-->
     <EditText
         android:id="@+id/activity_create_account_et_password"
         android:layout_width="308dp"
@@ -53,6 +56,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_last_name" />
 
+<!--    Email Text Field-->
     <EditText
         android:id="@+id/activity_create_account_et_email"
         android:layout_width="308dp"
@@ -72,6 +76,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
+<!--    First Name Text Field-->
     <EditText
         android:id="@+id/activity_create_account_et_first_name"
         android:layout_width="308dp"
@@ -91,6 +96,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_email" />
 
+<!--    Last Name Text Field-->
     <EditText
         android:id="@+id/activity_create_account_et_last_name"
         android:layout_width="308dp"
@@ -110,6 +116,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_first_name" />
 
+<!--    Create a new account Text-->
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"

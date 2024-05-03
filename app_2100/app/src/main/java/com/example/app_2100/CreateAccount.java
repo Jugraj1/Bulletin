@@ -33,11 +33,31 @@ public class CreateAccount extends AppCompatActivity {
         setContentView(R.layout.activity_create_account);
 
 
+//        Set up the create account button
         Button createAccountButton = findViewById(R.id.activity_create_account_bt_create_account);
         createAccountButton.setOnClickListener(v -> createAccountButtonPressed());
+
+
+//        Set up the cancel button
+        TextView cancelTextView = findViewById(R.id.activity_create_account_bt_cancel);
+        cancelTextView.setOnClickListener(v -> cancelButtonPressed());
     }
 
 
+    /**
+     * Run when cancel button is pressed
+     * Redirect to MainActivity
+     */
+    private void cancelButtonPressed(){
+        startActivity(new Intent(this, MainActivity.class));
+    }
+
+    /**
+     * Run when create account button is pressed
+     * Validate all fields
+     * Create account if all fields are valid
+     * Redirect to HomeFeed if successful
+     */
     private void createAccountButtonPressed(){
        if(validateAllFields()){
               // Create account
@@ -62,6 +82,8 @@ public class CreateAccount extends AppCompatActivity {
 
     /**
      * Callback for createAccount specify what happens after account creation
+     * Redirect to HomeFeed if successful
+     * Display error message if unsuccessful
      * @return
      */
     private AuthCallback createAccountCallback (){
