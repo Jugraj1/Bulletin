@@ -7,11 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -25,10 +28,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.Current;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +64,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
 
         populateFeed(); // this does all the recycle view stuff
-
-        ImageButton profilePicIb = findViewById(R.id.activity_home_feed_ib_profile);
+        ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
         profilePicIb.setOnClickListener(v -> {
-            Log.d(TAG, "profile pib ib clicked");
+            Log.d(TAG, "profile pib ib clicked");// forward to profile viewer
         });
 
         createProfilePic();
@@ -185,27 +191,50 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     }
 
     private void createProfilePic(){
-        Bitmap squareImageBitmap = createDummyBitmap(200, 200);
+//        Bitmap squareImageBitmap = createDummyBitmap(200, 200); // get the user profile pic
 
-        // Combine square image with circular corner drawable
-        Bitmap roundedImageBitmap = Bitmap.createBitmap(squareImageBitmap.getWidth(), squareImageBitmap.getHeight(), squareImageBitmap.getConfig());
-        Canvas canvas = new Canvas(roundedImageBitmap);
+        File localPfpFile = new File(this.getCacheDir(), "images/pfp_"+CurrentUser.getCurrent().getUserID()+".jpg");
+        if (localPfpFile.exists()) {
+            // file already exists locally, no need to redownload
+            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
+        } else {
+//            User.PfpLoadedCallback callback =
+            User curr = CurrentUser.getCurrent();
+            curr.getProfilePicBitmap(this,
+                new User.PfpLoadedCallback() {
+                    @Override
+                    public void onPfpLoaded(Bitmap bitmap) {
+                        updateProfileImageView(bitmap);
+                    }
+                    @Override
+                    public void onPfpLoadFailed(Exception e) {
+                        Log.d(TAG, "pfp load failed");
+                    }
+                }
+            );
+        }
+    }
+
+    private void updateProfileImageView(Bitmap immutableBitmap) {
+        Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
-        Drawable drawable = getResources().getDrawable(R.drawable.circular_corner);
-        drawable.setBounds(0, 0, squareImageBitmap.getWidth(), squareImageBitmap.getHeight());
-        drawable.draw(canvas);
-        canvas.drawBitmap(squareImageBitmap, 0f, 0f, paint);
 
-        // Set rounded image as background of the ImageButton
-        ImageButton imageButton = findViewById(R.id.activity_home_feed_ib_profile);
-        BitmapDrawable roundedImageDrawable = new BitmapDrawable(getResources(), roundedImageBitmap);
-        imageButton.setBackground(roundedImageDrawable);
+        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+        canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+
+        // get the element
+        ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
+
+        profileImg.setImageBitmap(pfpImageBitmap);
     }
 
     private Bitmap createDummyBitmap(int width, int height) {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.BLUE);
+        canvas.drawColor(Color.YELLOW);
         return bitmap;
     }
 }

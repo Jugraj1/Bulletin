@@ -18,12 +18,17 @@ public class CurrentUser extends User{
     };
 
     private CurrentUser() { // Private constructor to prevent instantiation from outside
+        super(FirebaseAuthConnection.getInstance().getAuth().getCurrentUser().getUid(), new FirestoreCallback() {
+            @Override
+            public void onUserLoaded(String firstName, String lastName) {
+
+            }
+        });
         FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
         if (currUser != null){
             this.setUserID(currUser.getUid()); // set current user id according to current logged in firebase user from auth
             this.queryUserByID(getUserID(), userCallback);
         }
-
     }
 
     public static CurrentUser getCurrent() {

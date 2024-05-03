@@ -104,8 +104,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //            shareBt = itemView.findViewById(R.id.activity_home_feed_post_thumbnail_bt_share);
 
             itemView.setOnClickListener(this);
-
-
         }
 
         @Override
@@ -117,7 +115,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
         }
-
     }
 
     private void populatePostThumbnails(PostThumbnailViewHolder viewHolder, int position) {
