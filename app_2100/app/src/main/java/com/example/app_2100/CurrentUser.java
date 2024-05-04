@@ -1,5 +1,6 @@
 package com.example.app_2100;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -11,23 +12,25 @@ public class CurrentUser extends User{
 
     private FirestoreCallback userCallback = new FirestoreCallback(){
         @Override
-        public void onUserLoaded(String fName, String lName){
+        public void onUserLoaded(String fName, String lName, String pfpLink){
             setFirstName(fName);
             setLastName(lName);
+            Log.d(TAG, "pfpLink CurrentUser: "+pfpLink);
+            setPfpStorageLink(pfpLink);
         }
     };
 
     private CurrentUser() { // Private constructor to prevent instantiation from outside
         super(FirebaseAuthConnection.getInstance().getAuth().getCurrentUser().getUid(), new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String firstName, String lastName) {
-
+            public void onUserLoaded(String firstName, String lastName, String pfpLink) {
+                // do nothing rn i guess.
             }
         });
         FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
         if (currUser != null){
             this.setUserID(currUser.getUid()); // set current user id according to current logged in firebase user from auth
-            this.queryUserByID(getUserID(), userCallback);
+//            this.queryUserByID(getUserID(), userCallback);
         }
     }
 

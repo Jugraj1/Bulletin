@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(currentUser != null) { // user is logged in already
             startActivity(new Intent(MainActivity.this, HomeFeed.class));
-            Log.d(TAG, "logged in already");
+//            Log.d(TAG, "logged in already");
         } else { // no currently logged in user
             startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
         }

@@ -50,6 +50,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
     boolean isLoading = false;
 
+    CurrentUser currUser;
+
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
         public void onPostLoaded(Post post) {
@@ -62,6 +64,14 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_feed);
         recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
+
+        currUser = CurrentUser.getCurrent();
+//        currUser.addInitialisationCallback(new InitialisationCallback() {
+//            @Override
+//            public void onUserInitialised() {
+//                createProfilePic();
+//            }
+//        });
 
         populateFeed(); // this does all the recycle view stuff
         ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
@@ -192,27 +202,27 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
     private void createProfilePic(){
 //        Bitmap squareImageBitmap = createDummyBitmap(200, 200); // get the user profile pic
-
-        File localPfpFile = new File(this.getCacheDir(), "images/pfp_"+CurrentUser.getCurrent().getUserID()+".jpg");
+//        Log.d(TAG, CurrentUser.getCurrent().toString());
+        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
             Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
             updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
         } else {
-//            User.PfpLoadedCallback callback =
-            User curr = CurrentUser.getCurrent();
-            curr.getProfilePicBitmap(this,
-                new User.PfpLoadedCallback() {
-                    @Override
-                    public void onPfpLoaded(Bitmap bitmap) {
-                        updateProfileImageView(bitmap);
-                    }
-                    @Override
-                    public void onPfpLoadFailed(Exception e) {
-                        Log.d(TAG, "pfp load failed");
-                    }
-                }
-            );
+            Log.d(TAG, "Getting profile pic from Firebase Storage");
+            updateProfileImageView(currUser.getPfpBitmap());
+//            currUser.getProfilePicBitmap(this,
+//                new User.PfpLoadedCallback() {
+//                    @Override
+//                    public void onPfpLoaded(Bitmap bitmap) {
+//                        updateProfileImageView(bitmap);
+//                    }
+//                    @Override
+//                    public void onPfpLoadFailed(Exception e) {
+//                        Log.d(TAG, "pfp load failed");
+//                    }
+//                }
+//            );
         }
     }
 
@@ -229,12 +239,5 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
 
         profileImg.setImageBitmap(pfpImageBitmap);
-    }
-
-    private Bitmap createDummyBitmap(int width, int height) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.YELLOW);
-        return bitmap;
     }
 }

@@ -58,7 +58,7 @@ public class Post implements Parcelable {
                         if (document.get("likes") != null){
                             List<String> likerIDs = (List<String>) document.get("likes");
                             isLikedByCurrUser = likerIDs.contains(CurrentUser.getCurrent().getUserID());
-                            Log.d(TAG, "liker by curr from db: "+String.valueOf(isLikedByCurrUser));
+//                            Log.d(TAG, "liker by curr from db: "+String.valueOf(isLikedByCurrUser));
 //                            if (likerIDs != null){
 //
 //                            } else {
@@ -82,7 +82,7 @@ public class Post implements Parcelable {
         if (this.authorID != null){
             FirestoreCallback userCallback = new FirestoreCallback(){
                 @Override
-                public void onUserLoaded(String fName, String lName){
+                public void onUserLoaded(String fName, String lName, String pfpLink){
                     authorName = User.formatName(fName, lName);
                 }
             };
@@ -97,7 +97,7 @@ public class Post implements Parcelable {
     }
 
     public void toggleLike(String likerID){
-        Log.d(TAG, String.valueOf(isLikedByCurrUser));
+//        Log.d(TAG, String.valueOf(isLikedByCurrUser));
         if (isLikedByCurrUser){
             ref.update("likes", FieldValue.arrayRemove(likerID))
                 .addOnFailureListener(new OnFailureListener() {

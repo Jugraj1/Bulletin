@@ -31,24 +31,41 @@ public class User {
     private String firstName;
     private String lastName;
     private String userID;
+    private String pfpStorageLink;
+
+    private String pfpLocalLink;
     private String TAG = "User";
     private FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
+    private Boolean isInitialised = false;
+    private InitialisationCallback initCallback;
 
+    private Bitmap pfpBitmap;
+
+    private File localPfpFile;
     FirebaseStorage storage;
     StorageReference pfpRef;
-    String pfpStorageLink;
 
     public User(String userID, FirestoreCallback callback){
         this.userID = userID;
+        this.pfpLocalLink = String.format("pfp_%s.jpg", this.userID);
         storage = FirebaseStorage.getInstance();
-        this.pfpStorageLink = "gs://app-f4755.appspot.com/pfp/" + this.userID + ".jpg";
-        this.pfpRef = storage.getReferenceFromUrl(pfpStorageLink); // file structure is root/pfp/{userId}.jpg
+//        this.pfpStorageLink = "gs://app-f4755.appspot.com/pfp/" + this.userID + ".jpg";
         queryUserByID(this.userID, callback);
+        // synchronised
+         // file structure is root/pfp/{userId}.jpg
     }
 
 //    public FirestoreCallback getUserCallback() {
 //        return userCallback;
 //    }
+
+    public void addInitialisationCallback(InitialisationCallback initCallback) {
+        if (isInitialised) {
+            initCallback.onUserInitialised();
+        } else {
+            // !?
+        }
+    }
 
     public void queryUserByID(String userID, FirestoreCallback callback){
 //        CollectionReference usersRef = db.collection("users");
@@ -64,9 +81,26 @@ public class User {
                                 Map<String, Object> userData = document.getData();
                                 String fName = (String) userData.get("firstName");
                                 String lName = (String) userData.get("lastName");
-                                String pfp = (String) userData.get("profilePicLink"); // may be null
-                                Log.d(TAG, User.formatName(fName, lName));
-                                callback.onUserLoaded(fName, lName);
+                                String pfpLink = (String) userData.get("pfpStorageLink"); // may be null
+
+                                firstName = fName;
+                                lastName = lName;
+                                if (pfpLink != null){
+                                    pfpStorageLink = pfpLink;
+                                    pfpRef = storage.getReferenceFromUrl(pfpStorageLink);
+
+                                    if (userID.equals(CurrentUser.getCurrent().getUserID())){ // saves doing it unneccesarily.
+                                        Log.d(TAG, "link: "+pfpStorageLink);
+                                        initProfilePicBitmap();
+                                    }
+
+                                    Log.d(TAG, "pfpLink: "+ pfpStorageLink);
+//                                    Log.d(TAG, "uid: "+userID);
+//                                    Log.d(TAG, "curr:" +CurrentUser.getCurrent().getUserID());
+                                }
+//                                isInitialised = true;
+//                                initCallback.onUserInitialised();
+                                callback.onUserLoaded(fName, lName, pfpLink);
                             }
 
                         } else {
@@ -76,35 +110,27 @@ public class User {
                 });
     }
 
-    public User(){
-
-    }
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public static String formatName(String fName, String lName){
-        return String.format("%s %s", fName, lName); // e.g. "John Smith"
+    /***
+     * handle everything for getting pfp bitmap
+     */
+    private void initProfilePicBitmap(){
+        this.localPfpFile = new File(App.getContext().getCacheDir(), "pfp_"+this.userID+".jpg");
+        if (localPfpFile.exists()) {
+            // file already exists locally, no need to redownload
+            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+            this.pfpBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
+        } else {
+            dlProfilePicBitmap(App.getContext(), new User.PfpLoadedCallback() {
+                @Override
+                public void onPfpLoaded(Bitmap bitmap) {
+                    pfpBitmap = bitmap;
+                }
+                @Override
+                public void onPfpLoadFailed(Exception e) {
+                    Log.d(TAG, "pfp load failed");
+                }
+            });
+        }
     }
 
     public interface PfpLoadedCallback {
@@ -112,9 +138,14 @@ public class User {
         void onPfpLoadFailed(Exception e);
     }
 
-    public void getProfilePicBitmap(Context context, PfpLoadedCallback callback) {
+    public void dlProfilePicBitmap(Context context, PfpLoadedCallback callback) {
 //        File localFile = File.createTempFile("images", "jpg");
-        File localFile = new File(context.getCacheDir(), String.format("pfp_%s.jpg", this.userID));
+        Log.d(TAG, "pfp link get: "+pfpStorageLink);
+        if (this.pfpStorageLink == null){
+            return;
+        }
+
+        File localFile = new File(context.getCacheDir(), this.pfpLocalLink);
         pfpRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
@@ -154,6 +185,49 @@ public class User {
             }
         });
     }
+
+    public User(){
+
+    }
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public Bitmap getPfpBitmap() {
+        return pfpBitmap;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public void setPfpStorageLink(String pfpStorageLink) {
+        this.pfpStorageLink = pfpStorageLink;
+    }
+
+    public static String formatName(String fName, String lName){
+        return String.format("%s %s", fName, lName); // e.g. "John Smith"
+    }
+
+    public void setPfpBitmap(Bitmap bmp){
+
+    }
+
 
     @Override
     public String toString() {
