@@ -10,12 +10,11 @@
         android:id="@+id/imageView"
         android:layout_width="112dp"
         android:layout_height="111dp"
-        android:layout_marginTop="76dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.053"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:layout_editor_absoluteY="76dp"
+        tools:srcCompat="@drawable/baseline_person_24" />
 
     <Button
         android:id="@+id/homeButton"
@@ -32,10 +31,7 @@
         android:id="@+id/tabHost"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,25 +52,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:id="@+id/posts"
+                <ScrollView
+                    android:id="@+id/scrollView1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
-                    <ListView
-                        android:id="@+id/PostList"
+                    <LinearLayout
+                        android:id="@+id/postsLayout1"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
 
-                <LinearLayout
-                    android:id="@+id/following"
+                </ScrollView>
+
+                <ScrollView
+                    android:id="@+id/scrollView2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:visibility="gone">
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/postsLayout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                </ScrollView>
 
             </FrameLayout>
         </LinearLayout>
@@ -85,19 +88,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="UID"
+        android:text="ID"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="@+id/homeButton"
+        android:textColor="#656565"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/homeButton"
-        app:layout_constraintTop_toTopOf="@+id/homeButton"
+        app:layout_constraintTop_toBottomOf="@+id/LName"
         app:layout_constraintVertical_bias="0.6" />
 
     <Button
         android:id="@+id/Follow"
         android:layout_width="120dp"
         android:layout_height="51dp"
+        android:layout_marginEnd="16dp"
         android:text="Follow"
         app:icon="@drawable/baseline_add_24"
         app:layout_constraintBottom_toBottomOf="@+id/homeButton"
@@ -106,8 +112,8 @@
         app:layout_constraintVertical_bias="0.266" />
 
     <TextView
-        android:id="@+id/Name"
-        android:layout_width="wrap_content"
+        android:id="@+id/LName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -116,4 +122,16 @@
         app:layout_constraintStart_toStartOf="@+id/authorID"
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 
+    <TextView
+        android:id="@+id/LName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LName"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/authorID"
+        tools:layout_editor_absoluteY="128dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

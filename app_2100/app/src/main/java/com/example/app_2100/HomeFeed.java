@@ -54,6 +54,10 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
         ImageButton profilePicIb = findViewById(R.id.activity_home_feed_ib_profile);
         profilePicIb.setOnClickListener(v -> {
+            Intent profileIntent = new Intent(HomeFeed.this, ProfileViewer.class);
+            profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
+            startActivity(profileIntent);
+
             Log.d(TAG, "profile pib ib clicked");
         });
 
