@@ -59,9 +59,17 @@ public class SearchResultsActivity extends AppCompatActivity {
         String searchFieldString = extras.getString("searchField");
         String dateButtonString = extras.getString("dateButton");
         String dateButtonToString = extras.getString("dateButtonTo");
+        assert dateButtonToString != null;
+        String[] tokens = dateButtonToString.split(" ");
+        int tmToYear = Integer.parseInt(tokens[2]);
+        int tmToMonth = getMonth(tokens[0]);
+        int tmToDate = Integer.parseInt(tokens[1]);
+//        Log.d("year", String.valueOf(tmToYear));
+//        Log.d("month", String.valueOf(tmToMonth));
+//        Log.d("date", String.valueOf(tmToDate));
 
         Timestamp tmFrom = new Timestamp(new Date(dateButtonString));
-        Timestamp tmTo = new Timestamp(new Date(dateButtonToString));
+        Timestamp tmTo = new Timestamp(new Date(tmToYear, tmToMonth, tmToDate, 23, 59, 59));
         populateFeed(tmTo, tmFrom);
 
 
@@ -101,10 +109,11 @@ public class SearchResultsActivity extends AppCompatActivity {
     private void getRelevantPosts(final HomeFeed.OnPostsLoadedListener listener, Timestamp tmTo, Timestamp tmFrom) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        Log.d("Time to", String.valueOf(tmTo.toDate()));
 
         db.collection("posts")
-                .whereLessThan("timeStamp", tmTo)
-                .whereGreaterThan("timeStamp", tmFrom)
+                .whereLessThanOrEqualTo("timeStamp", tmTo)
+                .whereGreaterThanOrEqualTo("timeStamp", tmFrom)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -132,6 +141,35 @@ public class SearchResultsActivity extends AppCompatActivity {
                 });
 
 
+    }
+
+    private int getMonth(String month) {
+        if (month.equals("JAN"))
+            return 1;
+        if (month.equals("FEB"))
+            return 2;
+        if (month.equals("MAR"))
+            return 3;
+        if (month.equals("APR"))
+            return 4;
+        if (month.equals("MAY"))
+            return 5;
+        if (month.equals("JUN"))
+            return 6;
+        if (month.equals("JUL"))
+            return 7;
+        if (month.equals("AUG"))
+            return 8;
+        if (month.equals("SEP"))
+            return 9;
+        if (month.equals("OCT"))
+            return 10;
+        if (month.equals("NOV"))
+            return 11;
+        if (month.equals("DEC"))
+            return 12;
+
+        return 1;
     }
 
     private void populateFeed(Timestamp tmTo, Timestamp tmFrom) {
