@@ -76,6 +76,20 @@
 Sit amet mauris commodo quis imperdiet. Tortor at auctor urna nunc id. At augue eget arcu dictum varius duis at. Egestas dui id ornare arcu odio ut sem nulla pharetra. Cursus sit amet dictum sit amet justo donec enim. Massa enim nec dui nunc mattis enim. Lobortis feugiat vivamus at augue. In eu mi bibendum neque. Pellentesque nec nam aliquam sem et. Adipiscing elit pellentesque habitant morbi tristique. Arcu dui vivamus arcu felis. Congue eu consequat ac felis. Massa massa ultricies mi quis hendrerit dolor magna. Amet porttitor eget dolor morbi non. Purus semper eget duis at tellus at. Orci a scelerisque purus semper eget duis at tellus. Amet purus gravida quis blandit turpis cursus in. Morbi tristique senectus et netus et malesuada fames. Vitae congue mauris rhoncus aenean vel elit"
           android:textColor="#252525" />
 
+      <TextView
+          android:id="@+id/activity_post_view_tv_cmts"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="16dp"
+          android:layout_marginEnd="16dp"
+          android:gravity="center"
+          android:lineSpacingExtra="8sp"
+          android:text="COMMENTS"
+          android:textColor="#000000"
+          android:textSize="22sp"
+          android:textStyle="bold" />
+
     </LinearLayout>
   </ScrollView>
 
