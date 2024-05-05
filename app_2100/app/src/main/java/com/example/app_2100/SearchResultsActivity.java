@@ -1,24 +1,18 @@
 package com.example.app_2100;
 
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.widget.ImageButton;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,17 +21,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class SearchResultsActivity extends AppCompatActivity {
-    RecyclerView recyclerView;
-    RecylerViewAdapter recylerViewAdapter;
+    LinearLayout listView;
+    ArrayAdapter arrayAdapter;
     private static final String TAG = "SearchResultsActivity_Screen";
     List<Post> posts = new ArrayList<Post>();
     boolean isLoading = false;
@@ -53,7 +44,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        recyclerView = findViewById(R.id.activity_search_results_rv_posts);
+        listView = findViewById(R.id.activity_home_feed_lv_posts);
 
         Bundle extras = getIntent().getExtras();
         String searchFieldString = extras.getString("searchField");
@@ -133,7 +124,6 @@ public class SearchResultsActivity extends AppCompatActivity {
                                 ));
                             }
                             listener.onPostsLoaded(posts);
-                            initAdapter();
                         } else {
                             Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
                         }
@@ -173,13 +163,50 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
     private void populateFeed(Timestamp tmTo, Timestamp tmFrom) {
-        getRelevantPosts(loadedPosts -> {
-            posts.addAll(loadedPosts);}, tmTo, tmFrom);
-    }
+        // query  posts from database
 
-    private void initAdapter() {
-        recylerViewAdapter = new RecylerViewAdapter(posts);
-        recyclerView.setAdapter(recylerViewAdapter);
+        // dynamically add children to the linear layout ("@+id/activity_home_feed_ll_posts")
+        getRelevantPosts(new HomeFeed.OnPostsLoadedListener() {
+            @Override
+            public void onPostsLoaded(List<Post> loadedPosts) {
+                Log.d(TAG, String.valueOf(loadedPosts.size()));
+
+                LinearLayout linearLayout = findViewById(R.id.activity_home_feed_lv_posts);
+
+                for (Post post : loadedPosts) {
+                    // Inflate the post thumbnail layout
+                    View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
+
+                    // Populate the post thumbnail with post data
+
+//                    Button likeButton = postThumbnail.findViewById(R.id.like_button);
+//                    Button commentButton = postThumbnail.findViewById(R.id.comment_button);
+//                    Button shareButton = postThumbnail.findViewById(R.id.share_button);
+                    //
+                    TextView titleTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_title);
+                    TextView authorTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_author);
+//                    TextView urlTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_url);
+                    TextView dateTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_date);
+//                    TextView publisherTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_publisher);
+                    TextView bodyTv = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_tv_summary);
+
+
+                    titleTv.setText(post.getTitle());
+                    authorTv.setText(post.getAuthorName());
+//                    urlTv.setText(post.getSourceURL());
+                    dateTv.setText(post.getFormattedDateTime());
+//                    publisherTv.setText(post.getPublisher());
+                    bodyTv.setText(post.getBody());
+//                    Log.d(TAG+"post body", post.getBody());
+
+
+                    // Set onClickListeners for buttons if needed
+
+                    // Add the post thumbnail to the LinearLayout
+                    linearLayout.addView(postThumbnail);
+                }
+            }
+        }, tmTo, tmFrom);
     }
 
 
