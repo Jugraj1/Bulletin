@@ -44,6 +44,18 @@ public class PostViewActivity extends AppCompatActivity {
 //        idTextView.setText(post.getID());
 //        publisherTextView.setText(post.getPublisher());
 
+        // OnClick for post author
+        authorTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start ProfileViewer activity and send authorID as an extra
+                Intent profileIntent = new Intent(PostViewActivity.this, ProfileViewer.class);
+                profileIntent.putExtra("authorID", post.getAuthorID());
+                startActivity(profileIntent);
+            }
+        });
+
+
         // OnClickListener for the "View Profile"
         ImageView viewProfileButton = findViewById(R.id.activity_postView_iv_user);
         viewProfileButton.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +63,7 @@ public class PostViewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Start ProfileViewer activity and send authorID as an extra
                 Intent profileIntent = new Intent(PostViewActivity.this, ProfileViewer.class);
-                profileIntent.putExtra("authorID", post.getAuthorID());
+                profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
                 startActivity(profileIntent);
             }
         });

@@ -74,6 +74,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
                 ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
                 profilePicIb.setOnClickListener(v -> {
                     Log.d(TAG, "profile pib is clicked");// forward to profile viewer
+                    Intent profileIntent = new Intent(HomeFeed.this, ProfileViewer.class);
+                    profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
+                    startActivity(profileIntent);
                 });
             }
         });

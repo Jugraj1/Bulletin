@@ -260,4 +260,5 @@ public class Post implements Parcelable {
             return new Post[size];
         }
     };
+
 }
