@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class ProfileViewer extends AppCompatActivity {
@@ -34,44 +35,52 @@ public class ProfileViewer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_viewer);
 
-
-        db = FirebaseFirestore.getInstance();
-        loggedInUserID = CurrentUser.getCurrent().getUserID();
-
-
-        // Get Author from extra
-        String authorID = getIntent().getStringExtra("authorID");
-
-
-        // Query Firebase for posts by that user
-        Query postsQuery = db.collection("posts").whereEqualTo("authorID", authorID);
-        postsQuery.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<Post> posts = new ArrayList<>();
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Post post = document.toObject(Post.class);
-                    // Addition to list
-                    posts.add(post);
-                }
-                // Addition to UI through helper
-                updateUIWithPosts(posts);
-            } else {
-                Toast.makeText(ProfileViewer.this, "Failed or no such Posts", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        // Set onClickListener for Home Button
-        Button homeButton = findViewById(R.id.homeButton);
-        homeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ProfileViewer.this, HomeFeed.class);
-            startActivity(intent);
-        });
-
-
-        // Set onClickListener for Follow Button
-        Button followButton = findViewById(R.id.Follow);
-        followButton.setOnClickListener(view -> followAuthor(authorID));
+//
+//        db = FirebaseFirestore.getInstance();
+//        loggedInUserID = CurrentUser.getCurrent().getUserID();
+//
+//
+//        // Get Author from extra
+//        String authorID = getIntent().getStringExtra("authorID");
+//
+//
+//        // Query Firebase for posts by that user
+//        Query postsQuery = db.collection("posts").whereEqualTo("author", authorID);
+//        postsQuery.get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                List<Post> posts = new ArrayList<Post>();
+//                Map<String, Object> currData;
+//                for (QueryDocumentSnapshot document : task.getResult()) {
+//                    currData = document.getData();
+//                    posts.add(new Post(
+//                            document.getId(),
+//                            currData.get("title"),
+//                            currData.get("body"),
+//                            currData.get("author"),
+//                            currData.get("publisher"),
+//                            currData.get("sourceURL"),
+//                            currData.get("timeStamp")
+//                    ));
+//                }
+//                // Addition to UI through helper
+//                updateUIWithPosts(posts);
+//            } else {
+//                Toast.makeText(ProfileViewer.this, "Failed or no such Posts", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//
+//        // Set onClickListener for Home Button
+//        Button homeButton = findViewById(R.id.homeButton);
+//        homeButton.setOnClickListener(view -> {
+//            Intent intent = new Intent(ProfileViewer.this, HomeFeed.class);
+//            startActivity(intent);
+//        });
+//
+//
+//        // Set onClickListener for Follow Button
+//        Button followButton = findViewById(R.id.Follow);
+//        followButton.setOnClickListener(view -> followAuthor(authorID));
     }
 
 
