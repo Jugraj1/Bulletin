@@ -74,12 +74,12 @@ public class PostGenerator {
             User user = gen.getRandomUser(); // set to random user
 
             Map<String, Object> post = new HashMap<>();
-            post.put("title", title);
-            post.put("publisher", publisher);
-            post.put("url", url);
-            post.put("body", content);
-            post.put("author", user.getUserID());
-            post.put("timeStamp", new Timestamp(new Date()));
+//            post.put("title", title);
+//            post.put("publisher", publisher);
+//            post.put("url", url);
+//            post.put("body", content);
+//            post.put("author", user.getUserID());
+//            post.put("timeStamp", new Timestamp(new Date()));
 
             uploadPost(post, db);
         }
