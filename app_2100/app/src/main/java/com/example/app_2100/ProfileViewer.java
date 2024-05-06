@@ -107,7 +107,7 @@ public class ProfileViewer extends AppCompatActivity {
 
         // Set onClickListener for Follow Button
         Button followButton = findViewById(R.id.Follow);
-//        followButton.setOnClickListener(view -> followAuthor(authorID));
+        followButton.setOnClickListener(view -> followAuthor(authorID));
 
 //        TABS IMPLEMENTATION
         TabLayout myTabLayout = findViewById(R.id.tabLayout);
