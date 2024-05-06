@@ -2,25 +2,25 @@ package com.example.app_2100.search;
 
 import java.util.HashSet;
 
-public class FieldIndex<T extends Comparable<T>> implements Comparable<FieldIndex<T>> {
+public class FieldIndex<T extends Comparable<T>, K extends Comparable<K>> implements Comparable<FieldIndex<T, K>> {
     private T field;
-    private HashSet<Integer> indices = new HashSet<>();
+    private HashSet<K> indices = new HashSet<>();
 
-    public FieldIndex(T field, Integer integer) {
+    public FieldIndex(T field, K integer) {
         this.field = field;
         this.indices.add(integer);
     }
 
-    public FieldIndex(T field, HashSet<Integer> integers) {
+    public FieldIndex(T field, HashSet<K> integers) {
         this.field = field;
         this.indices = integers;
     }
 
-    public void addIndex(Integer index) {
+    public void addIndex(K index) {
         indices.add(index);
     }
 
-    public void merge(FieldIndex<T> a) {
+    public void merge(FieldIndex<T, K> a) {
         if (this.compareTo(a) == 0) {
             this.indices.addAll(a.getIndices());
         } else {
@@ -36,16 +36,16 @@ public class FieldIndex<T extends Comparable<T>> implements Comparable<FieldInde
         this.field = field;
     }
 
-    public HashSet<Integer> getIndices() {
+    public HashSet<K> getIndices() {
         return indices;
     }
 
-    public void setIndices(HashSet<Integer> indices) {
+    public void setIndices(HashSet<K> indices) {
         this.indices = indices;
     }
 
     @Override
-    public int compareTo(FieldIndex<T> other) {
+    public int compareTo(FieldIndex<T, K> other) {
         // Implement comparison logic here
         // For example, if T is Date, you can compare the dates
         // Assuming T extends Comparable<T>

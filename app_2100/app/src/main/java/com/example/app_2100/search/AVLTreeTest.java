@@ -467,18 +467,18 @@ public class AVLTreeTest {
 
     @Test(timeout = 1000)
     public void insertFieldIndexTest() {
-        FieldIndex<Date> d1 = new FieldIndex<Date>(new Date(2024 - 1900, Calendar.APRIL, 15), 0);
-        AVLTree<FieldIndex<Date>> datesAVL = new AVLTree<>(d1);
-        datesAVL = datesAVL.insert(new FieldIndex<Date>(new Date(2024 - 1900, Calendar.MARCH, 1), 2));
-        datesAVL = datesAVL.insert(new FieldIndex<Date>(new Date(2024 - 1900, Calendar.JUNE, 1), 3));
+        FieldIndex<Date, Integer> d1 = new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 0);
+        AVLTree<FieldIndex<Date, Integer>> datesAVL = new AVLTree<>(d1);
+        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.MARCH, 1), 2));
+        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.JUNE, 1), 3));
         System.out.println(datesAVL.display(1));
 
         System.out.println("Test merge insert");
-        datesAVL = searchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date>(new Date(2024 - 1900, Calendar.APRIL, 15), 1));
+        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 1));
         System.out.println(datesAVL.display(1));
 
         System.out.println("Test new insert");
-        datesAVL = searchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date>(new Date(2024 - 1900, Calendar.SEPTEMBER, 30), 3));
+        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.SEPTEMBER, 30), 3));
         System.out.println(datesAVL.display(1));
 
         System.out.println(datesAVL.getBalanceFactor());
@@ -496,11 +496,11 @@ public class AVLTreeTest {
         String query = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor";
 
         // Calculate similarity using Levenshtein distance
-        List<searchUtils.SimilarText> similarTexts = new ArrayList<>();
+        List<SearchUtils.SimilarText> similarTexts = new ArrayList<>();
         for (String text : texts) {
-            int distance = searchUtils.levenshteinDistance(query, text);
+            int distance = SearchUtils.levenshteinDistance(query, text);
             double similarity = 1.0 - ((double) distance / Math.max(query.length(), text.length()));
-            similarTexts.add(new searchUtils.SimilarText(text, similarity));
+            similarTexts.add(new SearchUtils.SimilarText(text, similarity));
         }
         // Sort by similarity
         Collections.sort(similarTexts, Comparator.reverseOrder());
@@ -511,7 +511,7 @@ public class AVLTreeTest {
         }
 
         // Simple usage
-        List<String> result = searchUtils.findTopNSimilarTexts(query, texts, 4);
+        List<String> result = SearchUtils.findTopNSimilarTexts(query, texts, 4);
         System.out.println(result);
     }
 }

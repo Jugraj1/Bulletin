@@ -2,14 +2,20 @@ package com.example.app_2100.search;
 
 import java.util.*;
 
-public class searchUtils {
-    static <T extends Comparable<T>> AVLTree<FieldIndex<T>> insertFieldIndex(AVLTree<FieldIndex<T>> tree, FieldIndex<T> a) {
+public class SearchUtils {
+    public static <T extends Comparable<T>, K extends Comparable<K>> AVLTree<FieldIndex<T, K>> insertFieldIndex(AVLTree<FieldIndex<T, K>> tree, FieldIndex<T, K> a) {
         if (tree.find(a) == null) {
             tree = tree.insert(a);
         } else {
             tree.find(a).value.merge(a);
         }
         return tree;
+    }
+
+    public static double getTextsSimilarity(String query, String ref){
+        int distance = levenshteinDistance(query, ref);
+        double similarity = 1.0 - ((double) distance / Math.max(query.length(), ref.length()));
+        return similarity;
     }
 
     public static List<String> findTopNSimilarTexts(String query, List<String> refs, int n) {

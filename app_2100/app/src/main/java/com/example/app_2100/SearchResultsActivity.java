@@ -14,6 +14,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.app_2100.search.AVLTree;
+import com.example.app_2100.search.FieldIndex;
+import com.example.app_2100.search.SearchUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -22,6 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,8 @@ public class SearchResultsActivity extends AppCompatActivity {
     private static final String TAG = "SearchResultsActivity_Screen";
     List<Post> posts = new ArrayList<Post>();
     boolean isLoading = false;
+    String queryTitle;
+    AVLTree<FieldIndex<Double, String>> simTree;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -48,6 +54,11 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         String searchFieldString = extras.getString("searchField");
+
+        //IMP!!!!!!!!! THIS THING NEEDS TO BE FOUND BY A PARSER :::::: IMP!!!!!!!!!!!!
+        queryTitle = searchFieldString;
+
+
         String dateButtonString = extras.getString("dateButton");
         String dateButtonToString = extras.getString("dateButtonTo");
         assert dateButtonToString != null;
@@ -62,38 +73,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         Timestamp tmFrom = new Timestamp(new Date(dateButtonString));
         Timestamp tmTo = new Timestamp(new Date(tmToYear, tmToMonth, tmToDate, 23, 59, 59));
         populateFeed(tmTo, tmFrom);
-
-
-//        db.collection("posts")
-//                .whereLessThan("timeStamp", tmTo)
-//                .whereGreaterThan("timeStamp", tmFrom)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            Map<String, Object> currData;
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d(TAG, document.getId() + " => " + document.getData());
-//                                currData = document.getData();
-//                                posts.add(new Post(
-//                                        document.getId(),
-//                                        currData.get("title"),
-//                                        currData.get("body"),
-//                                        currData.get("author"),
-//                                        currData.get("publisher"),
-//                                        currData.get("sourceURL"),
-//                                        currData.get("timeStamp")
-//                                ));
-//                            }
-//
-//                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//
-//                });
-
 
     }
 
@@ -122,7 +101,22 @@ public class SearchResultsActivity extends AppCompatActivity {
                                         currData.get("sourceURL"),
                                         currData.get("timeStamp")
                                 ));
+
+                                double titleSimilarity = SearchUtils.getTextsSimilarity((String) currData.get("title"), queryTitle);
+                                FieldIndex<Double, String> simIndex = new FieldIndex<Double, String>(titleSimilarity, document.getId());
+
+                                if (simTree == null) {
+                                    simTree = new AVLTree<FieldIndex<Double, String>>(simIndex);
+                                } else {
+                                        simTree = SearchUtils.insertFieldIndex(simTree, simIndex);
+
+                                }
+
+
                             }
+
+//                            Log.d("structure of tree:", simTree.display(1));
+
                             listener.onPostsLoaded(posts);
                         } else {
                             Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
