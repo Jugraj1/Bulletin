@@ -263,8 +263,8 @@ public class User {
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", userID='" + userID + '\'' +
-                ", pfpRef=" + pfpRef.toString() +
-                ", pfpStorageLink='" + pfpStorageLink.toString() + '\'' +
+//                ", pfpRef=" + pfpRef.toString() +
+//                ", pfpStorageLink='" + pfpStorageLink.toString() + '\'' + // we have second constructor so this wont work anymore if pfp isnt present (for the PostGenerator mainly)
                 '}';
     }
 }

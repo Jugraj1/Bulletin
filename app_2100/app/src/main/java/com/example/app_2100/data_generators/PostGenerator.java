@@ -1,5 +1,6 @@
 package com.example.app_2100.data_generators;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -7,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.example.app_2100.CreatePost;
 import com.example.app_2100.CurrentUser;
 import com.example.app_2100.FirebaseFirestoreConnection;
+import com.example.app_2100.InitialisationCallback;
 import com.example.app_2100.Post;
 import com.example.app_2100.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,6 +27,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,14 +37,31 @@ import java.util.Random;
 
 public class PostGenerator {
     private final int nPosts;
+    private InitialisationCallback callback;
     private List<User> users;
     private int nUsers;
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
 
     private final Random rand = new Random();
 
-    public PostGenerator(int nPosts){
+    private final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
+    private static final String TAG = "PostGenerator";
+
+    private final List<String> PUBLISHERS = Arrays.asList(
+            "Penguin Random House", "HarperCollins", "Simon & Schuster", "Hachette Livre",
+            "Macmillan Publishers", "Pearson PLC", "Wiley", "Scholastic Corporation",
+            "Springer Nature", "Oxford University Press", "Bloomsbury Publishing",
+            "John Wiley & Sons", "Cambridge University Press", "Elsevier", "Cengage",
+            "McGraw-Hill Education", "Puffin Books", "Random House", "Peachpit Press",
+            "Routledge", "Vintage Books", "Houghton Mifflin Harcourt", "Faber & Faber",
+            "Grove Press", "National Geographic Society", "Little, Brown and Company",
+            "Abrams Books", "Doubleday", "W.W. Norton & Company", "Harvard University Press"
+    );
+
+    public PostGenerator(int nPosts, InitialisationCallback callback){
         this.nPosts = nPosts;
+        this.callback = callback;
+        this.users = new ArrayList<>();
         db = FirebaseFirestoreConnection.getDb();
 
         db.collection("users")
@@ -52,15 +73,40 @@ public class PostGenerator {
                         Map<String, Object> currData;
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             currData = document.getData();
-                            users.add(new User(
+
+                            String fName = (String) currData.get("firstName");
+                            String lName = (String) currData.get("lastName");
+                            User user = new User(
                                     document.getId(),
-                                    (String) currData.get("firstName"),
-                                    (String) currData.get("lastName")
-                            ));
+                                    fName,
+                                    lName
+                            );
+                            Log.d(TAG, user.toString());
+                            users.add(user);
                         }
                         nUsers = users.size();
 
+                        Random rand = new Random();
+                        for (int i = 0; i < nPosts; i++) {
+                            // generate post
+                            User user = getRandomUser(); // set to random user
 
+                            Map<String, Object> post = new HashMap<>();
+                            post.put("title", createTitle());
+                            post.put("publisher", createPublisher());
+                            post.put("url", createURL());
+                            post.put("body", createBody(rand.nextInt(4)));
+                            post.put("author", user.getUserID());
+                            post.put("timeStamp", createTimestamp());
+
+                            uploadPost(post);
+                        }
+
+                        // callback not needed if everything doen internally which is probbably what will happen
+                        if (callback != null) {
+                            callback.onInitialised(); // Call the callback when initialization is complete
+                        }
+                        //
                     } else {
                         System.out.println("ERR getting users");
                     }
@@ -72,32 +118,42 @@ public class PostGenerator {
         return this.users.get(rand.nextInt(users.size()));
     }
 
-    public static void main(String[] args) {
-        System.out.println("HELLO WORLD");
-//        PostGenerator gen = new PostGenerator(20);
-//        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
-//        Random rand = new Random();
-//        for (int i=0; i<gen.getNPosts(); i++) {
-//            // generate post
-//            User user = gen.getRandomUser(); // set to random user
-//
-//            Map<String, Object> post = new HashMap<>();
-//            post.put("title", createTitle());
-//            post.put("publisher", createPublisher());
-//            post.put("url", createURL());
-//            post.put("body", createBody(2));
-//            post.put("author", user.getUserID());
-//            post.put("timeStamp", new Timestamp(new Date()));
-//
-//            uploadPost(post, db);
-//        }
+    /***
+     * Generate random timestamp between now and 4 months ago (later we can change this to 1 year ago or something like that)
+     * @return
+     */
+    private Timestamp createTimestamp(){
+        long now = System.currentTimeMillis();
+        long fourMonthsAgo = now - (4L * 30 * 24 * 60 * 60 * 1000);
+        long randomTimestamp = fourMonthsAgo + (long) (Math.random() * (now - fourMonthsAgo));
+
+        return new Timestamp(new Date(randomTimestamp));
     }
 
-    private static String createBody(int nParagraphs){
-        String urlString = String.format("https://corporatelorem.kovah.de/api/%d?format=text", nParagraphs);
-        String body = makeHttpGetRequest(urlString);
+    public String createBody(int nParagraphs){
+//        String urlString = String.format("https://corporatelorem.kovah.de/api/%d?format=text", nParagraphs);
+//        String body = makeHttpGetRequest(urlString);
+        String body ="body content....";
 
         return body;
+    }
+    public String createTitle(){
+        return "title";
+    }
+    public String createPublisher(){
+        int randomIndex = rand.nextInt(PUBLISHERS.size());
+        return PUBLISHERS.get(randomIndex);
+    }
+    public String createURL(){
+        StringBuilder stringBuilder = new StringBuilder(7); // make url 7 char
+
+        // Generate random characters and append them to the string
+        for (int i = 0; i < 7; i++) {
+            int randomIndex = rand.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            stringBuilder.append(randomChar);
+        }
+        return String.format("https://%s.com", stringBuilder);
     }
 
     private static String makeHttpGetRequest(String urlString){
@@ -126,26 +182,18 @@ public class PostGenerator {
         }
     }
 
-    private static String createTitle(){
-
-    }
-    private static String createPublisher(){
-
-    }
-    private static String createURL(){
-
-    }
 
 
-    private static void uploadPost(Map<String, Object> post, FirebaseFirestore db){
+    public void uploadPost(Map<String, Object> post){
         CollectionReference postsCollection = db.collection("posts");
         postsCollection.add(post)
                 .addOnSuccessListener(documentReference -> {
                     // success
+                    Log.d("PostGenerator", "Success");
                 })
                 .addOnFailureListener(e -> {
                     // boohoo
-                    System.out.println("ERR uploading post: "+ post);
+                    Log.d("PostGenerator","ERR uploading post: "+ post);
                 });
     }
 
@@ -163,5 +211,25 @@ public class PostGenerator {
 
     public FirebaseFirestore getDb() {
         return db;
+    }
+    public static void main(String[] args) {
+        System.out.println("HELLO WORLD");
+//        PostGenerator gen = new PostGenerator(20);
+//        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
+//        Random rand = new Random();
+//        for (int i=0; i<gen.getNPosts(); i++) {
+//            // generate post
+//            User user = gen.getRandomUser(); // set to random user
+//
+//            Map<String, Object> post = new HashMap<>();
+//            post.put("title", createTitle());
+//            post.put("publisher", createPublisher());
+//            post.put("url", createURL());
+//            post.put("body", createBody(2));
+//            post.put("author", user.getUserID());
+//            post.put("timeStamp", new Timestamp(new Date()));
+//
+//            uploadPost(post, db);
+//        }
     }
 }

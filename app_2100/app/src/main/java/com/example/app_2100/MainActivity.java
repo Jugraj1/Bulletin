@@ -32,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
         FirebaseAuth.getInstance().signOut();
-        generateUsers();
+//        generateUsers();
+        generatePosts();
+
 
         if(currentUser != null) { // user is logged in already
             startActivity(new Intent(MainActivity.this, HomeFeed.class));
@@ -61,10 +63,28 @@ public class MainActivity extends AppCompatActivity {
         PostGenerator gen = new PostGenerator(1, new InitialisationCallback() {
             @Override
             public void onInitialised() {
+                Log.d(TAG, "initialised post gen");
                 // This method will be called when PostGenerator initialization is complete
 
             }
         });
+//        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
+//        Random rand = new Random();
+//        for (int i = 0; i < gen.getNPosts(); i++) {
+//            Log.d(TAG, "Generating post");
+//            // generate post
+//            User user = gen.getRandomUser(); // set to random user
+//
+//            Map<String, Object> post = new HashMap<>();
+//            post.put("title", gen.createTitle());
+//            post.put("publisher", gen.createPublisher());
+//            post.put("url", gen.createURL());
+//            post.put("body", gen.createBody(2));
+//            post.put("author", user.getUserID());
+//            post.put("timeStamp", new Timestamp(new Date()));
+//
+//            gen.uploadPost(post);
+//        }
     }
 
 }
