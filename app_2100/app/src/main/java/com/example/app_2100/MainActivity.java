@@ -24,13 +24,14 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
         Log.d(TAG, "current user: " + currentUser.toString());
 
-        if(currentUser != null) { // user is logged in already
-            startActivity(new Intent(MainActivity.this, HomeFeed.class));
-//            Log.d(TAG, "logged in already");
-        } else { // no currently logged in user
-            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
-        }
+//        if(currentUser != null) { // user is logged in already
+//            startActivity(new Intent(MainActivity.this, HomeFeed.class));
+////            Log.d(TAG, "logged in already");
+//        } else { // no currently logged in user
+//            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
+//        }
 
+        startActivity(new Intent(MainActivity.this, Login.class));
 //        startActivity(new Intent(MainActivity.this, HomeFeed.class));
 //        startActivity(new Intent(MainActivity.this, PostViewActivity.class));
 

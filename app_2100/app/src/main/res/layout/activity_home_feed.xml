@@ -57,16 +57,14 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:padding="2dp"
                 android:contentDescription="Profile picture"
                 android:gravity="end"
+                android:padding="2dp"
                 android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeableImageRound"
                 app:srcCompat="@mipmap/ic_launcher"
                 app:strokeColor="@android:color/black"
-                app:strokeWidth="1dp"
-                android:layout_margin="10dp"
-                app:shapeAppearanceOverlay="@style/ShapeableImageRound"
-                />
+                app:strokeWidth="1dp" />
 
         </RelativeLayout>
 

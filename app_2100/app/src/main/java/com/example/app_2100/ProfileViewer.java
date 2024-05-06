@@ -25,6 +25,48 @@ public class ProfileViewer extends AppCompatActivity {
     private String loggedInUserID;
     private int currentTab = 0;
 
+    private PostLoadCallback postLoadCallback = new PostLoadCallback() {
+        @Override
+        public void onPostLoaded(Post post) {
+        }
+    };
+
+    public void updatePosts(int tab){
+        //Clear the layout before populating
+        ScrollView scrollView1 = findViewById(R.id.scrollView1);
+        LinearLayout scrollViewChildLayout = (LinearLayout) scrollView1.getChildAt(0);
+        scrollViewChildLayout.removeAllViews();
+
+        currentTab = tab;
+        Log.d("ProfileViewer mytablayoutlistner", "current tab is " + currentTab);
+        String authorID = getIntent().getStringExtra("authorID");
+        // Query Firebase for posts by that user
+        Query postsQuery = db.collection("posts").whereEqualTo("author", authorID);
+        postsQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Post> posts = new ArrayList<Post>();
+                Map<String, Object> currData;
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    currData = document.getData();
+                    posts.add(new Post(
+                            document.getId(),
+                            currData.get("title"),
+                            currData.get("body"),
+                            currData.get("author"),
+                            currData.get("publisher"),
+                            currData.get("sourceURL"),
+                            currData.get("timeStamp"),
+                            postLoadCallback
+                    ));
+                }
+                // Addition to UI through helper
+                updateUIWithPosts(posts);
+            } else {
+                Toast.makeText(ProfileViewer.this, "Failed or no such Posts", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +77,7 @@ public class ProfileViewer extends AppCompatActivity {
 
         User user = new User(getIntent().getStringExtra("authorID"), new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String fName, String lName) {
+            public void onUserLoaded(String fName, String lName, String empty) {
                 Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
 
                 TextView nameTextView = findViewById(R.id.Name);
@@ -73,41 +115,7 @@ public class ProfileViewer extends AppCompatActivity {
         myTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-//                Clear the layout before populating
-                ScrollView scrollView1 = findViewById(R.id.scrollView1);
-                LinearLayout scrollViewChildLayout = (LinearLayout) scrollView1.getChildAt(0);
-                scrollViewChildLayout.removeAllViews();
-
-                currentTab = tab.getPosition();
-                Log.d("ProfileViewer mytablayoutlistner", "current tab is " + currentTab);
-
-                // Get Author from extra
-                String authorID = getIntent().getStringExtra("authorID");
-
-                // Query Firebase for posts by that user
-                Query postsQuery = db.collection("posts").whereEqualTo("author", authorID);
-                postsQuery.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Post> posts = new ArrayList<Post>();
-                        Map<String, Object> currData;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            currData = document.getData();
-                            posts.add(new Post(
-                                    document.getId(),
-                                    currData.get("title"),
-                                    currData.get("body"),
-                                    currData.get("author"),
-                                    currData.get("publisher"),
-                                    currData.get("sourceURL"),
-                                    currData.get("timeStamp")
-                            ));
-                        }
-                        // Addition to UI through helper
-                        updateUIWithPosts(posts);
-                    } else {
-                        Toast.makeText(ProfileViewer.this, "Failed or no such Posts", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                updatePosts(tab.getPosition());
             }
 
             @Override
@@ -118,6 +126,9 @@ public class ProfileViewer extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
                 // Handle tab reselected event if needed
             }});
+
+        updatePosts(0);
+
     }
 
     private List<Post> getPosts(){
@@ -139,7 +150,8 @@ public class ProfileViewer extends AppCompatActivity {
                             currData.get("author"),
                             currData.get("publisher"),
                             currData.get("sourceURL"),
-                            currData.get("timeStamp")
+                            currData.get("timeStamp"),
+                            postLoadCallback
                     ));
                 }
                 // Addition to UI through helper
@@ -207,47 +219,6 @@ public class ProfileViewer extends AppCompatActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         postLayoutParams.setMargins(0, 0, 0, 32); // Add bottom margin for space between posts
         scrollViewChildLayout.addView(postLayout, postLayoutParams);
-    }
-
-    private void displayFollowingUsersOfAuthor(String authorID, LinearLayout layout) {
-        // Retrieve the list of user IDs the profile is following
-        db.collection("users").document(authorID).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    List<String> following = (List<String>) documentSnapshot.get("following");
-                    if (following != null) {
-                        for (String userID : following) {
-                            // Retrieve user details
-                            db.collection("users").document(userID).get()
-                                    .addOnSuccessListener(userDocument -> {
-                                        // New layout to display relevant user details
-                                        LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
-                                        userLayout.setOrientation(LinearLayout.VERTICAL);
-
-                                        String firstName = userDocument.getString("firstName");
-                                        String lastName = userDocument.getString("lastName");
-
-                                        // Display user details in a TextView
-                                        TextView userTextView = new TextView(ProfileViewer.this);
-                                        userTextView.setText(firstName + " " + lastName);
-                                        userTextView.setLayoutParams(new ViewGroup.LayoutParams(
-                                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                                ViewGroup.LayoutParams.WRAP_CONTENT));
-
-                                        // Important for re-opening profileViewer with the new user as the subject
-                                        // Onclick listener for the user in question
-                                        userLayout.setOnClickListener(v -> openProfileViewer(userID));
-
-                                        // Add the TextView to the new layout
-                                        userLayout.addView(userTextView);
-
-                                        // Add the userLayout to the ScrollView
-                                        layout.addView(userLayout);
-                                    })
-                                    .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve user details.", Toast.LENGTH_SHORT).show());
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve following list.", Toast.LENGTH_SHORT).show());
     }
 
     private void displayFollowingUsersOfAuthor(String authorID, ScrollView scrollView) {
