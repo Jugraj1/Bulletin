@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PostGenerator {
     private final int nPosts;
@@ -81,7 +83,6 @@ public class PostGenerator {
                                     fName,
                                     lName
                             );
-                            Log.d(TAG, user.toString());
                             users.add(user);
                         }
                         nUsers = users.size();
@@ -90,16 +91,25 @@ public class PostGenerator {
                         for (int i = 0; i < nPosts; i++) {
                             // generate post
                             User user = getRandomUser(); // set to random user
+                            getAPIOutput(rand.nextInt(4), new ProcessedAPIResCallback(){
+                                @Override
+                                public void onResProcessed(String title, String body) {
+                                    Map<String, Object> post = new HashMap<>();
+                                    post.put("title", "");
+                                    post.put("publisher", createPublisher());
+                                    post.put("url", createURL());
+                                    post.put("body", "");
+                                    post.put("author", user.getUserID());
+                                    post.put("timeStamp", createTimestamp());
 
-                            Map<String, Object> post = new HashMap<>();
-                            post.put("title", createTitle());
-                            post.put("publisher", createPublisher());
-                            post.put("url", createURL());
-                            post.put("body", createBody(rand.nextInt(4)));
-                            post.put("author", user.getUserID());
-                            post.put("timeStamp", createTimestamp());
+                                    uploadPost(post);
+                                }
 
-                            uploadPost(post);
+                                @Override
+                                public void onError(Exception e) {
+                                    Log.e(TAG, e.toString());
+                                }
+                            });
                         }
 
                         // callback not needed if everything doen internally which is probbably what will happen
@@ -108,10 +118,58 @@ public class PostGenerator {
                         }
                         //
                     } else {
-                        System.out.println("ERR getting users");
+                        Log.e(TAG, "ERR getting users");
                     }
                 }
             });
+    }
+
+    public interface ProcessedAPIResCallback {
+        void onResProcessed(String title, String body);
+        void onError(Exception e);
+    }
+    public void getAPIOutput(int nParagraphs, ProcessedAPIResCallback callback){
+        String apiURL = String.format("https://corporatelorem.kovah.de/api/%d?format=text", nParagraphs);
+        makeHttpGetRequest(apiURL, new HttpCallback() {
+            @Override
+            public void onResponse(String response) {
+                String[] processedRes = separateTitle(response);
+                String title = processedRes[0];
+                String body = processedRes[1];
+
+                callback.onResProcessed(title, body);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e(TAG, e.toString());
+                callback.onError(e);
+            }
+        });
+    }
+
+    /***
+     * First line is the title, but not useful to post body
+     * @param input
+     * @return
+     */
+    public String[] separateTitle(String input) {
+        int indexOfFirstNewline = input.indexOf('\n');
+        if (indexOfFirstNewline != -1) {
+            String title = input.substring(0, indexOfFirstNewline);
+            String body = input.substring(indexOfFirstNewline + 1);
+            return new String[]{title, body};
+        }
+        return new String[]{"", ""}; // If there is no newline, return an empty string
+    }
+
+    /***
+     * Get rid of the html tags from the API output
+     * @param htmlIn
+     * @return
+     */
+    public String removePTags(String htmlIn) {
+        return htmlIn.replaceAll("<p>|</p>", "");
     }
 
     public User getRandomUser(){
@@ -129,17 +187,6 @@ public class PostGenerator {
 
         return new Timestamp(new Date(randomTimestamp));
     }
-
-    public String createBody(int nParagraphs){
-//        String urlString = String.format("https://corporatelorem.kovah.de/api/%d?format=text", nParagraphs);
-//        String body = makeHttpGetRequest(urlString);
-        String body ="body content....";
-
-        return body;
-    }
-    public String createTitle(){
-        return "title";
-    }
     public String createPublisher(){
         int randomIndex = rand.nextInt(PUBLISHERS.size());
         return PUBLISHERS.get(randomIndex);
@@ -156,30 +203,42 @@ public class PostGenerator {
         return String.format("https://%s.com", stringBuilder);
     }
 
-    private static String makeHttpGetRequest(String urlString){
-        try {
-            URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+    public interface HttpCallback {
+        void onResponse(String response);
+        void onError(Exception e);
+    }
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    public void makeHttpGetRequest(String urlString, HttpCallback callback) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(urlString);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
 
-            int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
+                    int responseCode = connection.getResponseCode();
+                    System.out.println("Response Code: " + responseCode);
 
-            // get response from server
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+                    // get response from server
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line+"\n");
+                    }
+                    reader.close();
+                    connection.disconnect();
+
+                    // Pass the response back to the caller
+                    callback.onResponse(response.toString());
+
+                } catch (IOException e) {
+                    // Pass the exception back to the caller
+                    callback.onError(e);
+                }
             }
-            reader.close();
-            connection.disconnect();
-
-            return response.toString();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
 

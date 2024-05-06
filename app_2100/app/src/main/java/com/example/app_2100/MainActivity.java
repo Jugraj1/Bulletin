@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         String fName;
         String lName;
         for (int i=0; i<gen.getNUsers(); i++) {
-            email = i+"abc@g.com";
-            fName = ""+i;
-            lName = ""+i;
+            fName = gen.getFirstName();
+            lName = gen.getLastName();
+            email = gen.getEmail(fName+lName);
 
             gen.uploadUser(email, fName, lName);
         }

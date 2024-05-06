@@ -23,14 +23,30 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 public class UserGenerator {
 
     private int nUsers;
+    private Random rand = new Random();
+
+    private final List<String> FIRST_NAMES = Arrays.asList(
+            "Noah", "John", "Emma", "Michael", "Olivia", "William", "Ava", "James", "Sophia", "Oliver", "Isabella",
+            "Benjamin", "Mia", "Elijah", "Charlotte", "Lucas", "Amelia", "Mason", "Harper", "Logan", "Evelyn"
+    );
+    private final List<String> LAST_NAMES = Arrays.asList(
+            "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+            "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"
+    );
+    private final List<String> EMAIL_PROVIDERS = Arrays.asList(
+            "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com",
+            "protonmail.com", "mail.com"
+    );
 
     public UserGenerator(int nUsers){
         this.nUsers = nUsers;
@@ -41,20 +57,42 @@ public class UserGenerator {
      * @param args
      */
     public static void main(String[] args) {
-        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
-        UserGenerator gen = new UserGenerator(2);
-        Random rand = new Random();
-        for (int i=0; i<gen.getNUsers(); i++) {
-            // generate post
-            Map<String, Object> user = new HashMap<>();
-            user.put("email", "FIRSTNAME"+i);
-            user.put("firstName", "FIRSTNAME"+i);
-            user.put("lastName", "LASTNAME"+i);
-//            uploadUser(email, fName, lName);
-        }
+//        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
+//        UserGenerator gen = new UserGenerator(2);
+//        Random rand = new Random();
+//        for (int i=0; i<gen.getNUsers(); i++) {
+//            // generate post
+//            Map<String, Object> user = new HashMap<>();
+//            String fName =
+//            String lastName =
+//
+//            user.put("email", getEmail(fName+lName));
+//            user.put("firstName", "FIRSTNAME"+i);
+//            user.put("lastName", "LASTNAME"+i);
+////            uploadUser(email, fName, lName);
+//        }
 //        System.out.println("USER GEN");
 
     }
+
+    public String getFirstName(){
+        int randomIndex = rand.nextInt(FIRST_NAMES.size());
+        return FIRST_NAMES.get(randomIndex);
+    }
+
+    public String getLastName(){
+        int randomIndex = rand.nextInt(LAST_NAMES.size());
+        return LAST_NAMES.get(randomIndex);
+    }
+
+    public String getEmail(String name){
+
+        int randomIndex = rand.nextInt(EMAIL_PROVIDERS.size());
+        return String.format("%s@%s", name, EMAIL_PROVIDERS.get(randomIndex));
+    }
+
+
+
 
     public void uploadUser(String email, String fName, String lName){
         FirebaseAuthConnection.getInstance().createAccount(email, "pass123", fName, lName, createAccountCallback()); // give every "fake" user same pass
