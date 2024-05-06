@@ -65,6 +65,18 @@ public class User {
          // file structure is root/pfp/{userId}.jpg
     }
 
+    /***
+     *  Used in the UserGenerator (making dummy accounts)
+     * @param userID
+     * @param firstName
+     * @param lastName
+     */
+    public User(String userID, String firstName, String lastName){  // add more user details if needed
+        this.userID = userID;
+        this.firstName = firstName;
+        this.lastName =lastName;
+    }
+
 //    public FirestoreCallback getUserCallback() {
 //        return userCallback;
 //    }
