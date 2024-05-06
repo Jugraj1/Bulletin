@@ -11,6 +11,7 @@
         android:layout_width="112dp"
         android:layout_height="111dp"
         android:layout_marginTop="16dp"
+        android:background="#DDDF94"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.053"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,6 +28,65 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TabHost
+        android:id="@+id/tabHost"
+        android:layout_width="409dp"
+        android:layout_height="430dp"
+        android:background="#CC7474"
+        app:layout_constraintBottom_toTopOf="@+id/homeButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <ScrollView
+                    android:id="@+id/scrollView1"
+                    android:layout_width="416dp"
+                    android:layout_height="match_parent"
+                    android:background="#A93232">
+
+                    <LinearLayout
+                        android:id="@+id/postsLayout1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TabWidget
+                            android:id="@android:id/tabs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                </ScrollView>
+
+                <ScrollView
+                    android:id="@+id/scrollView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/postsLayout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                </ScrollView>
+
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
 
     <TextView
         android:id="@+id/authorID"
@@ -79,48 +139,5 @@
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/Name"
         app:layout_constraintVertical_bias="0.666" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="391dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/homeButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.031">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/postsTab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Posts" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/followingtab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Following" />
-
-    </com.google.android.material.tabs.TabLayout>
-
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="356dp"
-        android:layout_height="489dp"
-        app:layout_constraintBottom_toTopOf="@+id/homeButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-        app:layout_constraintVertical_bias="0.306"
-
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

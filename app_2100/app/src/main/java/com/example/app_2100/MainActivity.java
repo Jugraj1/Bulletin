@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
+        Log.d(TAG, "current user: " + currentUser.toString());
 
         if(currentUser != null) { // user is logged in already
             startActivity(new Intent(MainActivity.this, HomeFeed.class));
