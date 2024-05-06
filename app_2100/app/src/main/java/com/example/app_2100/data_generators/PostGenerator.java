@@ -18,6 +18,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,24 +73,69 @@ public class PostGenerator {
     }
 
     public static void main(String[] args) {
-        PostGenerator gen = new PostGenerator(20);
-        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
-        Random rand = new Random();
-        for (int i=0; i<gen.getNPosts(); i++) {
-            // generate post
-            User user = gen.getRandomUser(); // set to random user
+        System.out.println("HELLO WORLD");
+//        PostGenerator gen = new PostGenerator(20);
+//        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
+//        Random rand = new Random();
+//        for (int i=0; i<gen.getNPosts(); i++) {
+//            // generate post
+//            User user = gen.getRandomUser(); // set to random user
+//
+//            Map<String, Object> post = new HashMap<>();
+//            post.put("title", createTitle());
+//            post.put("publisher", createPublisher());
+//            post.put("url", createURL());
+//            post.put("body", createBody(2));
+//            post.put("author", user.getUserID());
+//            post.put("timeStamp", new Timestamp(new Date()));
+//
+//            uploadPost(post, db);
+//        }
+    }
 
-            Map<String, Object> post = new HashMap<>();
-            post.put("title", title);
-            post.put("publisher", publisher);
-            post.put("url", url);
-            post.put("body", content);
-            post.put("author", user.getUserID());
-            post.put("timeStamp", new Timestamp(new Date()));
+    private static String createBody(int nParagraphs){
+        String urlString = String.format("https://corporatelorem.kovah.de/api/%d?format=text", nParagraphs);
+        String body = makeHttpGetRequest(urlString);
 
-            uploadPost(post, db);
+        return body;
+    }
+
+    private static String makeHttpGetRequest(String urlString){
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
+            // get response from server
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+            connection.disconnect();
+
+            return response.toString();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    private static String createTitle(){
+
+    }
+    private static String createPublisher(){
+
+    }
+    private static String createURL(){
+
+    }
+
 
     private static void uploadPost(Map<String, Object> post, FirebaseFirestore db){
         CollectionReference postsCollection = db.collection("posts");
