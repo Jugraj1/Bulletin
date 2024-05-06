@@ -10,15 +10,8 @@ public class CurrentUser extends User{
     private static CurrentUser instance;
     private static String TAG = "CurrentUser";
 
-    private FirestoreCallback userCallback = new FirestoreCallback(){
-        @Override
-        public void onUserLoaded(String fName, String lName, String pfpLink){
-            setFirstName(fName);
-            setLastName(lName);
-            Log.d(TAG, "pfpLink CurrentUser: "+pfpLink);
-            setPfpStorageLink(pfpLink);
-        }
-    };
+    private boolean initialised = false;
+    private InitialisationCallback initialisationCallback;
 
     private CurrentUser() { // Private constructor to prevent instantiation from outside
         super(FirebaseAuthConnection.getInstance().getAuth().getCurrentUser().getUid(), new FirestoreCallback() {
@@ -31,6 +24,21 @@ public class CurrentUser extends User{
         if (currUser != null){
             this.setUserID(currUser.getUid()); // set current user id according to current logged in firebase user from auth
 //            this.queryUserByID(getUserID(), userCallback);
+
+            setPfpLoadedCallback(new PfpLoadedCallback() {
+                @Override
+                public void onPfpLoaded(Bitmap bitmap) {
+                    // Call your initialization callback here if not null
+                    if (initCallback != null) {
+                        initCallback.onInitialised();
+                    }
+                }
+
+                @Override
+                public void onPfpLoadFailed(Exception e) {
+                    // Handle failure if needed
+                }
+            });
         }
     }
 
@@ -39,6 +47,27 @@ public class CurrentUser extends User{
             instance = new CurrentUser();
         }
         return instance;
+    }
+
+    public void setInitialisationCallback(InitialisationCallback callback) {
+        initialisationCallback = callback;
+        if (initialised) {
+            callback.onInitialised();
+        }
+    }
+
+    @Override
+    public void queryUserByID(String userID, FirestoreCallback callback) {
+        super.queryUserByID(userID, new FirestoreCallback() {
+            @Override
+            public void onUserLoaded(String fName, String lName, String pfpLink) {
+                initialised = true;
+                if (initialisationCallback != null) {
+                    initialisationCallback.onInitialised();
+                }
+                callback.onUserLoaded(fName, lName, pfpLink);
+            }
+        });
     }
 }
 

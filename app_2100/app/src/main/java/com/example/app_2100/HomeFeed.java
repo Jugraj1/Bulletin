@@ -66,12 +66,12 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
 
         currUser = CurrentUser.getCurrent();
-//        currUser.addInitialisationCallback(new InitialisationCallback() {
-//            @Override
-//            public void onUserInitialised() {
-//                createProfilePic();
-//            }
-//        });
+        currUser.setInitialisationCallback(new InitialisationCallback() {
+            @Override
+            public void onInitialised() {
+                createProfilePic();
+            }
+        });
 
         populateFeed(); // this does all the recycle view stuff
         ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
@@ -79,7 +79,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
             Log.d(TAG, "profile pib ib clicked");// forward to profile viewer
         });
 
-        createProfilePic();
+//        createProfilePic();
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
@@ -203,14 +203,29 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     private void createProfilePic(){
 //        Bitmap squareImageBitmap = createDummyBitmap(200, 200); // get the user profile pic
 //        Log.d(TAG, CurrentUser.getCurrent().toString());
-        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
-        if (localPfpFile.exists()) {
-            // file already exists locally, no need to redownload
-            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
-            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
-        } else {
-            Log.d(TAG, "Getting profile pic from Firebase Storage");
-            updateProfileImageView(currUser.getPfpBitmap());
+
+        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+            @Override
+            public void onPfpLoaded(Bitmap bitmap) {
+                Log.d("PFP","pfp loaded");
+                updateProfileImageView(bitmap);
+            }
+
+            @Override
+            public void onPfpLoadFailed(Exception e) {
+
+            }
+        });
+
+
+//        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
+//        if (localPfpFile.exists()) {
+//            // file already exists locally, no need to redownload
+//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+//            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
+//        } else {
+//            Log.d(TAG, "Getting profile pic from Firebase Storage");
+//            updateProfileImageView(currUser.getPfpBitmap());
 //            currUser.getProfilePicBitmap(this,
 //                new User.PfpLoadedCallback() {
 //                    @Override
@@ -223,7 +238,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 //                    }
 //                }
 //            );
-        }
+//        }
     }
 
     private void updateProfileImageView(Bitmap immutableBitmap) {

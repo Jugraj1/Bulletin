@@ -37,7 +37,7 @@ public class User {
     private String TAG = "User";
     private FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
     private Boolean isInitialised = false;
-    private InitialisationCallback initCallback;
+    public InitialisationCallback initCallback;
 
     private Bitmap pfpBitmap;
 
@@ -48,6 +48,7 @@ public class User {
     public User(String userID, FirestoreCallback callback){
         this.userID = userID;
         this.pfpLocalLink = String.format("pfp_%s.jpg", this.userID);
+        this.pfpStorageLink = String.format("gs://app-f4755.appspot.com/pfp/%s.jpg", this.userID);
         storage = FirebaseStorage.getInstance();
 //        this.pfpStorageLink = "gs://app-f4755.appspot.com/pfp/" + this.userID + ".jpg";
         queryUserByID(this.userID, callback);
@@ -61,7 +62,7 @@ public class User {
 
     public void addInitialisationCallback(InitialisationCallback initCallback) {
         if (isInitialised) {
-            initCallback.onUserInitialised();
+            initCallback.onInitialised();
         } else {
             // !?
         }
@@ -113,17 +114,25 @@ public class User {
     /***
      * handle everything for getting pfp bitmap
      */
-    private void initProfilePicBitmap(){
+    public void initProfilePicBitmap(){
         this.localPfpFile = new File(App.getContext().getCacheDir(), "pfp_"+this.userID+".jpg");
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
             Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
             this.pfpBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
+
+            if (pfpLoadedCallback != null) {
+                pfpLoadedCallback.onPfpLoaded(pfpBitmap);
+            }
         } else {
             dlProfilePicBitmap(App.getContext(), new User.PfpLoadedCallback() {
                 @Override
                 public void onPfpLoaded(Bitmap bitmap) {
                     pfpBitmap = bitmap;
+                    // Call the callback if not null
+                    if (pfpLoadedCallback != null) {
+                        pfpLoadedCallback.onPfpLoaded(pfpBitmap);
+                    }
                 }
                 @Override
                 public void onPfpLoadFailed(Exception e) {
@@ -137,8 +146,13 @@ public class User {
         void onPfpLoaded(Bitmap bitmap);
         void onPfpLoadFailed(Exception e);
     }
+    public void setPfpLoadedCallback(PfpLoadedCallback callback) {
+        this.pfpLoadedCallback = callback;
+    }
 
-    public void dlProfilePicBitmap(Context context, PfpLoadedCallback callback) {
+    private PfpLoadedCallback pfpLoadedCallback;
+
+    public void dlProfilePicBitmap(Context context, PfpLoadedCallback callback) { // made public for temp solution to the big async problem (ask noah)
 //        File localFile = File.createTempFile("images", "jpg");
         Log.d(TAG, "pfp link get: "+pfpStorageLink);
         if (this.pfpStorageLink == null){
