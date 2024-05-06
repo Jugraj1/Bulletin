@@ -12,8 +12,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.SetOptions;
 import com.google.rpc.context.AttributeContext;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,7 +80,9 @@ public class CreateAccount extends AppCompatActivity {
     private void createAccount(){
 //        Can only create account with email and password.
         Log.d(TAG, "createAccount() started");
+
         FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, createAccountCallback());
+
     }
 
     /**
@@ -91,10 +96,8 @@ public class CreateAccount extends AppCompatActivity {
             @Override
             public void onAuthentication(boolean success) {
                 if (success) {
-
                     Log.w(TAG, "createUserWithEmail:success");
                     Toast.makeText(CreateAccount.this, "Account Creation succeeded.", Toast.LENGTH_LONG).show();
-
 //                    Redirect to HomeFeed
                     startActivity(new Intent(CreateAccount.this, HomeFeed.class));
                 } else {
