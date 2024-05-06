@@ -52,4 +52,7 @@ dependencies {
 
     // Dependency for the Firebase Authentication library
     implementation("com.google.firebase:firebase-auth")
+
+    // Dependency for the Cloud Storage library
+    implementation("com.google.firebase:firebase-storage")
 }

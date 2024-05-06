@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity {
@@ -23,12 +22,17 @@ public class Login extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+
+
+
+//        Uncomment this code to automatically log in the user if they are already logged in
+//        this is just for testing purposes
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
-        if(currentUser != null){ // user is logged in already
-            startActivity(new Intent(Login.this, HomeFeed.class));
-            Log.d(TAG, "logged in already");
-        }
+//        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
+//        if(currentUser != null){ // user is logged in already
+//            startActivity(new Intent(Login.this, HomeFeed.class));
+//            Log.d(TAG, "logged in already");
+//        }
     }
 
     @Override
@@ -37,10 +41,10 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // initialise firebase auth
-        TextView email = (TextView) findViewById(R.id.activity_login_et_email);
-        TextView password = (TextView) findViewById(R.id.activity_login_et_password);
+        TextView email = (TextView) findViewById(R.id.activity_create_account_et_email);
+        TextView password = (TextView) findViewById(R.id.activity_create_account_et_password);
 
-        Button loginBt = (Button) findViewById(R.id.activity_login_bt_login);
+        Button loginBt = (Button) findViewById(R.id.activity_create_account_bt_create_account);
         TextView signupTv = (TextView) findViewById(R.id.activity_login_tv_signup);
 
         // login button on click handling
@@ -57,7 +61,8 @@ public class Login extends AppCompatActivity {
 
         // sign up "text" (which is acting like a button) onclick handling
         signupTv.setOnClickListener(v -> {
-            createAccount("email@email.com", "password","f","l"); // leave it as does nothing, but should link to create acc screen!?
+            startActivity(new Intent(Login.this, CreateAccount.class));
+//            createAccount("email@email.com", "password","f","l"); // leave it as does nothing, but should link to create acc screen!?
         });
     }
 

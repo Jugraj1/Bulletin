@@ -7,11 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -25,10 +28,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.Current;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +50,14 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
     boolean isLoading = false;
 
+    CurrentUser currUser;
+
+    private PostLoadCallback postLoadCallback = new PostLoadCallback() {
+        @Override
+        public void onPostLoaded(Post post) {
+            recylerViewAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,18 +65,20 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         setContentView(R.layout.activity_home_feed);
         recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
 
-        populateFeed(); // this does all the recycle view stuff
+        currUser = CurrentUser.getCurrent();
+        currUser.setInitialisationCallback(new InitialisationCallback() {
+            @Override
+            public void onInitialised() {
+                createProfilePic();
 
-        ImageButton profilePicIb = findViewById(R.id.activity_home_feed_ib_profile);
-        profilePicIb.setOnClickListener(v -> {
-            Intent profileIntent = new Intent(HomeFeed.this, ProfileViewer.class);
-            profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
-            startActivity(profileIntent);
-
-            Log.d(TAG, "profile pib ib clicked");
+                ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
+                profilePicIb.setOnClickListener(v -> {
+                    Log.d(TAG, "profile pib is clicked");// forward to profile viewer
+                });
+            }
         });
 
-        createProfilePic();
+        populateFeed(); // this does all the recycle view stuff
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
@@ -109,7 +126,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
                                         currData.get("author"),
                                         currData.get("publisher"),
                                         currData.get("sourceURL"),
-                                        currData.get("timeStamp")
+                                        currData.get("timeStamp"),
+                                        postLoadCallback
                                 ));
                             }
                             // call listener with the loaded posts
@@ -182,27 +200,58 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     }
 
     private void createProfilePic(){
-        Bitmap squareImageBitmap = createDummyBitmap(200, 200);
+//        Bitmap squareImageBitmap = createDummyBitmap(200, 200); // get the user profile pic
+//        Log.d(TAG, CurrentUser.getCurrent().toString());
 
-        // Combine square image with circular corner drawable
-        Bitmap roundedImageBitmap = Bitmap.createBitmap(squareImageBitmap.getWidth(), squareImageBitmap.getHeight(), squareImageBitmap.getConfig());
-        Canvas canvas = new Canvas(roundedImageBitmap);
-        Paint paint = new Paint();
-        Drawable drawable = getResources().getDrawable(R.drawable.circular_corner);
-        drawable.setBounds(0, 0, squareImageBitmap.getWidth(), squareImageBitmap.getHeight());
-        drawable.draw(canvas);
-        canvas.drawBitmap(squareImageBitmap, 0f, 0f, paint);
+        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+            @Override
+            public void onPfpLoaded(Bitmap bitmap) {
+                Log.d("PFP","pfp loaded");
+                updateProfileImageView(bitmap);
+            }
 
-        // Set rounded image as background of the ImageButton
-        ImageButton imageButton = findViewById(R.id.activity_home_feed_ib_profile);
-        BitmapDrawable roundedImageDrawable = new BitmapDrawable(getResources(), roundedImageBitmap);
-        imageButton.setBackground(roundedImageDrawable);
+            @Override
+            public void onPfpLoadFailed(Exception e) {
+
+            }
+        });
+
+
+//        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
+//        if (localPfpFile.exists()) {
+//            // file already exists locally, no need to redownload
+//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+//            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
+//        } else {
+//            Log.d(TAG, "Getting profile pic from Firebase Storage");
+//            updateProfileImageView(currUser.getPfpBitmap());
+//            currUser.getProfilePicBitmap(this,
+//                new User.PfpLoadedCallback() {
+//                    @Override
+//                    public void onPfpLoaded(Bitmap bitmap) {
+//                        updateProfileImageView(bitmap);
+//                    }
+//                    @Override
+//                    public void onPfpLoadFailed(Exception e) {
+//                        Log.d(TAG, "pfp load failed");
+//                    }
+//                }
+//            );
+//        }
     }
 
-    private Bitmap createDummyBitmap(int width, int height) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.BLUE);
-        return bitmap;
+    private void updateProfileImageView(Bitmap immutableBitmap) {
+        Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(pfpImageBitmap);
+        Paint paint = new Paint();
+
+        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+        canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+
+        // get the element
+        ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
+
+        profileImg.setImageBitmap(pfpImageBitmap);
     }
 }
