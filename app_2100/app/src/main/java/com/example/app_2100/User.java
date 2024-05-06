@@ -115,7 +115,9 @@ public class User {
      * handle everything for getting pfp bitmap
      */
     public void initProfilePicBitmap(){
+        Log.d("PFP", "init");
         this.localPfpFile = new File(App.getContext().getCacheDir(), "pfp_"+this.userID+".jpg");
+        Log.d("PFP", "got file");
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
             Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
@@ -154,7 +156,7 @@ public class User {
 
     public void dlProfilePicBitmap(Context context, PfpLoadedCallback callback) { // made public for temp solution to the big async problem (ask noah)
 //        File localFile = File.createTempFile("images", "jpg");
-        Log.d(TAG, "pfp link get: "+pfpStorageLink);
+        Log.d(TAG, "downloading pfp from: "+pfpStorageLink);
         if (this.pfpStorageLink == null){
             return;
         }

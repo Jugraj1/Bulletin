@@ -70,16 +70,15 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
             @Override
             public void onInitialised() {
                 createProfilePic();
+
+                ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
+                profilePicIb.setOnClickListener(v -> {
+                    Log.d(TAG, "profile pib is clicked");// forward to profile viewer
+                });
             }
         });
 
         populateFeed(); // this does all the recycle view stuff
-        ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
-        profilePicIb.setOnClickListener(v -> {
-            Log.d(TAG, "profile pib ib clicked");// forward to profile viewer
-        });
-
-//        createProfilePic();
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
