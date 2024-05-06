@@ -1,7 +1,12 @@
 package com.example.app_2100;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FirebaseAuthConnection {
     // A singleton class to handle all Firebase operations
@@ -90,6 +95,53 @@ public class FirebaseAuthConnection {
                     } else {
                         callback.onAuthentication(false);
                     }
+                });
+    }
+
+    /**
+     * Create a new account with the given email, password, first name, and last name
+     * Since we are using Firebase, we can only create an account with email and password
+     * The user will be updated after creating account with the first name and last name
+     * @param email
+     * @param password
+     * @param firstName
+     * @param lastName
+     * @param callback
+     */
+    public void createAccount(String email, String password, String firstName, String lastName, AuthCallback callback){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // sign in success
+                        String currentUser = CurrentUser.getCurrent().getUserID();
+                        updateAccount(currentUser, firstName, lastName);
+                        callback.onAuthentication(true);
+
+                    } else {
+                        callback.onAuthentication(false);
+                        return;
+                    }
+                });
+    }
+
+    /**
+     * Update the user with the given first name and last name and
+     * Add an empty array of Strings called following
+     * @param userId
+     * @param firstName
+     * @param lastName
+     */
+    private void updateAccount(String userId, String firstName, String lastName){
+        // update the user with the first name and last name
+        List<String> followingList = new ArrayList<>();
+        FirebaseFirestoreConnection.getDb().collection("users").document(userId)
+                .update("firstName", firstName, "lastName", lastName, "following", followingList)
+                .addOnSuccessListener(aVoid -> {
+                    // update success
+                    Log.d("FirebaseAuthConnection", "User updated successfully");
+                }).addOnFailureListener(e -> {
+                    // update failed
+                    Log.d("FirebaseAuthConnection", "User update failed");
                 });
     }
 
