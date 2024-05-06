@@ -60,6 +60,62 @@ public class PostGenerator {
             "Abrams Books", "Doubleday", "W.W. Norton & Company", "Harvard University Press"
     );
 
+    private final List<String> TITLE_ADJECTIVES = Arrays.asList(
+            "Interesting",
+            "Exciting",
+            "Unexpected",
+            "Fascinating",
+            "Thrilling",
+            "Intriguing",
+            "Captivating",
+            "Surprising",
+            "Stimulating",
+            "Engaging",
+            "Compelling",
+            "Provocative",
+            "Enthralling",
+            "Riveting",
+            "Dramatic",
+            "Thought-provoking",
+            "Gripping",
+            "Challenging",
+            "Inspiring",
+            "Controversial"
+    );
+
+    private final List<String> COUNTRIES = Arrays.asList(
+            "United States",
+            "China",
+            "India",
+            "Indonesia",
+            "Pakistan",
+            "Brazil",
+            "Nigeria",
+            "Bangladesh",
+            "Russia",
+            "Mexico",
+            "Japan",
+            "Ethiopia",
+            "Philippines",
+            "Egypt",
+            "Vietnam",
+            "DR Congo",
+            "Turkey",
+            "Iran",
+            "Germany",
+            "Thailand",
+            "United Kingdom",
+            "France",
+            "Italy",
+            "South Africa",
+            "Myanmar",
+            "Tanzania",
+            "Kenya",
+            "South Korea",
+            "Colombia",
+            "Spain"
+    );
+
     public PostGenerator(int nPosts, InitialisationCallback callback){
         this.nPosts = nPosts;
         this.callback = callback;
@@ -94,11 +150,12 @@ public class PostGenerator {
                             getAPIOutput(rand.nextInt(4), new ProcessedAPIResCallback(){
                                 @Override
                                 public void onResProcessed(String title, String body) {
+                                    Log.d(TAG, "body after: "+body);
                                     Map<String, Object> post = new HashMap<>();
-                                    post.put("title", "");
+                                    post.put("title", createTitle(title));
                                     post.put("publisher", createPublisher());
                                     post.put("url", createURL());
-                                    post.put("body", "");
+                                    post.put("body", body);
                                     post.put("author", user.getUserID());
                                     post.put("timeStamp", createTimestamp());
 
@@ -158,7 +215,8 @@ public class PostGenerator {
         if (indexOfFirstNewline != -1) {
             String title = input.substring(0, indexOfFirstNewline);
             String body = input.substring(indexOfFirstNewline + 1);
-            return new String[]{title, body};
+            Log.d(TAG, "body before: "+input.substring(indexOfFirstNewline + 1));
+            return new String[]{title, removePTags(body)};
         }
         return new String[]{"", ""}; // If there is no newline, return an empty string
     }
@@ -174,6 +232,11 @@ public class PostGenerator {
 
     public User getRandomUser(){
         return this.users.get(rand.nextInt(users.size()));
+    }
+
+    private String createTitle(String keyword){
+        int randomIndex = rand.nextInt(TITLE_ADJECTIVES.size());
+        return String.format("%s %s Article in %s", TITLE_ADJECTIVES.get(randomIndex), keyword, COUNTRIES.get(randomIndex)); // e.g. "{Interesting} {Sports} in {France}"
     }
 
     /***
