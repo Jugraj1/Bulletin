@@ -18,6 +18,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.checkerframework.checker.units.qual.Current;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +44,33 @@ public class ProfileViewer extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         loggedInUserID = CurrentUser.getCurrent().getUserID();
 
+        User user = new User(getIntent().getStringExtra("authorID"), new FirestoreCallback() {
+            @Override
+            public void onUserLoaded(String fName, String lName) {
+                Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
+
+                TextView nameTextView = findViewById(R.id.Name);
+                nameTextView.setText(fName);
+
+                TextView lastNameTextView = findViewById(R.id.LName);
+                lastNameTextView.setText(lName);
+
+
+
+
+            }
+        });
+
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+
+//        Update textviews with names
+
+
 //
-//        // Get Author from extra
-//        String authorID = getIntent().getStringExtra("authorID");
+        // Get Author from extra
+        String authorID = getIntent().getStringExtra("authorID");
+
 //
 //
 //        // Query Firebase for posts by that user
