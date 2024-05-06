@@ -32,6 +32,8 @@ public class User {
     private String lastName;
     private String userID;
     private String pfpStorageLink;
+    private String pfpFileLink;
+    private String defaultpfpStorageLink = "gs://app-f4755.appspot.com/pfp/1.png";
 
     private String pfpLocalLink;
     private String TAG = "User";
@@ -47,13 +49,32 @@ public class User {
 
     public User(String userID, FirestoreCallback callback){
         this.userID = userID;
-        this.pfpLocalLink = String.format("pfp_%s.jpg", this.userID);
-        this.pfpStorageLink = String.format("gs://app-f4755.appspot.com/pfp/%s.jpg", this.userID);
-        storage = FirebaseStorage.getInstance();
+
+//        TODO: DO we need this?
+//        I commented this out because it seems unneccessary. undo it if u need it
+//        this.pfpLocalLink = String.format("pfp_%s.jpg", this.userID);
+//        this.pfpStorageLink = String.format("gs://app-f4755.appspot.com/pfp/%s.jpg", this.userID);
+
+
+//        This is the old one. Remove it?
 //        this.pfpStorageLink = "gs://app-f4755.appspot.com/pfp/" + this.userID + ".jpg";
+
+        storage = FirebaseStorage.getInstance();
         queryUserByID(this.userID, callback);
         // synchronised
          // file structure is root/pfp/{userId}.jpg
+    }
+
+    /***
+     *  Used in the UserGenerator (making dummy accounts)
+     * @param userID
+     * @param firstName
+     * @param lastName
+     */
+    public User(String userID, String firstName, String lastName){  // add more user details if needed
+        this.userID = userID;
+        this.firstName = firstName;
+        this.lastName =lastName;
     }
 
 //    public FirestoreCallback getUserCallback() {
@@ -82,7 +103,14 @@ public class User {
                                 Map<String, Object> userData = document.getData();
                                 String fName = (String) userData.get("firstName");
                                 String lName = (String) userData.get("lastName");
-                                String pfpLink = (String) userData.get("pfpStorageLink"); // may be null
+                                String pfpLink = (String) userData.get("pfpStorageLink");
+
+//                                If the pfpLink is null, then set it to the default pfp link
+                                if(pfpLink == "" || pfpLink == null){
+                                    pfpLink = defaultpfpStorageLink;
+                                }
+                                Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
+
 
                                 firstName = fName;
                                 lastName = lName;
@@ -116,7 +144,10 @@ public class User {
      */
     public void initProfilePicBitmap(){
         Log.d("PFP", "init");
+
+//        This is Hardcoded. CHANGE IT
         this.localPfpFile = new File(App.getContext().getCacheDir(), "pfp_"+this.userID+".jpg");
+
         Log.d("PFP", "got file");
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
@@ -161,7 +192,19 @@ public class User {
             return;
         }
 
-        File localFile = new File(context.getCacheDir(), this.pfpLocalLink);
+//        File localFile = new File(context.getCacheDir(), this.pfpLocalLink);
+
+       File localFile = new File(context.getCacheDir(), "pfp_1.jpg");
+
+
+        Log.d(TAG, "local file: "+localFile.toString());
+        if(localFile == null){
+            Log.d(TAG, "local file is null");
+            this.pfpLocalLink = "1.jpg";
+
+        }
+
+
         pfpRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
