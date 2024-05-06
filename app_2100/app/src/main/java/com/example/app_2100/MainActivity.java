@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
         FirebaseAuth.getInstance().signOut();
 
-        generateUsers(5);
+//        generateUsers(5);
 //        generatePosts(20);
 
         if(currentUser != null) { // user is logged in already
