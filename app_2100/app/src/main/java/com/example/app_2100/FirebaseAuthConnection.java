@@ -19,6 +19,8 @@ public class FirebaseAuthConnection {
         mAuth = FirebaseAuth.getInstance();
     }
 
+    private static String TAG = "FirebaseAuthConnection";
+
 
 //    DELETE THIS METHOD IF IT IS NOT NEEDED!!!!!!
     /**
@@ -116,8 +118,12 @@ public class FirebaseAuthConnection {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // sign in success
-                        String currentUserID = CurrentUser.getCurrent().getUserID();
-                        updateAccount(currentUserID, firstName, lastName);
+                        String currentUserID = mAuth.getCurrentUser().getUid();
+                        if (currentUserID != null){
+                            updateAccount(currentUserID, firstName, lastName);
+                        } else {
+                            Log.d(TAG, "Currently signed in user is null :(");
+                        }
 
                         callback.onAuthentication(true);
 

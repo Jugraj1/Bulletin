@@ -1,30 +1,10 @@
 package com.example.app_2100.data_generators;
 
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-
 import com.example.app_2100.AuthCallback;
-import com.example.app_2100.CreateAccount;
-import com.example.app_2100.CurrentUser;
-import com.example.app_2100.FirebaseAuthConnection;
 import com.example.app_2100.FirebaseFirestoreConnection;
-import com.example.app_2100.HomeFeed;
-import com.example.app_2100.Post;
-import com.example.app_2100.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
-
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,14 +68,38 @@ public class UserGenerator {
     public String getEmail(String name){
 
         int randomIndex = rand.nextInt(EMAIL_PROVIDERS.size());
-        return String.format("%s@%s", name, EMAIL_PROVIDERS.get(randomIndex));
+        return String.format("%s@%s", name, EMAIL_PROVIDERS.get(randomIndex)).toLowerCase();
     }
 
 
 
 
     public void uploadUser(String email, String fName, String lName){
-        FirebaseAuthConnection.getInstance().createAccount(email, "pass123", fName, lName, createAccountCallback()); // give every "fake" user same pass
+        // we cant use the usual create account stuff because we're creating lots at once - firebase auth is only supposed to handle the current user
+        // its designed so we need to use admin sdk to do stuff like this
+        // NEVERMIND firebase admin sdk, has to be used somewhere else on a "secure" location. we cant plonk it in the android app which makes sense
+        // but its a bit of a bother to be plonking things in other places and since one git repo gets marked we'll just dodge it by skipping auth - upload record straight to firestore
+
+        // old way
+//        FirebaseAuthConnection.getInstance().createAccount(email, "pass123", fName, lName, createAccountCallback()); // give every "fake" user same pass
+        //
+
+        // ask noah why:
+        // dont create acc in auth - skip straight to firestore
+        Map<String, Object> user = new HashMap<>();
+        user.put("email", email);
+        user.put("firstName", fName);
+        user.put("lastName", lName);
+
+        CollectionReference usersCollection = FirebaseFirestoreConnection.getDb().collection("users");
+        usersCollection.add(user)
+                .addOnSuccessListener(documentReference -> {
+//                    Log.d("UserGenerator", "Success");
+                })
+                .addOnFailureListener(e -> {
+                    // boohoo
+                    Log.e("UserGenerator","ERR uploading user: "+ e);
+                });
     }
 
     public int getNUsers() {

@@ -1,19 +1,15 @@
 package com.example.app_2100.data_generators;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.app_2100.CreatePost;
-import com.example.app_2100.CurrentUser;
 import com.example.app_2100.FirebaseFirestoreConnection;
 import com.example.app_2100.InitialisationCallback;
 import com.example.app_2100.Post;
 import com.example.app_2100.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,8 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -222,7 +216,7 @@ public class PostGenerator {
     }
 
     /***
-     * Get rid of the html tags from the API output
+     * Get rid of the html tags from the API output. Looks clunky to keep it in
      * @param htmlIn
      * @return
      */
