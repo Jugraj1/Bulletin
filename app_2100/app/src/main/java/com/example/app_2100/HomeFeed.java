@@ -206,18 +206,18 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         // get the user profile pic
 //        Log.d(TAG, CurrentUser.getCurrent().toString());
 
-//        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
-//            @Override
-//            public void onPfpLoaded(Bitmap bitmap) {
-//                Log.d("PFP","pfp loaded");
-//                updateProfileImageView(bitmap);
-//            }
-//
-//            @Override
-//            public void onPfpLoadFailed(Exception e) {
-//
-//            }
-//        });
+        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+            @Override
+            public void onPfpLoaded(Bitmap bitmap) {
+                Log.d("PFP","pfp loaded");
+                updateProfileImageView(bitmap);
+            }
+
+            @Override
+            public void onPfpLoadFailed(Exception e) {
+
+            }
+        });
 
 
 //        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
