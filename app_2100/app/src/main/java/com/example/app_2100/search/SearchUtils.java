@@ -3,6 +3,25 @@ package com.example.app_2100.search;
 import java.util.*;
 
 public class SearchUtils {
+
+    public static  <T extends Comparable<T>, K extends Comparable<K>> int getIndexSizeFromTreeRec(AVLTree<FieldIndex<T, K>> tree) {
+
+        int size = 0;
+        if (tree == null)
+            return size;
+
+        int leftSize = 0, rightSize = 0;
+        // traverse the left child
+        if (!(tree.leftNode instanceof AVLTree.EmptyAVL)) {
+            leftSize = getIndexSizeFromTreeRec((AVLTree<FieldIndex<T, K>>) tree.leftNode);
+        }
+        if (!(tree.rightNode instanceof AVLTree.EmptyAVL)) {
+            rightSize = getIndexSizeFromTreeRec((AVLTree<FieldIndex<T, K>>) tree.rightNode);
+        }
+        return leftSize + (size + 1) * tree.value.getIndices().size() + rightSize;
+
+    }
+
     public static <T extends Comparable<T>, K extends Comparable<K>> AVLTree<FieldIndex<T, K>> insertFieldIndex(AVLTree<FieldIndex<T, K>> tree, FieldIndex<T, K> a) {
         if (tree.find(a) == null) {
             tree = tree.insert(a);

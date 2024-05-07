@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         populateFeed(tmTo, tmFrom);
 
     }
+
 
     private void getRelevantPosts(final HomeFeed.OnPostsLoadedListener listener, Timestamp tmTo, Timestamp tmFrom) {
 
@@ -128,10 +130,22 @@ public class SearchResultsActivity extends AppCompatActivity {
                             }
 
 //                            Log.d("structure of tree:", simTree.display(1));
-                            HashSet<String> mostRel =  simTree.max().getIndices();
-                            for (String id : mostRel) {
-                                posts.add(postMap.get(id));
-                            }
+//                            HashSet<String> mostRel =  simTree.max().getIndices();
+//                            for (String id : mostRel) {
+//                                posts.add(postMap.get(id));
+//                            }
+                            int topN = 3;
+                            List<Post> topNPosts = retrieveTopNPostsFromTree(simTree, postMap, topN);
+                            posts.addAll(topNPosts);
+
+//                            Log.d("structure of tree:", simTree.display(1));
+//                            int topN = 3;
+//                            List<Post> topNPosts = new ArrayList<Post>();
+//
+//                            int curNumPosts = 0;
+//                            HashSet<String> mostRel =  simTree.max().getIndices();
+
+
 
 
                             listener.onPostsLoaded(posts);
@@ -144,6 +158,34 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private List<Post> retrieveTopNPostsFromTree(AVLTree<FieldIndex<Double, String>> simTree, HashMap<String, Post> postMap, int topN) {
+        List<Post> topNPosts = new ArrayList<Post>();
+
+//        int curNumPosts = 0;
+        HashSet<String> mostRel =  simTree.max().getIndices();
+        Log.d("size", String.valueOf(SearchUtils.getIndexSizeFromTreeRec(simTree)));
+        for (int curNumPosts = 0; Math.abs(topN - SearchUtils.getIndexSizeFromTreeRec(simTree)) >= curNumPosts && curNumPosts < topN; curNumPosts++) {
+            for (Iterator<String> iterator = mostRel.iterator(); curNumPosts < topN && iterator.hasNext(); ) {
+                String id = iterator.next();
+                Post curPost = postMap.get(id);
+                if (!iterator.hasNext()) {
+                    if (simTree.delete(simTree.max()) instanceof AVLTree.EmptyAVL) {
+                        return topNPosts;
+                    } else {
+                        simTree = (AVLTree<FieldIndex<Double, String>>) simTree.delete(simTree.max());
+                    }
+                } else {
+                    curNumPosts++;
+                    iterator.remove();
+                }
+                topNPosts.add(curPost);
+            }
+
+            mostRel = simTree.max().getIndices();
+        }
+        return topNPosts;
     }
 
     private int getMonth(String month) {

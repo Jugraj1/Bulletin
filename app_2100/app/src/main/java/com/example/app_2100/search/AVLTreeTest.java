@@ -6,6 +6,8 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
+import android.util.Log;
+
 public class AVLTreeTest {
     /*
         For feedback, we have provided you with a visualisation of what your implementation 'should' look like.
@@ -513,5 +515,26 @@ public class AVLTreeTest {
         // Simple usage
         List<String> result = SearchUtils.findTopNSimilarTexts(query, texts, 4);
         System.out.println(result);
+    }
+
+    @Test(timeout = 1000)
+    public void getIndexSizeFromTreeRecTest() {
+        FieldIndex<Date, Integer> d1 = new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 0);
+        AVLTree<FieldIndex<Date, Integer>> datesAVL = new AVLTree<>(d1);
+        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.MARCH, 1), 2));
+        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.JUNE, 1), 3));
+        System.out.println(datesAVL.display(1));
+
+        System.out.println("Test merge insert");
+        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 1));
+        System.out.println(datesAVL.display(1));
+
+        System.out.println("Test new insert");
+        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.SEPTEMBER, 30), 3));
+        System.out.println(datesAVL.display(1));
+
+        System.out.println(SearchUtils.getIndexSizeFromTreeRec(datesAVL));
+
+
     }
 }
