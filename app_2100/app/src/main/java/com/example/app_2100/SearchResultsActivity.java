@@ -27,6 +27,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -79,6 +81,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private void getRelevantPosts(final HomeFeed.OnPostsLoadedListener listener, Timestamp tmTo, Timestamp tmFrom) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Post> postMap = new HashMap<>();
 //        Log.d("Time to", String.valueOf(tmTo.toDate()));
 
         db.collection("posts")
@@ -92,7 +95,17 @@ public class SearchResultsActivity extends AppCompatActivity {
                             Map<String, Object> currData;
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 currData = document.getData();
-                                posts.add(new Post(
+//                                posts.add(new Post(
+//                                        document.getId(),
+//                                        currData.get("title"),
+//                                        currData.get("body"),
+//                                        currData.get("author"),
+//                                        currData.get("publisher"),
+//                                        currData.get("sourceURL"),
+//                                        currData.get("timeStamp")
+//                                ));
+
+                                Post curPost = new Post(
                                         document.getId(),
                                         currData.get("title"),
                                         currData.get("body"),
@@ -100,7 +113,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                                         currData.get("publisher"),
                                         currData.get("sourceURL"),
                                         currData.get("timeStamp")
-                                ));
+                                );
 
                                 double titleSimilarity = SearchUtils.getTextsSimilarity((String) currData.get("title"), queryTitle);
                                 FieldIndex<Double, String> simIndex = new FieldIndex<Double, String>(titleSimilarity, document.getId());
@@ -108,14 +121,18 @@ public class SearchResultsActivity extends AppCompatActivity {
                                 if (simTree == null) {
                                     simTree = new AVLTree<FieldIndex<Double, String>>(simIndex);
                                 } else {
-                                        simTree = SearchUtils.insertFieldIndex(simTree, simIndex);
-
+                                    simTree = SearchUtils.insertFieldIndex(simTree, simIndex);
                                 }
-
+                                postMap.put(curPost.getID(), curPost);
 
                             }
 
 //                            Log.d("structure of tree:", simTree.display(1));
+                            HashSet<String> mostRel =  simTree.max().getIndices();
+                            for (String id : mostRel) {
+                                posts.add(postMap.get(id));
+                            }
+
 
                             listener.onPostsLoaded(posts);
                         } else {
@@ -123,6 +140,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+
 
 
     }
