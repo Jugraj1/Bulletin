@@ -1,6 +1,10 @@
 package com.example.app_2100;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +16,9 @@ import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -20,10 +27,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 public class ProfileViewer extends AppCompatActivity {
     private FirebaseFirestore db;
     private String loggedInUserID;
     private int currentTab = 0;
+
+
+    private User user;
+
+
+    CurrentUser currUser;
+
 
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
@@ -31,11 +46,13 @@ public class ProfileViewer extends AppCompatActivity {
         }
     };
 
+
     public void updatePosts(int tab){
         //Clear the layout before populating
         ScrollView scrollView1 = findViewById(R.id.scrollView1);
         LinearLayout scrollViewChildLayout = (LinearLayout) scrollView1.getChildAt(0);
         scrollViewChildLayout.removeAllViews();
+
 
         currentTab = tab;
         Log.d("ProfileViewer mytablayoutlistner", "current tab is " + currentTab);
@@ -67,36 +84,39 @@ public class ProfileViewer extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_viewer);
 
-        db = FirebaseFirestore.getInstance();
-        loggedInUserID = CurrentUser.getCurrent().getUserID();
 
-        User user = new User(getIntent().getStringExtra("authorID"), new FirestoreCallback() {
+        db = FirebaseFirestore.getInstance();
+
+
+        String authorID = getIntent().getStringExtra("authorID");
+
+
+        // Fetch user details from Firestore using authorID
+        user = new User(authorID, new FirestoreCallback() {
             @Override
             public void onUserLoaded(String fName, String lName, String empty) {
                 Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
 
+
                 TextView nameTextView = findViewById(R.id.Name);
                 nameTextView.setText(fName);
+
 
                 TextView lastNameTextView = findViewById(R.id.LName);
                 lastNameTextView.setText(lName);
 
+
+                // Update profile image
+                updateProfilePic(authorID);
             }
         });
 
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-
-//        Update textviews with names
-
-//
-        // Get Author from extra
-        String authorID = getIntent().getStringExtra("authorID");
 
         // Set onClickListener for Home Button
         Button homeButton = findViewById(R.id.homeButton);
@@ -105,18 +125,22 @@ public class ProfileViewer extends AppCompatActivity {
             startActivity(intent);
         });
 
+
         // Set onClickListener for Follow Button
         Button followButton = findViewById(R.id.Follow);
-//        followButton.setOnClickListener(view -> followAuthor(authorID));
+        // Remove onClickListener for followButton
+        // followButton.setOnClickListener(view -> followAuthor(authorID));
 
-//        TABS IMPLEMENTATION
+
         TabLayout myTabLayout = findViewById(R.id.tabLayout);
+
 
         myTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 updatePosts(tab.getPosition());
             }
+
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
@@ -127,13 +151,17 @@ public class ProfileViewer extends AppCompatActivity {
                 // Handle tab reselected event if needed
             }});
 
-        updatePosts(0);
 
+        updatePosts(0);
     }
+
+
+
 
     private List<Post> getPosts(){
         List<Post> returnPostsList = new ArrayList<Post>();
         String authorID = getIntent().getStringExtra("authorID");
+
 
         // Query Firebase for posts by that user
         Query postsQuery = db.collection("posts").whereEqualTo("author", authorID);
@@ -162,6 +190,7 @@ public class ProfileViewer extends AppCompatActivity {
         return returnPostsList;
     }
 
+
     private void updateUIWithPosts(List<Post> posts) {
         LinearLayout layoutToPopulate = null;
         // Determine which ScrollView to use
@@ -179,10 +208,12 @@ public class ProfileViewer extends AppCompatActivity {
         }
     }
 
+
     private void addPostToLayout(Post post, ScrollView layout) {
         // Create a LinearLayout to hold the post content
         LinearLayout postLayout = new LinearLayout(ProfileViewer.this);
         postLayout.setOrientation(LinearLayout.VERTICAL);
+
 
         // Create TextView for post title
         TextView titleTextView = new TextView(ProfileViewer.this);
@@ -194,12 +225,14 @@ public class ProfileViewer extends AppCompatActivity {
         titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
         titleTextView.setTypeface(titleTextView.getTypeface(), Typeface.BOLD); // Make text bold
 
+
         // Create TextView for post date
         TextView dateTextView = new TextView(ProfileViewer.this);
         dateTextView.setText(post.getFormattedDateTime());
         dateTextView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
+
 
         // Add title and date TextViews to the postLayout with space in between
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -209,8 +242,10 @@ public class ProfileViewer extends AppCompatActivity {
         postLayout.addView(titleTextView);
         postLayout.addView(dateTextView, layoutParams);
 
+
         // Set onClickListener for the postLayout
         postLayout.setOnClickListener(view -> onItemClick(post));
+
 
         // Add the postLayout to the ScrollView's child layout with space between posts
         LinearLayout scrollViewChildLayout = (LinearLayout) layout.getChildAt(0);
@@ -220,6 +255,7 @@ public class ProfileViewer extends AppCompatActivity {
         postLayoutParams.setMargins(0, 0, 0, 32); // Add bottom margin for space between posts
         scrollViewChildLayout.addView(postLayout, postLayoutParams);
     }
+
 
     private void displayFollowingUsersOfAuthor(String authorID, ScrollView scrollView) {
         // Retrieve the list of user IDs the profile is following
@@ -231,6 +267,7 @@ public class ProfileViewer extends AppCompatActivity {
                         LinearLayout linearLayout = new LinearLayout(ProfileViewer.this);
                         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
+
                         for (String userID : following) {
                             // Retrieve user details
                             db.collection("users").document(userID).get()
@@ -239,8 +276,10 @@ public class ProfileViewer extends AppCompatActivity {
                                         LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
                                         userLayout.setOrientation(LinearLayout.VERTICAL);
 
+
                                         String firstName = userDocument.getString("firstName");
                                         String lastName = userDocument.getString("lastName");
+
 
                                         // Display user details in a TextView
                                         TextView userTextView = new TextView(ProfileViewer.this);
@@ -252,6 +291,7 @@ public class ProfileViewer extends AppCompatActivity {
                                         userTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
                                         userTextView.setTypeface(userTextView.getTypeface(), Typeface.BOLD); // Make text bold
 
+
                                         // Add space between user details
                                         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                                                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -259,12 +299,15 @@ public class ProfileViewer extends AppCompatActivity {
                                         layoutParams.setMargins(0, 16, 0, 0); // Add top margin for space
                                         userLayout.addView(userTextView, layoutParams);
 
+
                                         // Important for re-opening profileViewer with the new user as the subject
                                         // Onclick listener for the user in question
                                         userLayout.setOnClickListener(v -> openProfileViewer(userID));
 
+
                                         // Add the userLayout to the LinearLayout
                                         linearLayout.addView(userLayout);
+
 
                                         // Add space between user layouts
                                         LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
@@ -282,6 +325,7 @@ public class ProfileViewer extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve following list.", Toast.LENGTH_SHORT).show());
     }
 
+
     // Intent to view profile of the clicked user
     private void openProfileViewer(String userID) {
         Intent profileViewerIntent = new Intent(ProfileViewer.this, ProfileViewer.class);
@@ -289,12 +333,14 @@ public class ProfileViewer extends AppCompatActivity {
         startActivity(profileViewerIntent);
     }
 
+
     // Intent back to PostView
     private void onItemClick(Post post) {
         Intent postViewIntent = new Intent(ProfileViewer.this, PostViewActivity.class);
         postViewIntent.putExtra("post", post);
         startActivity(postViewIntent);
     }
+
 
     // Method to follow the profile's Author
     private void followAuthor(String authorID) {
@@ -322,4 +368,78 @@ public class ProfileViewer extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve user profile.", Toast.LENGTH_SHORT).show());
     }
+
+
+    private void createProfilePic() {
+//        Bitmap squareImageBitmap = createDummyBitmap(200, 200); // get the user profile pic
+//        Log.d(TAG, CurrentUser.getCurrent().toString());
+
+
+        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+            @Override
+            public void onPfpLoaded(Bitmap bitmap) {
+                Log.d("PFP", "pfp loaded");
+                updateProfileImageView(bitmap);
+            }
+
+
+            @Override
+            public void onPfpLoadFailed(Exception e) {
+
+
+            }
+        });
+    }
+
+
+    private void updateProfilePic(String authorID) {
+        // Fetch profile picture from Firestore using authorID
+        new User(authorID, new FirestoreCallback() {
+            @Override
+            public void onUserLoaded(String fName, String lName, String empty) {
+                user.dlProfilePicBitmap(ProfileViewer.this.getApplicationContext(), new User.PfpLoadedCallback() {
+                    @Override
+                    public void onPfpLoaded(Bitmap bitmap) {
+                        // Update profile image view
+                        updateProfileImageView(bitmap);
+                    }
+
+
+                    @Override
+                    public void onPfpLoadFailed(Exception e) {
+                        // Handle failure to load profile picture
+                    }
+                });
+            }
+        });
+    }
+
+
+
+
+
+
+    private void updateProfileImageView(Bitmap immutableBitmap) {
+        Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(pfpImageBitmap);
+        Paint paint = new Paint();
+
+
+        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+        canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+
+
+        // get the element
+        ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
+
+
+        profileImg.setImageBitmap(pfpImageBitmap);
+    }
+
+
+
+
+
+
 }
