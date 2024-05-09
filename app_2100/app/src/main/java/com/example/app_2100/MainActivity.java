@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 //        FirebaseAuth.getInstance().signOut();
 
 //        generateUsers(25);
-//        generatePosts(100);
+        generatePosts(1);
 
         if(currentUser != null) { // user is logged in already
             startActivity(new Intent(MainActivity.this, HomeFeed.class));

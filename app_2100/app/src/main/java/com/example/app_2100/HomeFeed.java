@@ -151,6 +151,14 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
                         Map<String, Object> currData;
                         for (QueryDocumentSnapshot document : documentSnapshots) {
                             currData = document.getData();
+//                            Log.d(TAG, "Post {" +
+//                                    "title='" + currData.get("title") + '\'' +
+//                                    ", authorID='" + currData.get("author") + '\'' +
+//                                    ", likes=" + currData.get("likes").toString() +
+//                                    ", score=" + currData.get("score") +
+//                                   ", url='" + currData.get("url") + '\'' +
+//                                    ", timeStamp=" + currData.get("timeStamp") +
+//                                    '}');
                             posts.add(new Post(
                                     document.getId(),
                                     currData.get("title"),

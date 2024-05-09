@@ -15,6 +15,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class Post implements Parcelable {
     private String sourceURL;
     private Timestamp timeStamp;
     private Date dateTime;
+
+    private double score;
+    private List<String> likes;
 
     private Boolean isLikedByCurrUser;
     private Boolean isSharedByCurrUser;
@@ -46,6 +50,8 @@ public class Post implements Parcelable {
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
         this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
+        this.score = 0;
+        this.likes = new ArrayList<>();
         db = FirebaseFirestoreConnection.getDb();
         ref = db.collection("posts").document(this.ID);
         isLikedByCurrUser = false;
@@ -55,17 +61,11 @@ public class Post implements Parcelable {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        if (document.get("likes") != null){
-                            List<String> likerIDs = (List<String>) document.get("likes");
-                            isLikedByCurrUser = likerIDs.contains(CurrentUser.getCurrent().getUserID());
-//                            Log.d(TAG, "liker by curr from db: "+String.valueOf(isLikedByCurrUser));
-//                            if (likerIDs != null){
-//
-//                            } else {
-//                                isLikedByCurrUser = false; // post doesnt have any likes - therefore this user cant be one of the likers
-//                            }
-                        } else {
-                            isLikedByCurrUser = false;
+                        score = (double) document.get("score");
+
+                        if (likes != null){
+                            likes = (List<String>) document.get("likes");
+                            isLikedByCurrUser = likes.contains(CurrentUser.getCurrent().getUserID());
                         }
 //
                     } else {
@@ -164,6 +164,8 @@ public class Post implements Parcelable {
                 ", body='" + body + '\'' +
                 ", authorID='" + authorID + '\'' +
                 ", authorName='" + authorName + '\'' +
+                ", likes=" + likes.toString() +
+                ", score=" + String.valueOf(score) +
                 ", publisher='" + publisher + '\'' +
                 ", sourceURL='" + sourceURL + '\'' +
                 ", timeStamp=" + timeStamp +
