@@ -98,6 +98,9 @@ public class Post implements Parcelable {
 
     public void toggleLike(String likerID){
 //        Log.d(TAG, String.valueOf(isLikedByCurrUser));
+
+        // update score
+
         if (isLikedByCurrUser){
             ref.update("likes", FieldValue.arrayRemove(likerID))
                 .addOnFailureListener(new OnFailureListener() {

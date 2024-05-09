@@ -12,6 +12,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,8 @@ public class CreatePost extends AppCompatActivity {
             post.put("body", content);
             post.put("author", CurrentUser.getCurrent().getUserID());
             post.put("timeStamp", new Timestamp(new Date()));
+            post.put("likes", Collections.emptyList()); // empty likes arr, we need it to exist so we can OrderBy
+            post.put("score", 0.0); // empty likes arr, we need it to exist so we can OrderBy
 
 
             // Add to "posts" collection in firestore

@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,7 +142,7 @@ public class PostGenerator {
                         for (int i = 0; i < nPosts; i++) {
                             // generate post
                             User user = getRandomUser(); // set to random user
-                            getAPIOutput(rand.nextInt(4), new ProcessedAPIResCallback(){
+                            getAPIOutput(rand.nextInt(4)+1, new ProcessedAPIResCallback(){
                                 @Override
                                 public void onResProcessed(String title, String body) {
                                     Log.d(TAG, "body after: "+body);
@@ -152,6 +153,8 @@ public class PostGenerator {
                                     post.put("body", body);
                                     post.put("author", user.getUserID());
                                     post.put("timeStamp", createTimestamp());
+                                    post.put("likes", Collections.emptyList());
+                                    post.put("score", 0.0);
 
                                     uploadPost(post);
                                 }
