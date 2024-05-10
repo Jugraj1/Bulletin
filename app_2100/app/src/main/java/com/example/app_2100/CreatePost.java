@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -90,42 +91,51 @@ public class CreatePost extends AppCompatActivity {
             CollectionReference postsCollection = db.collection("posts");
             postsCollection.add(post)
                     .addOnSuccessListener(documentReference -> {
+
+
+//                        Log.d(TAG, uploadedPost.toString());
+//
+//                        Log.d(TAG, "Created post!");
+                        Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
+
+                        Intent postViewIntent = new Intent(this, PostViewActivity.class);
+                        Context context = this;
+
+
                         String authorID = documentReference.getId();
                         Post uploadedPost = new Post(
-                                authorID, //
+                                authorID,
                                 title,
                                 content,
                                 currUserID,
                                 publisher,
                                 url,
                                 currTime,
-                                postLoadCallback
-                        );
+                                new PostLoadCallback() {
+                                    @Override
+                                    public void onPostLoaded(Post loadedPost) {
+                                        postViewIntent.putExtra("post", loadedPost);
 
-                        Log.d(TAG, uploadedPost.toString());
+                                        postViewIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                        Log.d(TAG, "Created post!");
-                        Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
+                                        PendingIntent pendingIntent = PendingIntent.getActivity(
+                                                context, 0,
+                                                postViewIntent,
 
-                        Intent postViewIntent = new Intent(this, PostViewActivity.class);
-                        postViewIntent.putExtra("post", uploadedPost);
+                                                PendingIntent.FLAG_UPDATE_CURRENT
+                                        );
+                                        NewPostNotificationData data = new NewPostNotificationData(loadedPost, NotificationType.NEW_POST, pendingIntent);
 
-                        postViewIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                        PendingIntent pendingIntent = PendingIntent.getActivity(
-                                this, 0,
-                                postViewIntent,
-//                                PendingIntent.FLAG_IMMUTABLE
-                                PendingIntent.FLAG_UPDATE_CURRENT
-                        );
-                        NewPostNotificationData data = new NewPostNotificationData(uploadedPost, NotificationType.NEW_POST, pendingIntent);
-
-                        Notification postCreatedNotif = NotificationFactory.createNotification(data);
+                                        Notification postCreatedNotif = NotificationFactory.createNotification(data);
 //                        notificationManager.notify(2, postCreatedNotif.getNotificationBuilder().build());
-                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build()); // create notification
+                                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build()); // create notification
 
-                        startActivity(postViewIntent); // go to the post they just created
-                        finish(); // Finish the activity after creating the post
+                                        startActivity(postViewIntent); // go to the post they just created
+                                        finish(); // Finish the activity after creating the post
+                                    }
+                                }
+                        );
+
                     })
                     .addOnFailureListener(e -> {
                         // boohoo
