@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.app_2100.notification.Notification;
+import com.example.app_2100.notification.NotificationFactory;
+import com.example.app_2100.notification.NotificationType;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -70,6 +73,9 @@ public class CreatePost extends AppCompatActivity {
                     .addOnSuccessListener(documentReference -> {
                         // check success
                         Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
+
+                        Notification postCreatedNotif = NotificationFactory.createNotification(NotificationType.POST_PUBLISHED);
+                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build());
                         finish(); // Finish the activity after creating the post
                     })
                     .addOnFailureListener(e -> {

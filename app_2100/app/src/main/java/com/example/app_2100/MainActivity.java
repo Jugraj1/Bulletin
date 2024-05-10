@@ -53,8 +53,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private static NotificationManager notificationManager;
+    public static NotificationManager getNotificationManager(){
+        return notificationManager;
+    }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is not in the Support Library.
@@ -65,13 +68,15 @@ public class MainActivity extends AppCompatActivity {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
+
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this.
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
 
             Notification notif = NotificationFactory.createNotification(NotificationType.NEW_POST);
 
+            // we need this for android 13 (api 33) and above
             if (ContextCompat.checkSelfPermission(
                     this, Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED) {
@@ -80,19 +85,15 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.POST_NOTIFICATIONS)) {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected, and what
-                // features are disabled if it's declined. In this UI, include a
-                // "cancel" or "no thanks" button that lets the user continue
-                // using your app without granting the permission.
-//                showInContextUI(...);
-                // tell user to fuck themselves
+                // do stuff
             } else {
                 Log.d(TAG, "no perm");
                 // You can directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionLauncher.launch(
-                        Manifest.permission.POST_NOTIFICATIONS);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // for api 33 +
+                    requestPermissionLauncher.launch(
+                            Manifest.permission.POST_NOTIFICATIONS);
+                }
             }
 
             Log.d(TAG, "sending notif");
