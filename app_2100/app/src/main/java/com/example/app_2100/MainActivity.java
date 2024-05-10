@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
 
-            Notification notif = NotificationFactory.createNotification(NotificationType.NEW_POST);
+//            Notification notif = NotificationFactory.createNotification(NotificationType.NEW_POST);
 
             // we need this for android 13 (api 33) and above
             if (ContextCompat.checkSelfPermission(
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Log.d(TAG, "sending notif");
-            notificationManager.notify(1, notif.getNotificationBuilder().build());
+//            notificationManager.notify(1, notif.getNotificationBuilder().build());
         }
     }
 

@@ -41,6 +41,24 @@ public class Post implements Parcelable {
     private String TAG = "Post";
     private PostLoadCallback postLoadCallback;
 
+    /***
+     * For CreatePost
+     * @param title
+     * @param body
+     * @param authorID
+     * @param publisher
+     * @param sourceURL
+     * @param timeStamp
+     */
+    public Post(String title, String body, String authorID, String publisher, String sourceURL, Timestamp timeStamp){
+        this.title = title;
+        this.body = body;
+        this.authorID = authorID;
+        this.publisher = publisher;
+        this.sourceURL = sourceURL;
+        this.timeStamp = timeStamp;
+    }
+
     public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp, PostLoadCallback callback){
         this.ID = (String) ID;
         this.title = (String) title;
