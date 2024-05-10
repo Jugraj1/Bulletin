@@ -3,6 +3,7 @@ package com.example.app_2100;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -60,12 +61,10 @@ public class CreatePost extends AppCompatActivity {
 
         // OnClick Listener
         createButton.setOnClickListener(v -> {
-
             String title = titleEditText.getText().toString().trim();
             String publisher = publisherEditText.getText().toString().trim();
             String url = urlEditText.getText().toString().trim();
             String content = contentEditText.getText().toString().trim();
-
 
             // Check Fields
             if (title.isEmpty() || publisher.isEmpty() || url.isEmpty() || content.isEmpty()) {
@@ -73,31 +72,59 @@ public class CreatePost extends AppCompatActivity {
                 return;
             }
 
-            currPost = new Post(title, content, CurrentUser.getCurrent().getUserID(), publisher, url, new Timestamp(new Date()));
             // Generate Post Data
             Map<String, Object> post = new HashMap<>();
-            post.put("title", currPost.getTitle());
-            post.put("publisher", currPost.getPublisher());
-            post.put("url", currPost.getSourceURL());
-            post.put("body", currPost.getBody());
-            post.put("author", currPost.getAuthorID());
-            post.put("timeStamp", currPost.getTimeStamp());
+            Timestamp currTime = new Timestamp(new Date());
+            String currUserID = CurrentUser.getCurrent().getUserID();
+
+            post.put("title", title);
+            post.put("publisher", publisher);
+            post.put("url", url);
+            post.put("body", content);
+            post.put("author", currUserID);
+            post.put("timeStamp", currTime);
             post.put("likes", Collections.emptyList()); // empty likes arr, we need it to exist so we can OrderBy
             post.put("score", 0.0); // empty likes arr, we need it to exist so we can OrderBy
-
 
             // Add to "posts" collection in firestore
             CollectionReference postsCollection = db.collection("posts");
             postsCollection.add(post)
                     .addOnSuccessListener(documentReference -> {
+                        String authorID = documentReference.getId();
+                        Post uploadedPost = new Post(
+                                authorID, //
+                                title,
+                                content,
+                                currUserID,
+                                publisher,
+                                url,
+                                currTime,
+                                postLoadCallback
+                        );
+
+                        Log.d(TAG, uploadedPost.toString());
+
                         Log.d(TAG, "Created post!");
                         Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
-                        NewPostNotificationData data = new NewPostNotificationData(currPost, NotificationType.NEW_POST);
+
+                        Intent postViewIntent = new Intent(this, PostViewActivity.class);
+                        postViewIntent.putExtra("post", uploadedPost);
+
+                        postViewIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        PendingIntent pendingIntent = PendingIntent.getActivity(
+                                this, 0,
+                                postViewIntent,
+//                                PendingIntent.FLAG_IMMUTABLE
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        );
+                        NewPostNotificationData data = new NewPostNotificationData(uploadedPost, NotificationType.NEW_POST, pendingIntent);
 
                         Notification postCreatedNotif = NotificationFactory.createNotification(data);
-//                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build());
 //                        notificationManager.notify(2, postCreatedNotif.getNotificationBuilder().build());
-                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build());
+                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build()); // create notification
+
+                        startActivity(postViewIntent); // go to the post they just created
                         finish(); // Finish the activity after creating the post
                     })
                     .addOnFailureListener(e -> {
@@ -111,6 +138,13 @@ public class CreatePost extends AppCompatActivity {
             startActivity(new Intent(CreatePost.this, HomeFeed.class));
         });
     }
+
+    private final PostLoadCallback postLoadCallback = new PostLoadCallback() {
+        @Override
+        public void onPostLoaded(Post post) {
+
+        }
+    };
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because

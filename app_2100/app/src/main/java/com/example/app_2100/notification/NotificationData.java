@@ -1,7 +1,5 @@
 package com.example.app_2100.notification;
 
-import com.example.app_2100.Post;
-
 /***
  * Passed into the notification factory, so the factory can create the desired notification with desired data
  */
