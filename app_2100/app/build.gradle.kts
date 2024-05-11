@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.app_2100"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.example.app_2100"
@@ -39,10 +39,11 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-//    implementation("junit:junit:4.12")
-    implementation("androidx.activity:activity:1.8.0")
-    implementation("junit:junit:4.12")
-//    testImplementation("junit:junit:4.13.2")
+    implementation("androidx.activity:activity:1.7.0")
+    implementation("androidx.fragment:fragment:1.6.0")
+    implementation("androidx.core:core-ktx:1.1.0")
+    implementation("junit:junit:4.12") // for notifications
+    testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
@@ -54,4 +55,7 @@ dependencies {
 
     // Dependency for the Firebase Authentication library
     implementation("com.google.firebase:firebase-auth")
+
+    // Dependency for the Cloud Storage library
+    implementation("com.google.firebase:firebase-storage")
 }

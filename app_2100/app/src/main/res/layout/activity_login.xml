@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/activity_login_et_email"
+        android:id="@+id/activity_create_account_et_email"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginStart="25dp"
@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@id/activity_login_tv_title" />
 
     <EditText
-        android:id="@+id/activity_login_et_password"
+        android:id="@+id/activity_create_account_et_password"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginStart="25dp"
@@ -57,10 +57,10 @@
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/activity_login_et_email" />
+        app:layout_constraintTop_toBottomOf="@id/activity_create_account_et_email" />
 
     <Button
-        android:id="@+id/activity_login_bt_login"
+        android:id="@+id/activity_create_account_bt_create_account"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginStart="25dp"
@@ -72,7 +72,7 @@
         app:layout_constraintBottom_toTopOf="@id/activity_login_tv_noacctxt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/activity_login_et_password" />
+        app:layout_constraintTop_toBottomOf="@id/activity_create_account_et_password" />
 
     <TextView
         android:id="@+id/activity_login_tv_noacctxt"

@@ -23,6 +23,8 @@ public class DateFormatter {
             return formatTimeUnit(days, "day");
         } else if (weeks < 4) {
             return formatTimeUnit(weeks, "week");
+        } else if (months < 12) {
+            return formatTimeUnit(months, "month");
         } else {
             return formatDateFull(date);
         }

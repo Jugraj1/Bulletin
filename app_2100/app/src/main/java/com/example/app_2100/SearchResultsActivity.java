@@ -40,6 +40,13 @@ public class SearchResultsActivity extends AppCompatActivity {
     LinearLayout listView;
     //    ArrayAdapter arrayAdapter;
     Button load;
+
+    private PostLoadCallback postLoadCallback = new PostLoadCallback() {
+        @Override
+        public void onPostLoaded(Post post) {
+
+        }
+    };
     private static final String TAG = "SearchResultsActivity_Screen";
     List<Post> posts = new ArrayList<Post>();
     //    List<Post> topNPosts = new ArrayList<>();
@@ -89,7 +96,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // add to posts
                 int topN = 3;
-                final HomeFeed.OnPostsLoadedListener listener = new HomeFeed.OnPostsLoadedListener() {
+                final OnPostsLoadedListener listener = new OnPostsLoadedListener() {
                     @Override
                     public void onPostsLoaded(List<Post> loadedPosts) {
                         Log.d(TAG, String.valueOf(loadedPosts.size()));
@@ -132,7 +139,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
 
-    private void getRelevantPosts(final HomeFeed.OnPostsLoadedListener listener, Timestamp tmTo, Timestamp tmFrom) {
+    private void getRelevantPosts(final OnPostsLoadedListener listener, Timestamp tmTo, Timestamp tmFrom) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -164,7 +171,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                                         currData.get("author"),
                                         currData.get("publisher"),
                                         currData.get("sourceURL"),
-                                        currData.get("timeStamp")
+                                        currData.get("timeStamp"),
+                                        postLoadCallback
                                 );
 
                                 double titleSimilarity = SearchUtils.getTextsSimilarity((String) currData.get("title"), queryTitle);
@@ -256,7 +264,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private void populateFeed(Timestamp tmTo, Timestamp tmFrom) {
         // query  posts from database
 
-        getRelevantPosts(new HomeFeed.OnPostsLoadedListener() {
+        getRelevantPosts(new OnPostsLoadedListener() {
             @Override
             public void onPostsLoaded(List<Post> loadedPosts) {
                 Log.d(TAG, String.valueOf(loadedPosts.size()));

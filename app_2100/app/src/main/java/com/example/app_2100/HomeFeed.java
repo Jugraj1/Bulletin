@@ -7,11 +7,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -24,22 +27,40 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.Current;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeed extends AppCompatActivity {
+public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     private static final String TAG = "HomeFeed_Screen";
 
     RecyclerView recyclerView;
-    RecylerViewAdapter recylerViewAdapter;
+    RecyclerViewAdapter recylerViewAdapter;
+
     List<Post> posts = new ArrayList<Post>();
+
     boolean isLoading = false;
+    private int postsBatchNum = 0;
+    CurrentUser currUser;
+
+    private PostLoadCallback postLoadCallback = new PostLoadCallback() {
+        @Override
+        public void onPostLoaded(Post post) {
+            recylerViewAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +68,26 @@ public class HomeFeed extends AppCompatActivity {
         setContentView(R.layout.activity_home_feed);
         recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
 
-        populateFeed(); // this does all the recycle view stuff
+        currUser = CurrentUser.getCurrent();
+        currUser.setInitialisationCallback(new InitialisationCallback() {
+            @Override
+            public void onInitialised() {
+                createProfilePic();
 
-        ImageButton profilePicIb = findViewById(R.id.activity_home_feed_ib_profile);
-        profilePicIb.setOnClickListener(v -> {
-            Log.d(TAG, "profile pib ib clicked");
+                ShapeableImageView profilePicIb = findViewById(R.id.activity_home_feed_sv_profile);
+                profilePicIb.setOnClickListener(v -> {
+                    Log.d(TAG, "profile pib is clicked");// forward to profile viewer
+                    Intent profileIntent = new Intent(HomeFeed.this, ProfileViewer.class);
+                    profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
+                    startActivity(profileIntent);
+                });
+            }
         });
 
-        createProfilePic();
+        initAdapter(); // put this here so it waits for posts to be queried
+        initScrollListener();
+
+        populateFeed(); // this does all the recycle view stuff
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
@@ -70,11 +103,6 @@ public class HomeFeed extends AppCompatActivity {
         searchBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
         });
-
-
-
-
-
     }
 
     /***
@@ -82,54 +110,86 @@ public class HomeFeed extends AppCompatActivity {
      */
     private void populateFeed() {
         getPosts(loadedPosts -> {
-            posts.addAll(loadedPosts);
+//            posts.addAll(loadedPosts);
+//            posts.subList(posts.size() - 5, posts.size()).clear();
+//            for (Post p : posts){
+//                Log.d(TAG, p.getID());
+//            }
         });
     }
-
+    Query query;
+    DocumentSnapshot lastVisible = null;
 
     private void getPosts(final OnPostsLoadedListener listener) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        Query query = db.collection("posts")
+//                .orderBy("likes", Query.Direction.DESCENDING)// descending in like count
+//                .limit(10) // 10 posts per batch
+//                .startAfter(postsBatchNum * 10); // start after batch num
 
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        // change to score later
+        if (lastVisible == null){
+            query = db.collection("posts")
+                    .orderBy("score", Query.Direction.DESCENDING)// descending in like count
+                    .limit(15);
+        } else {
+            query = db.collection("posts")
+                    .orderBy("score", Query.Direction.DESCENDING) // descending in like count
+                    .startAfter(lastVisible) // start from prev
+                    .limit(15);
+        }
+
+        query.get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Map<String, Object> currData;
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                currData = document.getData();
-                                posts.add(new Post(
-                                        document.getId(),
-                                        currData.get("title"),
-                                        currData.get("body"),
-                                        currData.get("author"),
-                                        currData.get("publisher"),
-                                        currData.get("sourceURL"),
-                                        currData.get("timeStamp")
-                                ));
-                            }
-                            // call listener with the loaded posts
-
-                            listener.onPostsLoaded(posts);
-                            initAdapter(); // put this here so it waits for posts to be queried
-                            initScrollListener();
-                        } else {
-                            Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        // last visible document
+                        lastVisible = documentSnapshots.getDocuments()
+                                .get(documentSnapshots.size() -1);
+                        // TODO handle when we run out of posts to display (just refresh to top of page or come up with better solution)
+                        Map<String, Object> currData;
+                        for (QueryDocumentSnapshot document : documentSnapshots) {
+                            currData = document.getData();
+//                            Log.d(TAG, "Post {" +
+//                                    "title='" + currData.get("title") + '\'' +
+//                                    ", authorID='" + currData.get("author") + '\'' +
+//                                    ", likes=" + currData.get("likes").toString() +
+//                                    ", score=" + currData.get("score") +
+//                                   ", url='" + currData.get("url") + '\'' +
+//                                    ", timeStamp=" + currData.get("timeStamp") +
+//                                    '}');
+                            posts.add(new Post(
+                                    document.getId(),
+                                    currData.get("title"),
+                                    currData.get("body"),
+                                    currData.get("author"),
+                                    currData.get("publisher"),
+                                    currData.get("sourceURL"),
+                                    currData.get("timeStamp"),
+                                    postLoadCallback
+                            ));
                         }
+                        // call listener with the loaded posts
+                        listener.onPostsLoaded(posts);
+
                     }
                 });
     }
 
-    // interface for the post loaded listener
-    public interface OnPostsLoadedListener {
-        void onPostsLoaded(List<Post> posts);
+    @Override
+    public void onItemClick(int position) {
+//        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+        Intent postViewIntent = new Intent(HomeFeed.this, PostViewActivity.class);
+        postViewIntent.putExtra("post", posts.get(position));
+        Log.d(TAG, posts.get(position).toString());
+        startActivity(postViewIntent);
     }
 
     // initiates RecyclerViewAdapter
     private void initAdapter() {
-        recylerViewAdapter = new RecylerViewAdapter(posts);
+        recylerViewAdapter = new RecyclerViewAdapter(posts);
+        recylerViewAdapter.setOnItemClickListener(this);
         recyclerView.setAdapter(recylerViewAdapter);
     }
 
@@ -138,24 +198,24 @@ public class HomeFeed extends AppCompatActivity {
     // we are showing the loading view and populating the next list
     private void initScrollListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-             @Override
-             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                 super.onScrollStateChanged(recyclerView, newState);
-             }
-             @Override
-             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                 super.onScrolled(recyclerView, dx, dy);
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                 if (!isLoading) {
-                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
-                         // bottom of list!
-                         loadMore();
-                         isLoading = true;
-                     }
-                 }
-             }
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
+                        // bottom of list!
+                        loadMore();
+                        isLoading = true;
+                    }
+                }
+            }
         });
     }
 
@@ -175,27 +235,58 @@ public class HomeFeed extends AppCompatActivity {
     }
 
     private void createProfilePic(){
-        Bitmap squareImageBitmap = createDummyBitmap(200, 200);
+        // get the user profile pic
+//        Log.d(TAG, CurrentUser.getCurrent().toString());
 
-        // Combine square image with circular corner drawable
-        Bitmap roundedImageBitmap = Bitmap.createBitmap(squareImageBitmap.getWidth(), squareImageBitmap.getHeight(), squareImageBitmap.getConfig());
-        Canvas canvas = new Canvas(roundedImageBitmap);
-        Paint paint = new Paint();
-        Drawable drawable = getResources().getDrawable(R.drawable.circular_corner);
-        drawable.setBounds(0, 0, squareImageBitmap.getWidth(), squareImageBitmap.getHeight());
-        drawable.draw(canvas);
-        canvas.drawBitmap(squareImageBitmap, 0f, 0f, paint);
+        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+            @Override
+            public void onPfpLoaded(Bitmap bitmap) {
+                Log.d("PFP","pfp loaded");
+                updateProfileImageView(bitmap);
+            }
 
-        // Set rounded image as background of the ImageButton
-        ImageButton imageButton = findViewById(R.id.activity_home_feed_ib_profile);
-        BitmapDrawable roundedImageDrawable = new BitmapDrawable(getResources(), roundedImageBitmap);
-        imageButton.setBackground(roundedImageDrawable);
+            @Override
+            public void onPfpLoadFailed(Exception e) {
+
+            }
+        });
+
+
+//        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
+//        if (localPfpFile.exists()) {
+//            // file already exists locally, no need to redownload
+//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+//            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
+//        } else {
+//            Log.d(TAG, "Getting profile pic from Firebase Storage");
+//            updateProfileImageView(currUser.getPfpBitmap());
+//            currUser.getProfilePicBitmap(this,
+//                new User.PfpLoadedCallback() {
+//                    @Override
+//                    public void onPfpLoaded(Bitmap bitmap) {
+//                        updateProfileImageView(bitmap);
+//                    }
+//                    @Override
+//                    public void onPfpLoadFailed(Exception e) {
+//                        Log.d(TAG, "pfp load failed");
+//                    }
+//                }
+//            );
+//        }
     }
 
-    private Bitmap createDummyBitmap(int width, int height) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.BLUE);
-        return bitmap;
+    private void updateProfileImageView(Bitmap immutableBitmap) {
+        Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(pfpImageBitmap);
+        Paint paint = new Paint();
+
+        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+        canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+
+        // get the element
+        ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
+
+        profileImg.setImageBitmap(pfpImageBitmap);
     }
 }

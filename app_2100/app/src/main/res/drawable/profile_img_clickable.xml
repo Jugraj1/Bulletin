@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true"
+        android:drawable="@drawable/universal_pressed_background" />
+
+    <item android:state_focused="true"
+        android:drawable="@drawable/universal_pressed_background" /> <!-- focused -->
+    <item android:drawable="@drawable/baseline_favorite_border_24"/> <!-- default -->
+</selector>
