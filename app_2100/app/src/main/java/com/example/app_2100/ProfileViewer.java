@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -18,7 +20,6 @@ import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 public class ProfileViewer extends AppCompatActivity {
     private FirebaseFirestore db;
     private String loggedInUserID;
@@ -36,6 +36,87 @@ public class ProfileViewer extends AppCompatActivity {
     private User user;
     private final static String TAG = "ProfileViewer";
     CurrentUser currUser;
+
+    // for periodically updating:
+    private Handler handler;
+    private final int INTERVAL = 60000;
+
+    private final Runnable refresh = new Runnable()
+    {
+        public void run() {
+            // do the update // maybe use observer for this
+
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+//            recreate();
+
+            ProfileViewer.this.handler.postDelayed(refresh, 5000);
+        }
+
+    };
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_profile_viewer);
+        db = FirebaseFirestore.getInstance();
+        String authorID = getIntent().getStringExtra("authorID");
+
+        // initialise handler for periodic updates
+        handler = new Handler();
+        refresh.run();
+
+
+
+        // Fetch user details from Firestore using authorID
+        user = new User(authorID, new FirestoreCallback() {
+            @Override
+            public void onUserLoaded(String fName, String lName, String empty) {
+                Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
+
+                TextView nameTextView = findViewById(R.id.Name);
+                nameTextView.setText(fName);
+
+                TextView lastNameTextView = findViewById(R.id.LName);
+                lastNameTextView.setText(lName);
+
+                // Update profile image
+                updateProfilePic(authorID);
+            }
+        });
+
+        // Set onClickListener for Home Button
+        Button homeButton = findViewById(R.id.homeButton);
+        homeButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileViewer.this, HomeFeed.class);
+            startActivity(intent);
+        });
+
+        // Set onClickListener for Follow Button
+        Button followButton = findViewById(R.id.Follow);
+        // Remove onClickListener for followButton
+        // followButton.setOnClickListener(view -> followAuthor(authorID));
+
+        TabLayout myTabLayout = findViewById(R.id.tabLayout);
+
+        myTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                updatePosts(tab.getPosition());
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Handle tab unselected event if needed
+            }
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // Handle tab reselected event if needed
+            }});
+
+        updatePosts(0);
+    }
+
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
         public void onPostLoaded(Post post) {
@@ -78,61 +159,6 @@ public class ProfileViewer extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_viewer);
-        db = FirebaseFirestore.getInstance();
-        String authorID = getIntent().getStringExtra("authorID");
-
-        // Fetch user details from Firestore using authorID
-        user = new User(authorID, new FirestoreCallback() {
-            @Override
-            public void onUserLoaded(String fName, String lName, String empty) {
-                Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
-
-                TextView nameTextView = findViewById(R.id.Name);
-                nameTextView.setText(fName);
-
-                TextView lastNameTextView = findViewById(R.id.LName);
-                lastNameTextView.setText(lName);
-
-                // Update profile image
-                updateProfilePic(authorID);
-            }
-        });
-
-        // Set onClickListener for Home Button
-        Button homeButton = findViewById(R.id.homeButton);
-        homeButton.setOnClickListener(view -> {
-            Intent intent = new Intent(ProfileViewer.this, HomeFeed.class);
-            startActivity(intent);
-        });
-
-        // Set onClickListener for Follow Button
-        Button followButton = findViewById(R.id.Follow);
-        // Remove onClickListener for followButton
-        // followButton.setOnClickListener(view -> followAuthor(authorID));
-
-        TabLayout myTabLayout = findViewById(R.id.tabLayout);
-
-        myTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                updatePosts(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // Handle tab unselected event if needed
-            }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // Handle tab reselected event if needed
-            }});
-
-        updatePosts(0);
-    }
 
     private List<Post> getPosts(){
         List<Post> returnPostsList = new ArrayList<Post>();
@@ -369,21 +395,11 @@ public class ProfileViewer extends AppCompatActivity {
         Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
-
-//        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey for click
         paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
         canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
         canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
-
         // get the element
         ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
-
         profileImg.setImageBitmap(pfpImageBitmap);
     }
-
-
-
-
-
-
 }
