@@ -31,21 +31,40 @@
                 android:gravity="center"
                 app:cornerRadius="10dp"
                 android:drawableTop="@drawable/baseline_search_24"
-                android:layout_marginEnd="50dp"
+                android:layout_marginEnd="60dp"
                 android:layout_centerVertical="true"
                 />
 
-            <ImageButton
-                android:id="@+id/activity_home_feed_ib_profile"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+<!--            <ImageButton-->
+<!--                android:id="@+id/activity_home_feed_ib_profile"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_marginEnd="5dp"-->
+<!--                android:gravity="end"-->
+<!--                android:src="@drawable/circular_corner"-->
+<!--                android:contentDescription="Profile picture"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                android:layout_centerVertical="true"/>-->
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/activity_home_feed_sv_profile"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="5dp"
-                android:gravity="end"
-                android:background="@drawable/default_profile_pic"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:contentDescription="Profile picture"
+                android:gravity="end"
+                android:padding="2dp"
                 android:scaleType="centerCrop"
-                android:layout_centerVertical="true"/>
+                app:shapeAppearanceOverlay="@style/ShapeableImageRound"
+                app:srcCompat="@mipmap/ic_launcher"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="1dp" />
 
         </RelativeLayout>
 

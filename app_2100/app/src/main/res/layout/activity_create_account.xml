@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".CreateAccount">
 
-<!--    TODO: Let user upload picture
-        TODO: Cancel Button should go back to  login page, and change color-->
+<!--    TODO: Let user upload picture-->
 
 <!--    Create account Button-->
     <Button
@@ -28,12 +27,13 @@
         android:layout_height="50dp"
         android:layout_marginTop="44dp"
         android:text="Cancel"
-        android:textColor="@color/black"
+        android:textColor="@color/purple"
         android:textSize="18sp"
+        app:backgroundTint="@color/white"
         app:cornerRadius="500px"
         app:layout_constraintStart_toStartOf="@+id/activity_create_account_et_password"
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_password"
-        app:strokeColor="@color/black"
+        app:strokeColor="@color/purple"
         app:strokeWidth="5px" />
 
 <!--    Password Text Field-->

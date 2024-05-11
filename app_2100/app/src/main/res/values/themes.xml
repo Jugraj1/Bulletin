@@ -44,6 +44,8 @@
         <item name="android:background">@null</item>
     </style>
 
-
-
+    <!-- To make the profile pictures round-->
+    <style name="ShapeableImageRound">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
