@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.content.Intent;
@@ -103,6 +104,28 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         Button searchBt = findViewById(R.id.activity_home_feed_bt_search);
         searchBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
+        });
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.activity_home_feed_srl_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the page goes here
+                Log.d(TAG, "REFRESH");
+                // For example, you might want to clear the existing posts list and reload them
+                posts.clear();
+//                recylerViewAdapter.notifyDataSetChanged();
+
+                // Then, fetch new data or reload the existing data
+//                initAdapter(); // put this here so it waits for posts to be queried
+                lastVisible = null;
+                initScrollListener();
+
+                populateFeed(); // this does all the recycle view stuff
+
+                // When the data loading is complete, call setRefreshing(false) to hide the refresh indicator
+                swipeRefreshLayout.setRefreshing(false);
+            }
         });
     }
 
