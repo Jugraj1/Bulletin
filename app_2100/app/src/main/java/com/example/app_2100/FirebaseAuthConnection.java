@@ -150,7 +150,7 @@ public class FirebaseAuthConnection {
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("firstName", firstName);
         newUser.put("lastName", lastName);
-        newUser.put("firstName", Collections.emptyList());
+        newUser.put("following", Collections.emptyList());
 
         FirebaseFirestoreConnection.getDb()
                 .collection("users")
@@ -158,10 +158,10 @@ public class FirebaseAuthConnection {
                 .set(newUser)
                 .addOnSuccessListener(aVoid -> {
                     // update success
-                    Log.d("FirebaseAuthConnection", "User updated successfully");
+                    Log.d("FirebaseAuthConnection", "User creation successfully");
                 }).addOnFailureListener(e -> {
                     // update failed
-                    Log.d("FirebaseAuthConnection", "User update failed: "+e);
+                    Log.d("FirebaseAuthConnection", "User creation failed: "+e);
                 });
     }
 
