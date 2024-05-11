@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -238,18 +239,24 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         // get the user profile pic
 //        Log.d(TAG, CurrentUser.getCurrent().toString());
 
-        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
-            @Override
-            public void onPfpLoaded(Bitmap bitmap) {
-                Log.d("PFP","pfp loaded");
-                updateProfileImageView(bitmap);
+        if (currUser.getPfpBitmap() == null){
+            if (currUser.getLocalPfpFile().exists()){
+                updateProfileImageView(BitmapFactory.decodeFile(currUser.getLocalPfpFile().getAbsolutePath()));
             }
+            currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+                @Override
+                public void onPfpLoaded(Bitmap bitmap) {
+                    updateProfileImageView(bitmap);
+                }
+                @Override
+                public void onPfpLoadFailed(Exception e) {
+                    Log.e(TAG, "Error with loading pfp");
+                }
+            });
+        } else {
+            updateProfileImageView(currUser.getPfpBitmap());
+        }
 
-            @Override
-            public void onPfpLoadFailed(Exception e) {
-
-            }
-        });
 
 
 //        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
@@ -280,7 +287,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
 
-        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+//        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey for click
+        paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
         canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
         canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
 
