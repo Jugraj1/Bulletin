@@ -5,7 +5,6 @@ import android.content.Context;
 import android.util.Log;
 
 public class App extends Application {
-
     private static Context mContext;
 
     @Override

@@ -41,6 +41,24 @@ public class Post implements Parcelable {
     private String TAG = "Post";
     private PostLoadCallback postLoadCallback;
 
+    /***
+     * For CreatePost
+     * @param title
+     * @param body
+     * @param authorID
+     * @param publisher
+     * @param sourceURL
+     * @param timeStamp
+     */
+    public Post(String title, String body, String authorID, String publisher, String sourceURL, Timestamp timeStamp){
+        this.title = title;
+        this.body = body;
+        this.authorID = authorID;
+        this.publisher = publisher;
+        this.sourceURL = sourceURL;
+        this.timeStamp = timeStamp;
+    }
+
     public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp, PostLoadCallback callback){
         this.ID = (String) ID;
         this.title = (String) title;
@@ -75,7 +93,16 @@ public class Post implements Parcelable {
                     Log.d(TAG, "failed to get document: ", task.getException());
                 }
 
-                callback.onPostLoaded(Post.this);
+                User postAuthor = new User((String) authorID, new FirestoreCallback(){
+                    @Override
+                    public void onUserLoaded(String fName, String lName, String pfpLink){
+                        authorName = User.formatName(fName, lName);
+                        Log.d(TAG, "authorName: "+authorName);
+                        callback.onPostLoaded(Post.this);
+                    }
+                });
+
+//                callback.onPostLoaded(Post.this);
             }
         });
 
@@ -164,8 +191,8 @@ public class Post implements Parcelable {
                 ", body='" + body + '\'' +
                 ", authorID='" + authorID + '\'' +
                 ", authorName='" + authorName + '\'' +
-                ", likes=" + likes.toString() +
-                ", score=" + String.valueOf(score) +
+//                ", likes=" + likes.toString() +
+//                ", score=" + String.valueOf(score) +
                 ", publisher='" + publisher + '\'' +
                 ", sourceURL='" + sourceURL + '\'' +
                 ", timeStamp=" + timeStamp +

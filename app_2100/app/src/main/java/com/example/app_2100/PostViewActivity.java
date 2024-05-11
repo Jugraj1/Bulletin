@@ -27,7 +27,9 @@ public class PostViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Post post = (Post) intent.getParcelableExtra("post"); // post is serialised so it can be thrown in intent
 
-        Log.d(TAG, post.toString());
+        if (post != null){
+            Log.d(TAG, post.toString());
+        }
         // Display information in layout
         TextView titleTextView = findViewById(R.id.activity_postView_tv_title);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
