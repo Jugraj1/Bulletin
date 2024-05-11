@@ -2,11 +2,17 @@ package com.example.app_2100;
 
 import android.util.Log;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseAuthConnection {
     // A singleton class to handle all Firebase operations
@@ -15,6 +21,8 @@ public class FirebaseAuthConnection {
     private FirebaseAuthConnection(){
         mAuth = FirebaseAuth.getInstance();
     }
+
+    private static String TAG = "FirebaseAuthConnection";
 
 
 //    DELETE THIS METHOD IF IT IS NOT NEEDED!!!!!!
@@ -113,13 +121,17 @@ public class FirebaseAuthConnection {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // sign in success
-                        String currentUser = CurrentUser.getCurrent().getUserID();
-                        updateAccount(currentUser, firstName, lastName);
+                        String currentUserID = mAuth.getCurrentUser().getUid();
+                        if (currentUserID != null){
+                            updateAccount(currentUserID, firstName, lastName);
+                        } else {
+                            Log.d(TAG, "Currently signed in user is null :(");
+                        }
+
                         callback.onAuthentication(true);
 
                     } else {
                         callback.onAuthentication(false);
-                        return;
                     }
                 });
     }
@@ -133,15 +145,23 @@ public class FirebaseAuthConnection {
      */
     private void updateAccount(String userId, String firstName, String lastName){
         // update the user with the first name and last name
-        List<String> followingList = new ArrayList<>();
-        FirebaseFirestoreConnection.getDb().collection("users").document(userId)
-                .update("firstName", firstName, "lastName", lastName, "following", followingList)
+
+
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("firstName", firstName);
+        newUser.put("lastName", lastName);
+        newUser.put("following", Collections.emptyList());
+
+        FirebaseFirestoreConnection.getDb()
+                .collection("users")
+                .document(userId)
+                .set(newUser)
                 .addOnSuccessListener(aVoid -> {
                     // update success
-                    Log.d("FirebaseAuthConnection", "User updated successfully");
+                    Log.d("FirebaseAuthConnection", "User creation successfully");
                 }).addOnFailureListener(e -> {
                     // update failed
-                    Log.d("FirebaseAuthConnection", "User update failed");
+                    Log.d("FirebaseAuthConnection", "User creation failed: "+e);
                 });
     }
 

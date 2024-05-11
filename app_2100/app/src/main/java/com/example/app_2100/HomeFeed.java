@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,10 +29,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.units.qual.Current;
@@ -49,7 +54,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     List<Post> posts = new ArrayList<Post>();
 
     boolean isLoading = false;
-
+    private int postsBatchNum = 0;
     CurrentUser currUser;
 
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
@@ -81,6 +86,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
             }
         });
 
+        initAdapter(); // put this here so it waits for posts to be queried
+        initScrollListener();
+
         populateFeed(); // this does all the recycle view stuff
 
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
@@ -97,6 +105,28 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         searchBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
         });
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.activity_home_feed_srl_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the page goes here
+                Log.d(TAG, "REFRESH");
+                // For example, you might want to clear the existing posts list and reload them
+                posts.clear();
+//                recylerViewAdapter.notifyDataSetChanged();
+
+                // Then, fetch new data or reload the existing data
+//                initAdapter(); // put this here so it waits for posts to be queried
+                lastVisible = null;
+                initScrollListener();
+
+                populateFeed(); // this does all the recycle view stuff
+
+                // When the data loading is complete, call setRefreshing(false) to hide the refresh indicator
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     /***
@@ -104,43 +134,69 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
      */
     private void populateFeed() {
         getPosts(loadedPosts -> {
-            posts.addAll(loadedPosts);
+//            posts.addAll(loadedPosts);
+//            posts.subList(posts.size() - 5, posts.size()).clear();
+//            for (Post p : posts){
+//                Log.d(TAG, p.getID());
+//            }
         });
     }
-
+    Query query;
+    DocumentSnapshot lastVisible = null;
 
     private void getPosts(final OnPostsLoadedListener listener) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        Query query = db.collection("posts")
+//                .orderBy("likes", Query.Direction.DESCENDING)// descending in like count
+//                .limit(10) // 10 posts per batch
+//                .startAfter(postsBatchNum * 10); // start after batch num
 
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        // change to score later
+        if (lastVisible == null){
+            query = db.collection("posts")
+                    .orderBy("score", Query.Direction.DESCENDING)// descending in like count
+                    .limit(15);
+        } else {
+            query = db.collection("posts")
+                    .orderBy("score", Query.Direction.DESCENDING) // descending in like count
+                    .startAfter(lastVisible) // start from prev
+                    .limit(15);
+        }
+
+        query.get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Map<String, Object> currData;
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                currData = document.getData();
-                                posts.add(new Post(
-                                        document.getId(),
-                                        currData.get("title"),
-                                        currData.get("body"),
-                                        currData.get("author"),
-                                        currData.get("publisher"),
-                                        currData.get("sourceURL"),
-                                        currData.get("timeStamp"),
-                                        postLoadCallback
-                                ));
-                            }
-                            // call listener with the loaded posts
-
-                            listener.onPostsLoaded(posts);
-                            initAdapter(); // put this here so it waits for posts to be queried
-                            initScrollListener();
-                        } else {
-                            Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        // last visible document
+                        lastVisible = documentSnapshots.getDocuments()
+                                .get(documentSnapshots.size() -1);
+                        // TODO handle when we run out of posts to display (just refresh to top of page or come up with better solution)
+                        Map<String, Object> currData;
+                        for (QueryDocumentSnapshot document : documentSnapshots) {
+                            currData = document.getData();
+//                            Log.d(TAG, "Post {" +
+//                                    "title='" + currData.get("title") + '\'' +
+//                                    ", authorID='" + currData.get("author") + '\'' +
+//                                    ", likes=" + currData.get("likes").toString() +
+//                                    ", score=" + currData.get("score") +
+//                                   ", url='" + currData.get("url") + '\'' +
+//                                    ", timeStamp=" + currData.get("timeStamp") +
+//                                    '}');
+                            posts.add(new Post(
+                                    document.getId(),
+                                    currData.get("title"),
+                                    currData.get("body"),
+                                    currData.get("author"),
+                                    currData.get("publisher"),
+                                    currData.get("sourceURL"),
+                                    currData.get("timeStamp"),
+                                    postLoadCallback
+                            ));
                         }
+                        // call listener with the loaded posts
+                        listener.onPostsLoaded(posts);
+
                     }
                 });
     }
@@ -203,21 +259,27 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
     }
 
     private void createProfilePic(){
-//        Bitmap squareImageBitmap = createDummyBitmap(200, 200); // get the user profile pic
+        // get the user profile pic
 //        Log.d(TAG, CurrentUser.getCurrent().toString());
 
-        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
-            @Override
-            public void onPfpLoaded(Bitmap bitmap) {
-                Log.d("PFP","pfp loaded");
-                updateProfileImageView(bitmap);
+        if (currUser.getPfpBitmap() == null){
+            if (currUser.getLocalPfpFile().exists()){
+                updateProfileImageView(BitmapFactory.decodeFile(currUser.getLocalPfpFile().getAbsolutePath()));
             }
+            currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+                @Override
+                public void onPfpLoaded(Bitmap bitmap) {
+                    updateProfileImageView(bitmap);
+                }
+                @Override
+                public void onPfpLoadFailed(Exception e) {
+                    Log.e(TAG, "Error with loading pfp");
+                }
+            });
+        } else {
+            updateProfileImageView(currUser.getPfpBitmap());
+        }
 
-            @Override
-            public void onPfpLoadFailed(Exception e) {
-
-            }
-        });
 
 
 //        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
@@ -248,7 +310,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
 
-        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+//        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey for click
+        paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
         canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
         canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
 
