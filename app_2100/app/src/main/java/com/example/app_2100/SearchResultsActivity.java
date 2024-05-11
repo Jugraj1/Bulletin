@@ -120,7 +120,27 @@ public class SearchResultsActivity extends AppCompatActivity {
                             dateTv.setText(post.getFormattedDateTime());
                             bodyTv.setText(post.getBody());
 
+                            // handle likes
+                            Button likeBt = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
+
+                            if (post.getLikedByCurrUser()) // user has liked the post
+                            {
+                                likeBt.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+                            } else { // user hasnt liked the post yet
+                                likeBt.setBackground(null);
+                            }
+
                             // Set onClickListeners for buttons if needed
+                            likeBt.setOnClickListener(v -> {
+                                Log.d(TAG, "toggling like");
+                                if (post.getLikedByCurrUser()) // user has liked the post, now wants to unlike
+                                {
+                                    likeBt.setBackground(null);
+                                } else { // user hasnt liked the post yet, and wants to like
+                                    likeBt.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+                                }
+                                post.toggleLike(CurrentUser.getCurrent().getUserID());
+                            });
 
                             // Add the post thumbnail to the LinearLayout
                             linearLayout.addView(postThumbnail);
