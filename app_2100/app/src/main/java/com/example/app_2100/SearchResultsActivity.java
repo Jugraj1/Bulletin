@@ -132,6 +132,9 @@ public class SearchResultsActivity extends AppCompatActivity {
                     topNPosts = retrieveTopNPostsFromTree(topN);
                     listener.onPostsLoaded(topNPosts);
                 }
+                if (simTree instanceof AVLTree.EmptyAVL) {
+                    load.setVisibility(View.INVISIBLE);
+                }
 
             }
         });
