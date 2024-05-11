@@ -152,6 +152,10 @@ public class Post implements Parcelable {
     public Boolean getLikedByCurrUser() {
         return isLikedByCurrUser;
     }
+    public void setIsLikedByCurrUser(boolean b) {
+        this.isLikedByCurrUser = b;
+    }
+
 
     public Boolean getSharedByCurrUser() {
         return isSharedByCurrUser;

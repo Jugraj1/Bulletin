@@ -182,6 +182,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 //        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
         Intent postViewIntent = new Intent(HomeFeed.this, PostViewActivity.class);
         postViewIntent.putExtra("post", posts.get(position));
+        postViewIntent.putExtra("yes", posts.get(position).getLikedByCurrUser());
         Log.d(TAG, posts.get(position).toString());
         startActivity(postViewIntent);
     }
@@ -250,29 +251,6 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
             }
         });
-
-
-//        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
-//        if (localPfpFile.exists()) {
-//            // file already exists locally, no need to redownload
-//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
-//            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
-//        } else {
-//            Log.d(TAG, "Getting profile pic from Firebase Storage");
-//            updateProfileImageView(currUser.getPfpBitmap());
-//            currUser.getProfilePicBitmap(this,
-//                new User.PfpLoadedCallback() {
-//                    @Override
-//                    public void onPfpLoaded(Bitmap bitmap) {
-//                        updateProfileImageView(bitmap);
-//                    }
-//                    @Override
-//                    public void onPfpLoadFailed(Exception e) {
-//                        Log.d(TAG, "pfp load failed");
-//                    }
-//                }
-//            );
-//        }
     }
 
     private void updateProfileImageView(Bitmap immutableBitmap) {
