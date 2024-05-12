@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -97,7 +96,7 @@ public class Post implements Parcelable {
                     @Override
                     public void onUserLoaded(String fName, String lName, String pfpLink){
                         authorName = User.formatName(fName, lName);
-                        Log.d(TAG, "authorName: "+authorName);
+//                        Log.d(TAG, "authorName: "+authorName);
                         callback.onPostLoaded(Post.this);
                     }
                 });
@@ -191,6 +190,7 @@ public class Post implements Parcelable {
                 ", body='" + body + '\'' +
                 ", authorID='" + authorID + '\'' +
                 ", authorName='" + authorName + '\'' +
+                ", isLikedByCurrUser=" + isLikedByCurrUser  +
 //                ", likes=" + likes.toString() +
 //                ", score=" + String.valueOf(score) +
                 ", publisher='" + publisher + '\'' +
@@ -260,8 +260,10 @@ public class Post implements Parcelable {
         authorName = in.readString();
         publisher = in.readString();
         sourceURL = in.readString();
-        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
-        dateTime = new Date(timeStamp.getSeconds()*1000);
+//        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
+//        dateTime = new Date(timeStamp.getSeconds()*1000);
+
+        isLikedByCurrUser = in.readByte() != 0;
     }
 
     @Override
@@ -273,7 +275,8 @@ public class Post implements Parcelable {
         dest.writeString(authorName);
         dest.writeString(publisher);
         dest.writeString(sourceURL);
-        dest.writeParcelable(timeStamp, flags);
+        dest.writeByte((byte) (isLikedByCurrUser ? 1 : 0)); // needed for writing bools
+//        dest.writeParcelable(timeStamp, flags);
     }
 
     @Override

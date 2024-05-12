@@ -12,7 +12,7 @@
 
 
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/activity_search_et_search_field"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -61,7 +61,7 @@
         android:gravity="center"
         android:text="Date from"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+        app:layout_constraintTop_toBottomOf="@+id/activity_search_et_search_field" />
 
     <TextView
         android:id="@+id/textView5"
@@ -72,7 +72,7 @@
         android:gravity="center"
         android:text="Date to"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+        app:layout_constraintTop_toBottomOf="@+id/activity_search_et_search_field" />
 
     <TextView
         android:id="@+id/textView2"
