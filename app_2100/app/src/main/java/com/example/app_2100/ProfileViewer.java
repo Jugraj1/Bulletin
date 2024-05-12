@@ -34,25 +34,27 @@ public class ProfileViewer extends AppCompatActivity {
     private String loggedInUserID;
     private int currentTab = 0;
     private User user;
+
+    private String userID;
     private final static String TAG = "ProfileViewer";
     CurrentUser currUser;
 
     // for periodically updating:
     private Handler handler;
-    private final int INTERVAL = 60000;
+    private final int INTERVAL = 6000;
 
     private final Runnable refresh = new Runnable()
     {
         public void run() {
             // do the update // maybe use observer for this
 
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
+//            finish();
+//            overridePendingTransition(0, 0);
+//            startActivity(getIntent());
+//            overridePendingTransition(0, 0);
 //            recreate();
 
-            ProfileViewer.this.handler.postDelayed(refresh, 5000);
+            ProfileViewer.this.handler.postDelayed(refresh, INTERVAL);
         }
 
     };
@@ -61,7 +63,7 @@ public class ProfileViewer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_viewer);
         db = FirebaseFirestore.getInstance();
-        String authorID = getIntent().getStringExtra("authorID");
+        userID = getIntent().getStringExtra("authorID");
 
         // initialise handler for periodic updates
         handler = new Handler();
@@ -69,22 +71,8 @@ public class ProfileViewer extends AppCompatActivity {
 
 
 
-        // Fetch user details from Firestore using authorID
-        user = new User(authorID, new FirestoreCallback() {
-            @Override
-            public void onUserLoaded(String fName, String lName, String empty) {
-                Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
-
-                TextView nameTextView = findViewById(R.id.Name);
-                nameTextView.setText(fName);
-
-                TextView lastNameTextView = findViewById(R.id.LName);
-                lastNameTextView.setText(lName);
-
-                // Update profile image
-                updateProfilePic(authorID);
-            }
-        });
+        // Fetch user details from Firestore using userID
+        createUser(userID);
 
         // Set onClickListener for Home Button
         Button homeButton = findViewById(R.id.homeButton);
@@ -96,7 +84,7 @@ public class ProfileViewer extends AppCompatActivity {
         // Set onClickListener for Follow Button
         Button followButton = findViewById(R.id.Follow);
         // Remove onClickListener for followButton
-        // followButton.setOnClickListener(view -> followAuthor(authorID));
+        // followButton.setOnClickListener(view -> followAuthor(userID));
 
         TabLayout myTabLayout = findViewById(R.id.tabLayout);
 
@@ -117,6 +105,24 @@ public class ProfileViewer extends AppCompatActivity {
         updatePosts(0);
     }
 
+    private void createUser(String userID){
+        user = new User(userID, new FirestoreCallback() {
+            @Override
+            public void onUserLoaded(String fName, String lName, String empty) {
+                Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
+
+                TextView nameTextView = findViewById(R.id.Name);
+                nameTextView.setText(fName);
+
+                TextView lastNameTextView = findViewById(R.id.LName);
+                lastNameTextView.setText(lName);
+
+                // Update profile image
+                updateProfilePic(userID);
+            }
+        });
+    }
+
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
         public void onPostLoaded(Post post) {
@@ -131,9 +137,9 @@ public class ProfileViewer extends AppCompatActivity {
 
         currentTab = tab;
         Log.d("ProfileViewer mytablayoutlistner", "current tab is " + currentTab);
-        String authorID = getIntent().getStringExtra("authorID");
+//        String userID = getIntent().getStringExtra("authorID");
         // Query Firebase for posts by that user
-        Query postsQuery = db.collection("posts").whereEqualTo("author", authorID);
+        Query postsQuery = db.collection("posts").whereEqualTo("author", userID);
         postsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Post> posts = new ArrayList<Post>();
@@ -162,10 +168,10 @@ public class ProfileViewer extends AppCompatActivity {
 
     private List<Post> getPosts(){
         List<Post> returnPostsList = new ArrayList<Post>();
-        String authorID = getIntent().getStringExtra("authorID");
+//        String userID = getIntent().getStringExtra("authorID");
 
         // Query Firebase for posts by that user
-        Query postsQuery = db.collection("posts").whereEqualTo("author", authorID);
+        Query postsQuery = db.collection("posts").whereEqualTo("author", userID);
         postsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Post> posts = new ArrayList<Post>();
@@ -204,7 +210,7 @@ public class ProfileViewer extends AppCompatActivity {
             }
         } else if (currentTab == 1) {
             Log.d("ProfileViewer", "tabhost.get current tab is " + currentTab);
-            displayFollowingUsersOfAuthor(getIntent().getStringExtra("authorID"), scrollView1);
+            displayFollowingUsersOfAuthor(userID, scrollView1);
         }
     }
 
@@ -250,9 +256,9 @@ public class ProfileViewer extends AppCompatActivity {
         scrollViewChildLayout.addView(postLayout, postLayoutParams);
     }
 
-    private void displayFollowingUsersOfAuthor(String authorID, ScrollView scrollView) {
+    private void displayFollowingUsersOfAuthor(String userID, ScrollView scrollView) {
         // Retrieve the list of user IDs the profile is following
-        db.collection("users").document(authorID).get()
+        db.collection("users").document(userID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     List<String> following = (List<String>) documentSnapshot.get("following");
                     if (following != null) {
@@ -260,9 +266,9 @@ public class ProfileViewer extends AppCompatActivity {
                         LinearLayout linearLayout = new LinearLayout(ProfileViewer.this);
                         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-                        for (String userID : following) {
+                        for (String followingUserID : following) {
                             // Retrieve user details
-                            db.collection("users").document(userID).get()
+                            db.collection("users").document(followingUserID).get()
                                     .addOnSuccessListener(userDocument -> {
                                         // New layout to display relevant user details
                                         LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
@@ -290,7 +296,7 @@ public class ProfileViewer extends AppCompatActivity {
 
                                         // Important for re-opening profileViewer with the new user as the subject
                                         // Onclick listener for the user in question
-                                        userLayout.setOnClickListener(v -> openProfileViewer(userID));
+                                        userLayout.setOnClickListener(v -> openProfileViewer(followingUserID));
 
                                         // Add the userLayout to the LinearLayout
                                         linearLayout.addView(userLayout);
@@ -326,7 +332,7 @@ public class ProfileViewer extends AppCompatActivity {
     }
 
     // Method to follow the profile's Author
-    private void followAuthor(String authorID) {
+    private void followAuthor(String userID) {
         // Search for the profile of the logged-in user
         db.collection("users").document(loggedInUserID).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -335,13 +341,13 @@ public class ProfileViewer extends AppCompatActivity {
                         following = new ArrayList<>();
                     }
                     // cant follow yourself
-                    if (authorID.equals(loggedInUserID)){
+                    if (userID.equals(loggedInUserID)){
                         Toast.makeText(ProfileViewer.this, "You cant follow yourself.", Toast.LENGTH_SHORT).show();
                     }
                     // Check to see if not already following
-                    else if (!following.contains(authorID)) {
+                    else if (!following.contains(userID)) {
                         // If not, add it to the list
-                        following.add(authorID);
+                        following.add(userID);
                         db.collection("users").document(loggedInUserID).update("following", following)
                                 .addOnSuccessListener(aVoid -> Toast.makeText(ProfileViewer.this, "You are now following this user.", Toast.LENGTH_SHORT).show())
                                 .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to follow user.", Toast.LENGTH_SHORT).show());
@@ -371,7 +377,7 @@ public class ProfileViewer extends AppCompatActivity {
         });
     }
 
-    private void updateProfilePic(String authorID) {
+    private void updateProfilePic(String userID) {
         if (user.getPfpBitmap() == null){
             if (user.getLocalPfpFile().exists()){
                 updateProfileImageView(BitmapFactory.decodeFile(user.getLocalPfpFile().getAbsolutePath()));
