@@ -1,20 +1,34 @@
 package com.example.app_2100;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.arch.core.executor.ArchTaskExecutor;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.rpc.context.AttributeContext;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -27,6 +41,15 @@ public class CreateAccount extends AppCompatActivity {
     private String passwordString;
     private String firstNameString;
     private String lastNameString;
+
+//    Default profile picture variables
+    private StorageReference storageReference;
+    private String defaultProfilePicture = "1.png";
+    private FirebaseStorage storage;
+    private File localPfpFile;
+
+
+//    ------------------
 
     private static final String TAG = "CreateAccount";
 
@@ -44,7 +67,58 @@ public class CreateAccount extends AppCompatActivity {
 //        Set up the cancel button
         TextView cancelTextView = findViewById(R.id.activity_create_account_bt_cancel);
         cancelTextView.setOnClickListener(v -> cancelButtonPressed());
+
+
+//        Set default profile picture
+        localPfpFile = new File(App.getContext().getCacheDir(), "pfp.png");
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/1.png"
+        );
+        downloadProfilePicture();
+        updateProfileImageView();
+
+
+
     }
+
+    private void updateProfileImageView(){
+        Bitmap immutableBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
+        ShapeableImageView profileImg = findViewById(R.id.activity_create_account_image_view);
+
+
+        Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(pfpImageBitmap);
+        Paint paint = new Paint();
+
+//        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey for click
+        paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
+//        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+        canvas.drawRect(0, 0, profileImg.getWidth(), profileImg.getHeight(), paint);
+        canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+
+//        get element and set the image
+        profileImg.setImageBitmap(pfpImageBitmap);
+    }
+
+
+
+    /**
+     * Download the default profile picture
+     */
+    private void downloadProfilePicture(){
+        storageReference.getFile(localPfpFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>(){
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot){
+                Log.d(TAG, "Successfully downloaded default profile picture");
+            }
+        }).addOnFailureListener(new OnFailureListener(){
+            @Override
+            public void onFailure(Exception e){
+                Log.d(TAG, "Failed to download default profile picture");
+            }
+        });
+    }
+
 
 
     /**

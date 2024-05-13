@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
+//        FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
 //        FirebaseAuth.getInstance().signOut();
 
 //        generateUsers(25);
@@ -43,13 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
+        startActivity(new Intent(MainActivity.this, Login.class));
 
-        if (currentUser != null) { // user is logged in already
-            startActivity(new Intent(MainActivity.this, HomeFeed.class));
-            Log.d(TAG, "logged in already");
-        } else { // no currently logged in user
-            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
-        }
+
+//        if (currentUser != null) { // user is logged in already
+//            startActivity(new Intent(MainActivity.this, HomeFeed.class));
+//            Log.d(TAG, "logged in already");
+//        } else { // no currently logged in user
+//            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
+//        }
     }
 
 
