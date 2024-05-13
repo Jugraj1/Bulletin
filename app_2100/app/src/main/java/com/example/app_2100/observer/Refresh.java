@@ -51,7 +51,7 @@ public class Refresh implements Subject<User> {
     }
 
     private void queryDatabase() {
-        Log.d("Refresh", "currUser: " + currUser.toString());
+//        Log.d("Refresh", "currUser: " + currUser.toString());
         newUser = new User(currUser.getUserID(), new FirestoreCallback() {
             @Override
             public void onUserLoaded(String fName, String lName, String pfpStorageLink) {
@@ -64,7 +64,10 @@ public class Refresh implements Subject<User> {
                     public void OnDataLoaded(Object followingList) {
                         newFollowing = (List<String>) followingList;
 
+                        Log.d("Refresh", "currFollowing: "+currFollowing.toString());
+
                         if (!currFollowing.equals(newFollowing)){
+                            Log.d("Refresh", "newFollowing: "+newFollowing.toString());
                             notify = true;
                         }
 
@@ -73,6 +76,7 @@ public class Refresh implements Subject<User> {
                             notifyAllObservers(newUser);
                             notify = false;
                             currUser = newUser;
+                            currFollowing = newFollowing;
                         }
                     }
                 });

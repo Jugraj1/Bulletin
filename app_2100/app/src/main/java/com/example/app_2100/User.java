@@ -113,11 +113,11 @@ public class User {
                                     pfpRef = storage.getReferenceFromUrl(pfpStorageLink);
 
                                     if (userID.equals(CurrentUser.getCurrent().getUserID())){ // saves doing it unneccesarily.
-                                        Log.d(TAG, "link: "+pfpStorageLink);
+//                                        Log.d(TAG, "link: "+pfpStorageLink);
                                         initProfilePicBitmap();
                                     }
 
-                                    Log.d(TAG, "pfpLink: "+ pfpStorageLink);
+//                                    Log.d(TAG, "pfpLink: "+ pfpStorageLink);
                                 } else {
                                     Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
                                     pfpBitmap = App.drawableToBitmap(vectorDrawable);
@@ -143,7 +143,7 @@ public class User {
 
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
-            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
             this.pfpBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
 
             if (pfpLoadedCallback != null) {

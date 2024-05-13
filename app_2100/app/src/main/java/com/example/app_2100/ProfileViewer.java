@@ -41,37 +41,16 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     private final static String TAG = "ProfileViewer";
     CurrentUser currUser;
 
-    // for periodically updating:
-    private Handler handler;
-    private final int INTERVAL = 6000;
-
-    private final Runnable refresh = new Runnable()
-    {
-        public void run() {
-            // do the update // maybe use observer for this
-//            User newUser = fetchUser(userID);
-//            if (newUser.get)
-//
-
-//            ProfileViewer.this.handler.postDelayed(refresh, INTERVAL);
-        }
-
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_viewer);
         db = FirebaseFirestore.getInstance();
         userID = getIntent().getStringExtra("authorID");
-
-        // initialise handler for periodic updates
-        handler = new Handler();
-//        refresh.run();
+        loggedInUserID = FirebaseAuthConnection.getAuth().getUid();
 
         // Fetch user details from Firestore using userID
         fetchUser(userID);
-
-
 
         // Set onClickListener for Home Button
         Button homeButton = findViewById(R.id.homeButton);
@@ -83,7 +62,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         // Set onClickListener for Follow Button
         Button followButton = findViewById(R.id.Follow);
         // Remove onClickListener for followButton
-        // followButton.setOnClickListener(view -> followAuthor(userID));
+         followButton.setOnClickListener(view -> followAuthor(userID));
 
         TabLayout myTabLayout = findViewById(R.id.tabLayout);
 
@@ -114,19 +93,22 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
             public void onUserLoaded(String fName, String lName, String empty) {
                 Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
 
-                TextView nameTextView = findViewById(R.id.Name);
-                nameTextView.setText(fName);
-
-                TextView lastNameTextView = findViewById(R.id.LName);
-                lastNameTextView.setText(lName);
-
-                // Update profile image
+                // Set the text for firstname, lastname
+                updateUserText();
 
                 initiateRefresh();
 
                 updateProfilePic(userID);
             }
         });
+    }
+
+    private void updateUserText(){
+        TextView nameTextView = findViewById(R.id.Name);
+        nameTextView.setText(user.getFirstName());
+
+        TextView lastNameTextView = findViewById(R.id.LName);
+        lastNameTextView.setText(user.getLastName());
     }
 
     private void initiateRefresh() {
@@ -273,6 +255,59 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
             @Override
             public void OnDataLoaded(Object followingList) {
                 List<String> following = (List<String>) followingList;
+
+                if (following != null) {
+                    // Create a LinearLayout to contain all user layouts
+                    LinearLayout linearLayout = new LinearLayout(ProfileViewer.this);
+                    linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+                    for (String followingUserID : following) {
+                        // Retrieve user details
+                        db.collection("users").document(followingUserID).get()
+                                .addOnSuccessListener(userDocument -> {
+                                    // New layout to display relevant user details
+                                    LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
+                                    userLayout.setOrientation(LinearLayout.VERTICAL);
+
+                                    String firstName = userDocument.getString("firstName");
+                                    String lastName = userDocument.getString("lastName");
+
+                                    // Display user details in a TextView
+                                    TextView userTextView = new TextView(ProfileViewer.this);
+                                    userTextView.setText(firstName + " " + lastName);
+                                    userTextView.setLayoutParams(new ViewGroup.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                                    // Set text properties
+                                    userTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
+                                    userTextView.setTypeface(userTextView.getTypeface(), Typeface.BOLD); // Make text bold
+
+                                    // Add space between user details
+                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    layoutParams.setMargins(0, 16, 0, 0); // Add top margin for space
+                                    userLayout.addView(userTextView, layoutParams);
+
+                                    // Important for re-opening profileViewer with the new user as the subject
+                                    // Onclick listener for the user in question
+                                    userLayout.setOnClickListener(v -> openProfileViewer(followingUserID));
+
+                                    // Add the userLayout to the LinearLayout
+                                    linearLayout.addView(userLayout);
+
+                                    // Add space between user layouts
+                                    LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            16); // Space height
+                                    linearLayout.addView(new Space(ProfileViewer.this), spaceParams);
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve user details.", Toast.LENGTH_SHORT).show());
+                    }
+                    // Add the LinearLayout to the ScrollView
+                    scrollView.removeAllViews();
+                    scrollView.addView(linearLayout);
+                }
             }
         });
 
@@ -352,6 +387,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
 
     // Method to follow the profile's Author
     private void followAuthor(String userID) {
+        Log.d(TAG, "following starting");
         // Search for the profile of the logged-in user
         db.collection("users").document(loggedInUserID).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -367,6 +403,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
                     else if (!following.contains(userID)) {
                         // If not, add it to the list
                         following.add(userID);
+                        Log.d(TAG, "followed");
                         db.collection("users").document(loggedInUserID).update("following", following)
                                 .addOnSuccessListener(aVoid -> Toast.makeText(ProfileViewer.this, "You are now following this user.", Toast.LENGTH_SHORT).show())
                                 .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to follow user.", Toast.LENGTH_SHORT).show());
@@ -435,10 +472,16 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     public void update(User newUser) {
 //        Toast.makeText(ProfileViewer.this, "OBSERVER UPDATED: "+ newUser.toString(), Toast.LENGTH_SHORT).show();
         this.user = newUser;
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(getIntent());
-        overridePendingTransition(0, 0);
-        recreate();
+        updateUserText(); // update name text
+        updatePosts(currentTab);
+//        displayFollowingUsersOfAuthor("", findViewById(R.id.scrollView1)); // update following
+        // update posts
+
+
+//        finish();
+//        overridePendingTransition(0, 0);
+//        startActivity(getIntent());
+//        overridePendingTransition(0, 0);
+//        recreate();
     }
 }
