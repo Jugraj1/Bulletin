@@ -26,10 +26,14 @@ public class Refresh implements Subject<User> {
 
     User currUser;
     List<String> currFollowing;
+    List<String> currPosts;
+
     User newUser;
     List<String> newFollowing;
+    List<String> newPosts;
 
     Boolean notify = false;
+    public static final String TAG = "Refresh";
 
     public Refresh(User user) {
         observers = new ArrayList<>();
@@ -40,9 +44,21 @@ public class Refresh implements Subject<User> {
             @Override
             public void OnDataLoaded(Object followingList) {
                 currFollowing = (List<String>) followingList;
+                Log.d(TAG, "currfollowing toten");
+
+                currUser.getPosts(new DataLoadedListener() {
+                    @Override
+                    public void OnDataLoaded(Object postsList) {
+                        currPosts = (List<String>) postsList;
+                        Log.d(TAG, "currpoosts toten");
+                        start(); // start once starting info is gathered
+                    }
+                });
             }
         });
-        start();
+
+
+
     }
 
     private void start() {
@@ -63,21 +79,27 @@ public class Refresh implements Subject<User> {
                     @Override
                     public void OnDataLoaded(Object followingList) {
                         newFollowing = (List<String>) followingList;
+                        newUser.getPosts(new DataLoadedListener() {
+                            @Override
+                            public void OnDataLoaded(Object postsList) {
 
-                        Log.d("Refresh", "currFollowing: "+currFollowing.toString());
+                                newPosts = (List<String>) postsList;
+                                Log.d("Refresh", "currPosts: "+currPosts.toString());
+                                Log.d("Refresh", "newPosts: "+newPosts.toString());
 
-                        if (!currFollowing.equals(newFollowing)){
-                            Log.d("Refresh", "newFollowing: "+newFollowing.toString());
-                            notify = true;
-                        }
+                                if (!currFollowing.equals(newFollowing) || !currPosts.equals(newPosts)){
+                                    notify = true;
+                                }
 
-//                        Log.d("Refresh", "new user : " + newUser.toString());
-                        if (notify){
-                            notifyAllObservers(newUser);
-                            notify = false;
-                            currUser = newUser;
-                            currFollowing = newFollowing;
-                        }
+                                // Log.d("Refresh", "new user : " + newUser.toString());
+                                if (notify){
+                                    notifyAllObservers(newUser);
+                                    notify = false;
+                                    currUser = newUser;
+                                    currFollowing = newFollowing;
+                                }
+                            }
+                        });
                     }
                 });
             }

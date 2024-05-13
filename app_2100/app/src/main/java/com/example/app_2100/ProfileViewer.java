@@ -199,7 +199,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         if (currentTab == 0) {
             Log.d("ProfileViewer", "tabhost.get current tab is " + currentTab);
             for(Post post: posts){
-                Log.d("ProfileViewer", "post title: " + post.getTitle());
+//                Log.d("ProfileViewer", "post title: " + post.getTitle());
                 addPostToLayout(post, scrollView1);
             }
         } else if (currentTab == 1) {
@@ -420,7 +420,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
             @Override
             public void onPfpLoaded(Bitmap bitmap) {
-                Log.d("PFP", "pfp loaded");
+//                Log.d("PFP", "pfp loaded");
                 updateProfileImageView(bitmap);
             }
 

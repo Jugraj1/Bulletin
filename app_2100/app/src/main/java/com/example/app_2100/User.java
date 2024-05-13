@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
@@ -28,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -293,6 +295,36 @@ public class User {
                 }
         );
     }
+
+    public void getPosts(DataLoadedListener listener){
+        Query postsQuery = db.collection("posts").whereEqualTo("author", userID);
+        postsQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Post> posts = new ArrayList<Post>();
+                Map<String, Object> currData;
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    currData = document.getData();
+                    posts.add(new Post(
+                            document.getId(),
+                            currData.get("title"),
+                            currData.get("body"),
+                            currData.get("author"),
+                            currData.get("publisher"),
+                            currData.get("sourceURL"),
+                            currData.get("timeStamp"),
+                            new PostLoadCallback() {
+                                @Override
+                                public void onPostLoaded(Post post) {
+
+                                }
+                            }
+                    ));
+                }
+                listener.OnDataLoaded(posts);
+            }
+        });
+    }
+
 
 
     @Override
