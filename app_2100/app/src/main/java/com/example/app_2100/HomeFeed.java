@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -103,6 +105,28 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         searchBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
         });
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.activity_home_feed_srl_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the page goes here
+                Log.d(TAG, "REFRESH");
+                // For example, you might want to clear the existing posts list and reload them
+                posts.clear();
+//                recylerViewAdapter.notifyDataSetChanged();
+
+                // Then, fetch new data or reload the existing data
+//                initAdapter(); // put this here so it waits for posts to be queried
+                lastVisible = null;
+                initScrollListener();
+
+                populateFeed(); // this does all the recycle view stuff
+
+                // When the data loading is complete, call setRefreshing(false) to hide the refresh indicator
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     /***
@@ -182,7 +206,6 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 //        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
         Intent postViewIntent = new Intent(HomeFeed.this, PostViewActivity.class);
         postViewIntent.putExtra("post", posts.get(position));
-        postViewIntent.putExtra("yes", posts.get(position).getLikedByCurrUser());
         Log.d(TAG, posts.get(position).toString());
         startActivity(postViewIntent);
     }
@@ -239,18 +262,47 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         // get the user profile pic
 //        Log.d(TAG, CurrentUser.getCurrent().toString());
 
-        currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
-            @Override
-            public void onPfpLoaded(Bitmap bitmap) {
-                Log.d("PFP","pfp loaded");
-                updateProfileImageView(bitmap);
+        if (currUser.getPfpBitmap() == null){
+            if (currUser.getLocalPfpFile().exists()){
+                updateProfileImageView(BitmapFactory.decodeFile(currUser.getLocalPfpFile().getAbsolutePath()));
             }
+            currUser.dlProfilePicBitmap(this.getApplicationContext(), new User.PfpLoadedCallback() {
+                @Override
+                public void onPfpLoaded(Bitmap bitmap) {
+                    updateProfileImageView(bitmap);
+                }
+                @Override
+                public void onPfpLoadFailed(Exception e) {
+                    Log.e(TAG, "Error with loading pfp");
+                }
+            });
+        } else {
+            updateProfileImageView(currUser.getPfpBitmap());
+        }
 
-            @Override
-            public void onPfpLoadFailed(Exception e) {
 
-            }
-        });
+
+//        File localPfpFile = new File(this.getCacheDir(), "pfp_"+currUser.getUserID()+".jpg");
+//        if (localPfpFile.exists()) {
+//            // file already exists locally, no need to redownload
+//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+//            updateProfileImageView(BitmapFactory.decodeFile(localPfpFile.getAbsolutePath()));
+//        } else {
+//            Log.d(TAG, "Getting profile pic from Firebase Storage");
+//            updateProfileImageView(currUser.getPfpBitmap());
+//            currUser.getProfilePicBitmap(this,
+//                new User.PfpLoadedCallback() {
+//                    @Override
+//                    public void onPfpLoaded(Bitmap bitmap) {
+//                        updateProfileImageView(bitmap);
+//                    }
+//                    @Override
+//                    public void onPfpLoadFailed(Exception e) {
+//                        Log.d(TAG, "pfp load failed");
+//                    }
+//                }
+//            );
+//        }
     }
 
     private void updateProfileImageView(Bitmap immutableBitmap) {
@@ -258,7 +310,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
 
-        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey
+//        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey for click
+        paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
         canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
         canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
 

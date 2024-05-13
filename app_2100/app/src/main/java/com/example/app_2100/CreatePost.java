@@ -121,7 +121,7 @@ public class CreatePost extends AppCompatActivity {
                                         PendingIntent pendingIntent = PendingIntent.getActivity(
                                                 context, 0,
                                                 postViewIntent,
-                                                PendingIntent.FLAG_IMMUTABLE
+                                                PendingIntent.FLAG_UPDATE_CURRENT
                                         );
                                         NewPostNotificationData data = new NewPostNotificationData(loadedPost, NotificationType.NEW_POST, pendingIntent);
 
