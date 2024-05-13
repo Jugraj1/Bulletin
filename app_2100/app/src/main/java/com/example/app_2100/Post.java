@@ -151,6 +151,10 @@ public class Post implements Parcelable {
     public Boolean getLikedByCurrUser() {
         return isLikedByCurrUser;
     }
+    public void setIsLikedByCurrUser(boolean b) {
+        this.isLikedByCurrUser = b;
+    }
+
 
     public Boolean getSharedByCurrUser() {
         return isSharedByCurrUser;
@@ -260,10 +264,10 @@ public class Post implements Parcelable {
         authorName = in.readString();
         publisher = in.readString();
         sourceURL = in.readString();
-//        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
-//        dateTime = new Date(timeStamp.getSeconds()*1000);
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
+        dateTime = new Date(timeStamp.getSeconds()*1000);
 
-        isLikedByCurrUser = in.readByte() != 0;
+//        isLikedByCurrUser = in.readByte() != 0;
     }
 
     @Override
@@ -275,8 +279,8 @@ public class Post implements Parcelable {
         dest.writeString(authorName);
         dest.writeString(publisher);
         dest.writeString(sourceURL);
-        dest.writeByte((byte) (isLikedByCurrUser ? 1 : 0)); // needed for writing bools
-//        dest.writeParcelable(timeStamp, flags);
+//        dest.writeByte((byte) (isLikedByCurrUser ? 1 : 0)); // needed for writing bools
+        dest.writeParcelable(timeStamp, flags);
     }
 
     @Override

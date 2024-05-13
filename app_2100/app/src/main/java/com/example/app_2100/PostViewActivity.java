@@ -6,68 +6,174 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PostViewActivity extends AppCompatActivity {
+
     private Post post;
-    private static String TAG = "PostView";
+    private ArrayList<String> commentsList;
+    private FirebaseFirestore firestore;
+    private Boolean yes;
+
+    private static final String TAG = "PostView";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
 
-        // Retrieve post information from intent (Need to actually get the intent)
         Intent intent = getIntent();
-        Post post = (Post) intent.getParcelableExtra("post"); // post is serialised so it can be thrown in intent
+        post = intent.getParcelableExtra("post");
+        yes = intent.getBooleanExtra("yes", true);
+        post.setIsLikedByCurrUser(yes);
 
-        if (post != null){
-            Log.d(TAG, post.toString());
+        if (post != null) {
+            displayPostDetails();
         }
-        // Display information in layout
-        TextView titleTextView = findViewById(R.id.activity_postView_tv_title);
+
+        firestore = FirebaseFirestore.getInstance();
+        commentsList = new ArrayList<>();
+        ListView listViewComments = findViewById(R.id.Comments);
+        ArrayAdapter<String> commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, commentsList);
+        listViewComments.setAdapter(commentsAdapter);
+
+        CollectionReference commentsRef = firestore.collection("comments");
+        commentsRef.whereEqualTo("parentID", post.getID())
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Error getting comments", error);
+                        return;
+                    }
+
+                    commentsList.clear();
+                    for (QueryDocumentSnapshot document : value) {
+                        String commentText = document.getString("text");
+                        commentsList.add(commentText);
+                    }
+                    commentsAdapter.notifyDataSetChanged();
+                });
+
+        Button addCommentButton = findViewById(R.id.activity_postView_btn_addCom);
+        addCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText commentEditText = findViewById(R.id.activity_postView_et_comment);
+                String commentText = commentEditText.getText().toString().trim();
+
+                if (!commentText.isEmpty()) {
+                    addCommentToFirestore(commentText);
+                    commentEditText.setText("");
+                }
+            }
+        });
+
+        Button likeButton = findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                post.setIsLikedByCurrUser(!post.getLikedByCurrUser());
+                updatePostLikesInFirestore(post.getID(), post.getLikedByCurrUser());
+                updateLikeButtonUI(likeButton, post.getLikedByCurrUser());
+            }
+        });
+
+        // Inside your PostViewActivity class
+
+        Button viewArticleButton = findViewById(R.id.button3);
+        viewArticleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open WebViewActivity and pass the source URL as an extra
+                Intent webViewIntent = new Intent(PostViewActivity.this, ArticleWebViewer.class);
+                webViewIntent.putExtra("url", post.getSourceURL());
+                startActivity(webViewIntent);
+            }
+        });
+
+
+    }
+
+    private void displayPostDetails() {
+        TextView titleTextView = findViewById(R.id.activity_postView_tv_Title);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
         TextView authorTextView = findViewById(R.id.activity_postView_tv_author);
+        authorTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent openProfile = new Intent(PostViewActivity.this, ProfileViewer.class);
+                openProfile.putExtra("authorID", post.getAuthorID());
+                startActivity(openProfile);
+            }
+        });
         TextView dateTextView = findViewById(R.id.activity_postView_tv_timestamp);
-//        Button URLButton = findViewById(R.id.URL);
-        // add a button that leads to the actual post
 
         titleTextView.setText(post.getTitle());
         contentTextView.setText(post.getBody());
         authorTextView.setText(post.getAuthorName());
-//        URLButton.setText(post.getSourceURL());
         dateTextView.setText(post.getFormattedDateTime());
-//        idTextView.setText(post.getID());
-//        publisherTextView.setText(post.getPublisher());
+    }
 
-        // OnClick for post author
-        authorTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start ProfileViewer activity and send authorID as an extra
-                Intent profileIntent = new Intent(PostViewActivity.this, ProfileViewer.class);
-                profileIntent.putExtra("authorID", post.getAuthorID());
-                startActivity(profileIntent);
-            }
-        });
+    private void addCommentToFirestore(String commentText) {
+        CollectionReference commentsRef = firestore.collection("comments");
 
+        Map<String, Object> commentData = new HashMap<>();
+        commentData.put("parentID", post.getID());
+        commentData.put("text", commentText);
 
-        // OnClickListener for the "View Profile"
-        ImageView viewProfileButton = findViewById(R.id.activity_postView_iv_user);
-        viewProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start ProfileViewer activity and send authorID as an extra
-                Intent profileIntent = new Intent(PostViewActivity.this, ProfileViewer.class);
-                profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
-                startActivity(profileIntent);
+        commentsRef.add(commentData)
+                .addOnSuccessListener(documentReference -> Log.d(TAG, "Comment added with ID: " + documentReference.getId()))
+                .addOnFailureListener(e -> Log.w(TAG, "Error adding comment", e));
+    }
+
+    private void updateLikeButtonUI(Button likeButton, boolean isLiked) {
+        if (isLiked) {
+            likeButton.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+        } else {
+            likeButton.setBackground(null);
+        }
+    }
+
+    private void updatePostLikesInFirestore(String postId, boolean likedByCurrentUser) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference postRef = db.collection("posts").document(postId);
+
+        postRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    ArrayList<String> likes = (ArrayList<String>) document.get("likes");
+                    if (likes == null) {
+                        likes = new ArrayList<>();
+                    }
+
+                    String currentUserId = CurrentUser.getCurrent().getUserID();
+                    if (likedByCurrentUser && !likes.contains(currentUserId)) {
+                        likes.add(currentUserId);
+                    } else if (!likedByCurrentUser && likes.contains(currentUserId)) {
+                        likes.remove(currentUserId);
+                    }
+
+                    postRef.update("likes", likes);
+                }
             }
         });
     }
 }
+
+
+
+
