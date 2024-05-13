@@ -3,9 +3,11 @@ package com.example.app_2100;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -50,9 +52,8 @@ public class User {
     public User(String userID, FirestoreCallback callback){
         this.userID = userID;
 
-//        TODO: DO we need this?
-//        I commented this out because it seems unneccessary. undo it if u need it
-//        this.pfpLocalLink = String.format("pfp_%s.jpg", this.userID);
+        this.pfpLocalLink = String.format("pfp_%s.jpg", this.userID);
+        this.localPfpFile = new File(App.getContext().getCacheDir(), "pfp_"+this.userID+".jpg");
 //        this.pfpStorageLink = String.format("gs://app-f4755.appspot.com/pfp/%s.jpg", this.userID);
 
 
@@ -77,10 +78,6 @@ public class User {
         this.lastName =lastName;
     }
 
-//    public FirestoreCallback getUserCallback() {
-//        return userCallback;
-//    }
-
     public void addInitialisationCallback(InitialisationCallback initCallback) {
         if (isInitialised) {
             initCallback.onInitialised();
@@ -90,7 +87,6 @@ public class User {
     }
 
     public void queryUserByID(String userID, FirestoreCallback callback){
-//        CollectionReference usersRef = db.collection("users");
         db.collection("users")
                 .whereEqualTo(FieldPath.documentId(), userID)
                 .get()
@@ -106,11 +102,7 @@ public class User {
                                 String pfpLink = (String) userData.get("pfpStorageLink");
 
 //                                If the pfpLink is null, then set it to the default pfp link
-                                if(pfpLink == "" || pfpLink == null){
-                                    pfpLink = defaultpfpStorageLink;
-                                }
-                                Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
-
+                                // Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
 
                                 firstName = fName;
                                 lastName = lName;
@@ -124,9 +116,12 @@ public class User {
                                     }
 
                                     Log.d(TAG, "pfpLink: "+ pfpStorageLink);
-//                                    Log.d(TAG, "uid: "+userID);
-//                                    Log.d(TAG, "curr:" +CurrentUser.getCurrent().getUserID());
+                                } else {
+                                    Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
+                                    pfpBitmap = App.drawableToBitmap(vectorDrawable);
+//
                                 }
+
 //                                isInitialised = true;
 //                                initCallback.onUserInitialised();
                                 callback.onUserLoaded(fName, lName, pfpLink);
@@ -143,12 +138,7 @@ public class User {
      * handle everything for getting pfp bitmap
      */
     public void initProfilePicBitmap(){
-        Log.d("PFP", "init");
 
-//        This is Hardcoded. CHANGE IT
-        this.localPfpFile = new File(App.getContext().getCacheDir(), "pfp_"+this.userID+".jpg");
-
-        Log.d("PFP", "got file");
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
             Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
@@ -179,11 +169,16 @@ public class User {
         void onPfpLoaded(Bitmap bitmap);
         void onPfpLoadFailed(Exception e);
     }
+
     public void setPfpLoadedCallback(PfpLoadedCallback callback) {
         this.pfpLoadedCallback = callback;
     }
 
     private PfpLoadedCallback pfpLoadedCallback;
+
+    public File getLocalPfpFile(){
+        return this.localPfpFile;
+    }
 
     public void dlProfilePicBitmap(Context context, PfpLoadedCallback callback) { // made public for temp solution to the big async problem (ask noah)
 //        File localFile = File.createTempFile("images", "jpg");
@@ -192,25 +187,24 @@ public class User {
             return;
         }
 
-//        File localFile = new File(context.getCacheDir(), this.pfpLocalLink);
-
-       File localFile = new File(context.getCacheDir(), "pfp_1.jpg");
-
-
-        Log.d(TAG, "local file: "+localFile.toString());
-        if(localFile == null){
-            Log.d(TAG, "local file is null");
-            this.pfpLocalLink = "1.jpg";
-
+        // use the local file if it exists
+        if (localPfpFile.exists()){
+            callback.onPfpLoaded(
+                    BitmapFactory.decodeFile(localPfpFile.getAbsolutePath())
+            );
+            return;
         }
+//        File localFile = new File(context.getCacheDir(), this.pfpLocalLink);
+//       File localFile = new File(context.getCacheDir(), "pfp_1.jpg");
 
+//        Log.d(TAG, "local file: "+localFile.toString());
 
-        pfpRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+        pfpRef.getFile(localPfpFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                 Log.d(TAG, "Download complete: "+ pfpStorageLink);
                 // Local temp file has been created
-                Bitmap pfpBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                Bitmap pfpBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
                 callback.onPfpLoaded(pfpBitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
