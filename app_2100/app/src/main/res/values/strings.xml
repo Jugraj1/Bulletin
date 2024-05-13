@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">app_2100</string>
+    <string name="channel_name">notif_channel_1</string>
+    <string name="channel_description">channel where all notifs are currently sent from</string>
 </resources>
