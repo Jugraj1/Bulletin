@@ -20,6 +20,8 @@ import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.app_2100.observer.Observer;
+import com.example.app_2100.observer.Refresh;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ProfileViewer extends AppCompatActivity {
+public class ProfileViewer extends AppCompatActivity implements Observer {
     private FirebaseFirestore db;
     private String loggedInUserID;
     private int currentTab = 0;
@@ -47,14 +49,11 @@ public class ProfileViewer extends AppCompatActivity {
     {
         public void run() {
             // do the update // maybe use observer for this
+//            User newUser = fetchUser(userID);
+//            if (newUser.get)
+//
 
-//            finish();
-//            overridePendingTransition(0, 0);
-//            startActivity(getIntent());
-//            overridePendingTransition(0, 0);
-//            recreate();
-
-            ProfileViewer.this.handler.postDelayed(refresh, INTERVAL);
+//            ProfileViewer.this.handler.postDelayed(refresh, INTERVAL);
         }
 
     };
@@ -67,12 +66,12 @@ public class ProfileViewer extends AppCompatActivity {
 
         // initialise handler for periodic updates
         handler = new Handler();
-        refresh.run();
-
-
+//        refresh.run();
 
         // Fetch user details from Firestore using userID
-        createUser(userID);
+        fetchUser(userID);
+
+
 
         // Set onClickListener for Home Button
         Button homeButton = findViewById(R.id.homeButton);
@@ -105,7 +104,11 @@ public class ProfileViewer extends AppCompatActivity {
         updatePosts(0);
     }
 
-    private void createUser(String userID){
+    private void updateUser(User newUser){
+        this.user = newUser;
+    }
+
+    private void fetchUser(String userID){
         user = new User(userID, new FirestoreCallback() {
             @Override
             public void onUserLoaded(String fName, String lName, String empty) {
@@ -118,9 +121,18 @@ public class ProfileViewer extends AppCompatActivity {
                 lastNameTextView.setText(lName);
 
                 // Update profile image
+
+                initiateRefresh();
+
                 updateProfilePic(userID);
             }
         });
+    }
+
+    private void initiateRefresh() {
+        // Create a Refresh instance and attach this class as an observer
+        Refresh r = new Refresh(user);
+        r.attach(this);
     }
 
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
@@ -257,64 +269,71 @@ public class ProfileViewer extends AppCompatActivity {
     }
 
     private void displayFollowingUsersOfAuthor(String userID, ScrollView scrollView) {
+        this.user.getFollowing(new DataLoadedListener() {
+            @Override
+            public void OnDataLoaded(Object followingList) {
+                List<String> following = (List<String>) followingList;
+            }
+        });
+
         // Retrieve the list of user IDs the profile is following
-        db.collection("users").document(userID).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    List<String> following = (List<String>) documentSnapshot.get("following");
-                    if (following != null) {
-                        // Create a LinearLayout to contain all user layouts
-                        LinearLayout linearLayout = new LinearLayout(ProfileViewer.this);
-                        linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-                        for (String followingUserID : following) {
-                            // Retrieve user details
-                            db.collection("users").document(followingUserID).get()
-                                    .addOnSuccessListener(userDocument -> {
-                                        // New layout to display relevant user details
-                                        LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
-                                        userLayout.setOrientation(LinearLayout.VERTICAL);
-
-                                        String firstName = userDocument.getString("firstName");
-                                        String lastName = userDocument.getString("lastName");
-
-                                        // Display user details in a TextView
-                                        TextView userTextView = new TextView(ProfileViewer.this);
-                                        userTextView.setText(firstName + " " + lastName);
-                                        userTextView.setLayoutParams(new ViewGroup.LayoutParams(
-                                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                                ViewGroup.LayoutParams.WRAP_CONTENT));
-                                        // Set text properties
-                                        userTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
-                                        userTextView.setTypeface(userTextView.getTypeface(), Typeface.BOLD); // Make text bold
-
-                                        // Add space between user details
-                                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                                ViewGroup.LayoutParams.WRAP_CONTENT);
-                                        layoutParams.setMargins(0, 16, 0, 0); // Add top margin for space
-                                        userLayout.addView(userTextView, layoutParams);
-
-                                        // Important for re-opening profileViewer with the new user as the subject
-                                        // Onclick listener for the user in question
-                                        userLayout.setOnClickListener(v -> openProfileViewer(followingUserID));
-
-                                        // Add the userLayout to the LinearLayout
-                                        linearLayout.addView(userLayout);
-
-                                        // Add space between user layouts
-                                        LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
-                                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                                16); // Space height
-                                        linearLayout.addView(new Space(ProfileViewer.this), spaceParams);
-                                    })
-                                    .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve user details.", Toast.LENGTH_SHORT).show());
-                        }
-                        // Add the LinearLayout to the ScrollView
-                        scrollView.removeAllViews();
-                        scrollView.addView(linearLayout);
-                    }
-                })
-                .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve following list.", Toast.LENGTH_SHORT).show());
+//        db.collection("users").document(userID).get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    List<String> following = (List<String>) documentSnapshot.get("following");
+//                    if (following != null) {
+//                        // Create a LinearLayout to contain all user layouts
+//                        LinearLayout linearLayout = new LinearLayout(ProfileViewer.this);
+//                        linearLayout.setOrientation(LinearLayout.VERTICAL);
+//
+//                        for (String followingUserID : following) {
+//                            // Retrieve user details
+//                            db.collection("users").document(followingUserID).get()
+//                                    .addOnSuccessListener(userDocument -> {
+//                                        // New layout to display relevant user details
+//                                        LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
+//                                        userLayout.setOrientation(LinearLayout.VERTICAL);
+//
+//                                        String firstName = userDocument.getString("firstName");
+//                                        String lastName = userDocument.getString("lastName");
+//
+//                                        // Display user details in a TextView
+//                                        TextView userTextView = new TextView(ProfileViewer.this);
+//                                        userTextView.setText(firstName + " " + lastName);
+//                                        userTextView.setLayoutParams(new ViewGroup.LayoutParams(
+//                                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                                                ViewGroup.LayoutParams.WRAP_CONTENT));
+//                                        // Set text properties
+//                                        userTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
+//                                        userTextView.setTypeface(userTextView.getTypeface(), Typeface.BOLD); // Make text bold
+//
+//                                        // Add space between user details
+//                                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+//                                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                                                ViewGroup.LayoutParams.WRAP_CONTENT);
+//                                        layoutParams.setMargins(0, 16, 0, 0); // Add top margin for space
+//                                        userLayout.addView(userTextView, layoutParams);
+//
+//                                        // Important for re-opening profileViewer with the new user as the subject
+//                                        // Onclick listener for the user in question
+//                                        userLayout.setOnClickListener(v -> openProfileViewer(followingUserID));
+//
+//                                        // Add the userLayout to the LinearLayout
+//                                        linearLayout.addView(userLayout);
+//
+//                                        // Add space between user layouts
+//                                        LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
+//                                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                                                16); // Space height
+//                                        linearLayout.addView(new Space(ProfileViewer.this), spaceParams);
+//                                    })
+//                                    .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve user details.", Toast.LENGTH_SHORT).show());
+//                        }
+//                        // Add the LinearLayout to the ScrollView
+//                        scrollView.removeAllViews();
+//                        scrollView.addView(linearLayout);
+//                    }
+//                })
+//                .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve following list.", Toast.LENGTH_SHORT).show());
     }
 
     // Intent to view profile of the clicked user
@@ -407,5 +426,19 @@ public class ProfileViewer extends AppCompatActivity {
         // get the element
         ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_profile);
         profileImg.setImageBitmap(pfpImageBitmap);
+    }
+
+    /***
+     * Updates when the subject notifies the observer
+     */
+    @Override
+    public void update(User newUser) {
+//        Toast.makeText(ProfileViewer.this, "OBSERVER UPDATED: "+ newUser.toString(), Toast.LENGTH_SHORT).show();
+        this.user = newUser;
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+        recreate();
     }
 }

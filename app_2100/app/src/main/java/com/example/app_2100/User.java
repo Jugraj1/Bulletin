@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import com.example.app_2100.observer.Observer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -39,7 +41,7 @@ public class User {
 
     private String pfpLocalLink;
     private String TAG = "User";
-    private FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
+    private final FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
     private Boolean isInitialised = false;
     public InitialisationCallback initCallback;
 
@@ -258,6 +260,8 @@ public class User {
         return pfpBitmap;
     }
 
+    public String getPfpStorageLink() {return pfpStorageLink; }
+
     public void setUserID(String userID) {
         this.userID = userID;
     }
@@ -279,6 +283,15 @@ public class User {
 
     public void setPfpBitmap(Bitmap bmp){
 
+    }
+
+    public void getFollowing(DataLoadedListener listener){
+        db.collection("users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<String> following = (List<String>) documentSnapshot.get("following");
+                    listener.OnDataLoaded(following);
+                }
+        );
     }
 
 
