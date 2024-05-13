@@ -111,6 +111,14 @@ public class PostViewActivity extends AppCompatActivity {
         TextView titleTextView = findViewById(R.id.activity_postView_tv_Title);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
         TextView authorTextView = findViewById(R.id.activity_postView_tv_author);
+        authorTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent openProfile = new Intent(PostViewActivity.this, ProfileViewer.class);
+                openProfile.putExtra("authorID", post.getAuthorID());
+                startActivity(openProfile);
+            }
+        });
         TextView dateTextView = findViewById(R.id.activity_postView_tv_timestamp);
 
         titleTextView.setText(post.getTitle());
