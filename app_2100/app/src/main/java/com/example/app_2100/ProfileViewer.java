@@ -92,7 +92,7 @@ public class ProfileViewer extends AppCompatActivity {
 
 
         db = FirebaseFirestore.getInstance();
-
+        loggedInUserID = CurrentUser.getCurrent().getUserID();
 
         String authorID = getIntent().getStringExtra("authorID");
 
@@ -128,8 +128,7 @@ public class ProfileViewer extends AppCompatActivity {
 
         // Set onClickListener for Follow Button
         Button followButton = findViewById(R.id.Follow);
-        // Remove onClickListener for followButton
-        // followButton.setOnClickListener(view -> followAuthor(authorID));
+        followButton.setOnClickListener(view -> followAuthor(authorID));
 
 
         TabLayout myTabLayout = findViewById(R.id.tabLayout);
