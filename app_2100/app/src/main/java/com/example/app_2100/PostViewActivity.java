@@ -13,8 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.app_2100.observer.Observer;
-import com.example.app_2100.observer.PostRefresh;
-import com.example.app_2100.observer.Refresh;
+import com.example.app_2100.observer.UpdatePostView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,8 +32,8 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "PostView";
 
     private void initiateRefresh() {
-        // Create a Refresh instance and attach this class as an observer
-        PostRefresh r = new PostRefresh(post);
+        // Create a UpdateProfile instance and attach this class as an observer
+        UpdatePostView r = new UpdatePostView(post);
         r.attach(this);
     }
 

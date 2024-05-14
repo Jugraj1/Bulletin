@@ -2,10 +2,8 @@ package com.example.app_2100;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -20,11 +18,6 @@ import android.util.Log;
 
 import com.example.app_2100.data_generators.PostGenerator;
 import com.example.app_2100.data_generators.UserGenerator;
-import com.example.app_2100.notification.Notification;
-import com.example.app_2100.notification.NotificationFactory;
-import com.example.app_2100.notification.NotificationType;
-import com.example.app_2100.observer.Refresh;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        generateUsers(25);
 //        generatePosts(1);
-//        Refresh r = new Refresh();
+//        UpdateProfile r = new UpdateProfile();
 //        r.start();
 
 

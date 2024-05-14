@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,26 +12,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.util.Log;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.app_2100.observer.UpdateFeed;
 import com.example.app_2100.observer.Observer;
-import com.example.app_2100.observer.Refresh;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,9 +27,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.Current;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -134,13 +118,13 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
     private void reset(){
         posts.clear();
         lastVisible = null;
-        initScrollListener();
+//        initScrollListener();
         populateFeed();
     }
 
     private void initiateRefresh() {
-        // Create a Refresh instance and attach this class as an observer
-        Refresh r = new Refresh(posts, false);
+        // Create a UpdateProfile instance and attach this class as an observer
+        UpdateFeed r = new UpdateFeed(posts, false);
         r.attach(this);
     }
 

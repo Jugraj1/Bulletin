@@ -8,8 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -21,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.app_2100.observer.Observer;
-import com.example.app_2100.observer.Refresh;
+import com.example.app_2100.observer.UpdateProfile;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -112,8 +110,8 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     }
 
     private void initiateRefresh() {
-        // Create a Refresh instance and attach this class as an observer
-        Refresh r = new Refresh(user);
+        // Create a UpdateProfile instance and attach this class as an observer
+        UpdateProfile r = new UpdateProfile(user);
         r.attach(this);
     }
 
