@@ -11,6 +11,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 public class App extends Application {
     private static Context mContext;
+    private static final int BATCH_NUMBER = 15; // number of posts to fetch in each batch for Feeds
 
     @Override
     public void onCreate() {
@@ -19,6 +20,10 @@ public class App extends Application {
     }
     public static Context getContext() {
         return mContext;
+    }
+
+    public static int getBATCH_NUMBER() {
+        return BATCH_NUMBER;
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {
