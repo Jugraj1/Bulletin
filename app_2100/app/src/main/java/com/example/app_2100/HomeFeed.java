@@ -351,9 +351,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
     }
 
     @Override
-    public void update(User user) {
-        Log.d(TAG, "update homefeed");
-//        populateFeed();
+    public <T> void update(T posts) {
         reset();
     }
 

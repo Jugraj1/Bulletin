@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.app_2100.observer.Observer;
+import com.example.app_2100.observer.PostRefresh;
+import com.example.app_2100.observer.Refresh;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -22,17 +25,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostViewActivity extends AppCompatActivity {
+public class PostViewActivity extends AppCompatActivity implements Observer {
 
     private Post post;
     private ArrayList<String> commentsList;
     private FirebaseFirestore firestore;
     private static final String TAG = "PostView";
 
+    private void initiateRefresh() {
+        // Create a Refresh instance and attach this class as an observer
+        PostRefresh r = new PostRefresh(post);
+        r.attach(this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
 
@@ -44,6 +51,8 @@ public class PostViewActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference postRef = db.collection("posts").document(post.getID());
+
+        initiateRefresh();
 
         postRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -188,6 +197,13 @@ public class PostViewActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public <T> void update(T post) {
+        Log.d(TAG, "updating called T");
+        this.post = (Post) post;
+        displayPostDetails();
     }
 }
 

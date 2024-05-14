@@ -2,6 +2,8 @@ package com.example.app_2100.observer;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.example.app_2100.App;
 import com.example.app_2100.DataLoadedListener;
 import com.example.app_2100.FirebaseFirestoreConnection;
@@ -11,7 +13,11 @@ import com.example.app_2100.User;
 import com.example.app_2100.Post;
 import com.example.app_2100.HomeFeed;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -37,11 +43,15 @@ public class Refresh implements Subject<User> {
     private List<Post> currPosts;
     private List<String> currPostIDs;
 
+    private Post currPost;
+
     // current db info to be compared current profile page info
     private User newUser;
     private List<String> newFollowing;
     private List<Post> newPosts;
     private List<String> newPostIDs;
+
+    private Post newPost;
 
     // How often the database should be repeatedly queried
     private final int REFRESH_TIME = 500; // time in milliseconds
@@ -93,7 +103,6 @@ public class Refresh implements Subject<User> {
         executor.scheduleAtFixedRate(this::queryDatabaseFeed, 0, REFRESH_TIME, TimeUnit.MILLISECONDS); // use method reference since runnable is functional interface
     }
 
-
     @Override
     public void attach(Observer observer) {
         observers.add(observer);
@@ -116,6 +125,9 @@ public class Refresh implements Subject<User> {
         executor.shutdown();
     }
 
+
+
+
     private void queryDatabaseFeed() {
         newPosts = new ArrayList<>();
         if (useFollowingCondition){
@@ -124,7 +136,6 @@ public class Refresh implements Subject<User> {
 //                    .orderBy("score", Query.Direction.DESCENDING)// descending in like count
 //                    .limit(App.getBATCH_NUMBER());
         } else{
-
             currQuery = db.collection("posts")
                     .orderBy("score", Query.Direction.DESCENDING)// descending in like count
                     .limit(App.getBATCH_NUMBER());

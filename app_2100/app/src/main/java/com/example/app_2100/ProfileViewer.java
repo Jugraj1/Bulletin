@@ -469,9 +469,9 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
      * Updates when the subject notifies the observer
      */
     @Override
-    public void update(User newUser) {
+    public <T> void update(T newUser) {
 //        Toast.makeText(ProfileViewer.this, "OBSERVER UPDATED: "+ newUser.toString(), Toast.LENGTH_SHORT).show();
-        this.user = newUser;
+        this.user = (User) newUser;
         updateUserText(); // update name text
         updatePosts(currentTab);
 //        displayFollowingUsersOfAuthor("", findViewById(R.id.scrollView1)); // update following
