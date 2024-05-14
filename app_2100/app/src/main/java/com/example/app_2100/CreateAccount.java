@@ -1,16 +1,24 @@
 package com.example.app_2100;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.arch.core.executor.ArchTaskExecutor;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +37,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.rpc.context.AttributeContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,6 +79,16 @@ public class CreateAccount extends AppCompatActivity {
         cancelTextView.setOnClickListener(v -> cancelButtonPressed());
 
 
+//        Set up the select image button=
+        ImageButton selectImageButton = findViewById(R.id.activity_create_account_bt_choose_image);
+        selectImageButton.setOnClickListener(v -> selectImageButtonPressed());
+
+
+//        Set up the take photo button
+        ImageButton takePictureButton = findViewById(R.id.activity_create_account_bt_take_photo);
+        takePictureButton.setOnClickListener(v -> takePhotoButtonPressed());
+
+
 //        Set default profile picture
         localPfpFile = new File(App.getContext().getCacheDir(), "pfp.png");
         storage = FirebaseStorage.getInstance();
@@ -78,20 +98,95 @@ public class CreateAccount extends AppCompatActivity {
 
     }
 
-    private void updateProfileImageView(){
-        Bitmap immutableBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
+    /**
+     * Run when select image button is pressed to select an image from the gallery
+     */
+    private void selectImageButtonPressed(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        startActivityForResult(intent, 100);
+        // Launch the photo picker and let the user choose only images.
+        pickMedia.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+
+    }
+
+    /**
+     * Used to select an image from the gallery
+     */
+    // Registers a photo picker activity launcher in single-select mode.
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                // Callback is invoked after the user selects a media item or closes the
+                // photo picker.
+                if (uri != null) {
+                    Log.d("PhotoPicker", "Selected URI: " + uri);
+                    localPfpFile = new File(Objects.requireNonNull(uri.getPath()));
+                    Log.d("PhotoPicker", "Selected file: " + localPfpFile.getAbsolutePath());
+//                    Bitmap immutableBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
+
+                    Bitmap immutableBitmap = null;
+                    try {
+                        immutableBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        updateProfileImageView(immutableBitmap);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Log.d("Bitmap", "Selected file: " + immutableBitmap.toString());
+
+//                    updateProfileImageView(immutableBitmap);
+                } else {
+                    Log.d("PhotoPicker", "No media selected");
+                }
+            });
+    /**
+     * Run when take photo button is pressed
+      */
+    private void takePhotoButtonPressed(){
+
+    }
+
+
+    /**
+     * Update the profile picture with the selected image
+     */
+    private void updateProfileImageView(Bitmap immutableBitmap){
         ShapeableImageView profileImg = findViewById(R.id.activity_create_account_image_view);
 
 
-//       FIXME: null pointer exception below
         Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
 
 //        paint.setColor(Color.parseColor("#70000000")); // 50% opacity grey for click
         paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
-//        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
-        canvas.drawRect(0, 0, profileImg.getWidth(), profileImg.getHeight(), paint);
+
+//        account for different aspect ratio. and choose the one that fills the entire circle
+        int width = pfpImageBitmap.getWidth();
+        int height = pfpImageBitmap.getHeight();
+        float aspectRatio = (float) width /height;
+
+        int dpwidth = width;
+        int dpheight = height;
+
+        if(aspectRatio > 1){
+//            Image is wider than it is tall
+            dpheight = profileImg.getHeight();
+            dpwidth = (int) (dpheight * aspectRatio);
+        } else {
+//            Image is taller than it is wide
+            dpwidth = profileImg.getWidth();
+            dpheight = (int) (dpwidth / aspectRatio);
+        }
+
+
+
+        canvas.drawRect(0, 0, dpwidth, dpheight, paint);
+
+
         canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
 
 //        get element and set the image
@@ -108,7 +203,8 @@ public class CreateAccount extends AppCompatActivity {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot){
                 Log.d(TAG, "Successfully downloaded default profile picture");
-                updateProfileImageView();
+                Bitmap immutableBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
+                updateProfileImageView(immutableBitmap);
             }
         }).addOnFailureListener(new OnFailureListener(){
             @Override
