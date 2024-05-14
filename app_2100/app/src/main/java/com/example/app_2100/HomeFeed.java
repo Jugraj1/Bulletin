@@ -118,7 +118,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
     private void reset(){
         posts.clear();
         lastVisible = null;
-//        initScrollListener();
+        initScrollListener();
         populateFeed();
     }
 
@@ -134,8 +134,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
 
         posts.clear();
         lastVisible = null;
-        initScrollListener();
-
+//        initScrollListener();
         populateFeed();
     }
 
@@ -258,7 +257,13 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
 
     private void loadMore() {
         posts.add(null);
-        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
+        recyclerView.post(new Runnable() {
+            public void run() {
+                // There is no need to use notifyDataSetChanged()
+                recylerViewAdapter.notifyItemInserted(posts.size() - 1);
+            }
+        });
+//        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
 
         Handler handler = new Handler();
         handler.postDelayed(() -> {

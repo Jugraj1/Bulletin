@@ -96,7 +96,7 @@ Sit amet mauris commodo quis imperdiet. Tortor at auctor urna nunc id. At augue 
 
             <Button
                 android:id="@+id/activity_home_feed_post_thumbnail_bt_like"
-                style="@style/HomeFeedPostThumbnailButton"
+                style="@style/PostViewLikeButton"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginStart="280dp"

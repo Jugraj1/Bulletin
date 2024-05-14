@@ -40,7 +40,15 @@
         <item name="android:textSize">12sp</item>
         <item name="android:layout_width">20dp</item>
         <item name="android:layout_height">20dp</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="PostViewLikeButton" parent="Widget.AppCompat.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_margin">14dp</item>
         <item name="android:background">@null</item>
     </style>
 
