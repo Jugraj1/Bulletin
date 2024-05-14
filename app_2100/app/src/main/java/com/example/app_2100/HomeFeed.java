@@ -129,6 +129,17 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        posts.clear();
+        lastVisible = null;
+        initScrollListener();
+
+        populateFeed();
+    }
+
     /***
      * populates FollowingFeed with relevant posts
      */

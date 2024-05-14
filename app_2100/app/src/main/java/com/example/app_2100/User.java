@@ -297,14 +297,14 @@ public class User {
     }
 
     public void getPosts(DataLoadedListener listener){
-        Query postsQuery = db.collection("posts").whereEqualTo("author", userID);
+        Query postsQuery = db.collection("posts").whereEqualTo("author", this.userID);
         postsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                List<Post> posts = new ArrayList<Post>();
+                List<Post> fetchedPosts = new ArrayList<Post>();
                 Map<String, Object> currData;
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     currData = document.getData();
-                    posts.add(new Post(
+                    fetchedPosts.add(new Post(
                             document.getId(),
                             currData.get("title"),
                             currData.get("body"),
@@ -320,7 +320,7 @@ public class User {
                             }
                     ));
                 }
-                listener.OnDataLoaded(posts);
+                listener.OnDataLoaded(fetchedPosts);
             }
         });
     }
