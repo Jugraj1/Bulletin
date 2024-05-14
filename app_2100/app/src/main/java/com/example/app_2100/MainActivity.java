@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
+        startActivity(new Intent(MainActivity.this, Login.class));
+
 
         if (currentUser != null) { // user is logged in already
             startActivity(new Intent(MainActivity.this, HomeFeed.class));

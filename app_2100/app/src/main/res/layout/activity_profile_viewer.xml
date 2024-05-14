@@ -74,27 +74,24 @@
         android:id="@+id/LName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="LName"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/activity_home_feed_sv_profile"
         app:layout_constraintStart_toStartOf="@+id/Name"
         app:layout_constraintTop_toBottomOf="@+id/Name" />
 
-
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
-        android:layout_width="391dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/homeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_home_feed_sv_profile"
         app:layout_constraintVertical_bias="0.031">
-
-
 
 
         <com.google.android.material.tabs.TabItem
@@ -104,8 +101,6 @@
             android:text="Posts" />
 
 
-
-
         <com.google.android.material.tabs.TabItem
             android:id="@+id/followingtab"
             android:layout_width="wrap_content"
@@ -113,30 +108,23 @@
             android:text="Following" />
 
 
-
-
     </com.google.android.material.tabs.TabLayout>
-
-
 
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="356dp"
-        android:layout_height="489dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/homeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.486"
         app:layout_constraintStart_toStartOf="parent"
+
+
         app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-        app:layout_constraintVertical_bias="0.306"
-
-
-
-
-        >
-
-
+        app:layout_constraintVertical_bias="0.306">
 
 
         <LinearLayout

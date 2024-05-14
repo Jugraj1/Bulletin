@@ -27,23 +27,41 @@ public class PostViewActivity extends AppCompatActivity {
     private Post post;
     private ArrayList<String> commentsList;
     private FirebaseFirestore firestore;
-    private Boolean yes;
-
     private static final String TAG = "PostView";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
 
         Intent intent = getIntent();
         post = intent.getParcelableExtra("post");
-        yes = intent.getBooleanExtra("yes", true);
-        post.setIsLikedByCurrUser(yes);
+        System.out.println("before");
+
+        Button likeButton = findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference postRef = db.collection("posts").document(post.getID());
+
+        postRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    ArrayList<String> likes = (ArrayList<String>) document.get("likes");
+                    String currentUserId = CurrentUser.getCurrent().getUserID();
+                    updateLikeButtonUI(likeButton,likes.contains(currentUserId));
+                    postRef.update("likes", likes);
+                }
+            }
+        });
 
         if (post != null) {
             displayPostDetails();
         }
+
+        System.out.println("after");
 
         firestore = FirebaseFirestore.getInstance();
         commentsList = new ArrayList<>();
@@ -81,13 +99,10 @@ public class PostViewActivity extends AppCompatActivity {
             }
         });
 
-        Button likeButton = findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                post.setIsLikedByCurrUser(!post.getLikedByCurrUser());
-                updatePostLikesInFirestore(post.getID(), post.getLikedByCurrUser());
-                updateLikeButtonUI(likeButton, post.getLikedByCurrUser());
+                updatePostLikesInFirestore(likeButton, post.getID());
             }
         });
 
@@ -147,7 +162,7 @@ public class PostViewActivity extends AppCompatActivity {
         }
     }
 
-    private void updatePostLikesInFirestore(String postId, boolean likedByCurrentUser) {
+    private void updatePostLikesInFirestore(Button likeButton, String postId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference postRef = db.collection("posts").document(postId);
 
@@ -161,10 +176,12 @@ public class PostViewActivity extends AppCompatActivity {
                     }
 
                     String currentUserId = CurrentUser.getCurrent().getUserID();
-                    if (likedByCurrentUser && !likes.contains(currentUserId)) {
+                    if (!likes.contains(currentUserId)) {
                         likes.add(currentUserId);
-                    } else if (!likedByCurrentUser && likes.contains(currentUserId)) {
+                        updateLikeButtonUI(likeButton, true);
+                    } else if (likes.contains(currentUserId)) {
                         likes.remove(currentUserId);
+                        updateLikeButtonUI(likeButton, false);
                     }
 
                     postRef.update("likes", likes);
