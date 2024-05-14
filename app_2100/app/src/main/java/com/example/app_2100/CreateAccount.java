@@ -1,11 +1,18 @@
 package com.example.app_2100;
 
+import android.Manifest;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,6 +35,8 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
@@ -42,9 +51,10 @@ public class CreateAccount extends AppCompatActivity {
     private String firstNameString;
     private String lastNameString;
 
-//    Default profile picture variables
+//     profile picture variables
     private StorageReference defaultPfpRef;
     private String defaultProfilePicture = "1.png";
+    private ActivityResultLauncher<Intent> takePhotoLauncher;
 
 
 
@@ -81,10 +91,10 @@ public class CreateAccount extends AppCompatActivity {
         ImageButton selectImageButton = findViewById(R.id.activity_create_account_bt_choose_image);
         selectImageButton.setOnClickListener(v -> selectImageButtonPressed());
 
-
-//        Set up the take photo button
-        ImageButton takePictureButton = findViewById(R.id.activity_create_account_bt_take_photo);
-        takePictureButton.setOnClickListener(v -> takePhotoButtonPressed());
+//      This is disabled because it does not work
+////        Set up the take photo button
+//        ImageButton takePictureButton = findViewById(R.id.activity_create_account_bt_take_photo);
+//        takePictureButton.setOnClickListener(v -> takePhotoButtonPressed());
 
 
 //        Set default profile picture
@@ -93,11 +103,26 @@ public class CreateAccount extends AppCompatActivity {
         defaultPfpRef = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/1.png");
 
 
-//        set reference to the profile picture
-
-
+//        Set up the take photo button
         downloadProfilePicture();
 
+
+//        FIXME: this take photo stuff doesn't work. IT is a low priority so only fix it later if we have time
+//        FIXME: this requires android sdk leevel 34 or higher. our app is on 33
+//        It is disabled for now
+        takePhotoLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Bitmap imageBitmap = (Bitmap) result.getData().getExtras().get("data");
+
+//                        update the profile picture with the selected image
+                        if(imageBitmap != null) {
+                            updateProfileImageView(imageBitmap);
+                            defaultPicture = false;
+                        }
+                    }
+                });
     }
 
     /**
@@ -148,6 +173,10 @@ public class CreateAccount extends AppCompatActivity {
             });
 
 
+    /**
+     * Upload the profile picture to the storage
+     * The upload picture will use the localURI
+     */
     private void uploadProfilePicture(){
 //        If default picture, do not upload
         if(defaultPicture){
@@ -178,6 +207,15 @@ public class CreateAccount extends AppCompatActivity {
       */
     private void takePhotoButtonPressed(){
 
+        // Check for camera permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
+        }
+
+        // Launch the camera to take a photo.
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePhotoLauncher.launch(takePictureIntent);
     }
 
 
