@@ -1,25 +1,21 @@
 package com.example.app_2100;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.arch.core.executor.ArchTaskExecutor;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.graphics.Bitmap;
@@ -28,18 +24,12 @@ import android.graphics.BitmapFactory;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.rpc.context.AttributeContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,11 +43,19 @@ public class CreateAccount extends AppCompatActivity {
     private String lastNameString;
 
 //    Default profile picture variables
-    private StorageReference storageReference;
+    private StorageReference defaultPfpRef;
     private String defaultProfilePicture = "1.png";
+
+
+
+//    Firebase variables to upload profile picture
+    private StorageReference pfpRef;
     private FirebaseStorage storage;
     private File localPfpFile;
 
+    private Uri localURI;
+    private String userId;
+    private boolean defaultPicture = true;
 
 //    ------------------
 
@@ -92,8 +90,12 @@ public class CreateAccount extends AppCompatActivity {
 //        Set default profile picture
         localPfpFile = new File(App.getContext().getCacheDir(), "pfp.png");
         storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/1.png"
-        );
+        defaultPfpRef = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/1.png");
+
+
+//        set reference to the profile picture
+
+
         downloadProfilePicture();
 
     }
@@ -122,16 +124,18 @@ public class CreateAccount extends AppCompatActivity {
                 // Callback is invoked after the user selects a media item or closes the
                 // photo picker.
                 if (uri != null) {
-                    Log.d("PhotoPicker", "Selected URI: " + uri);
-                    localPfpFile = new File(Objects.requireNonNull(uri.getPath()));
-                    Log.d("PhotoPicker", "Selected file: " + localPfpFile.getAbsolutePath());
-//                    Bitmap immutableBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
 
+                    localURI = uri;
+
+                    localPfpFile = new File(Objects.requireNonNull(uri.getPath()));
                     Bitmap immutableBitmap = null;
+
                     try {
+//                        update the profile picture with the selected image
                         immutableBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                         updateProfileImageView(immutableBitmap);
-                    } catch (IOException e) {
+                        defaultPicture = false;
+                    } catch (NullPointerException | IOException e) {
                         throw new RuntimeException(e);
                     }
 
@@ -142,6 +146,33 @@ public class CreateAccount extends AppCompatActivity {
                     Log.d("PhotoPicker", "No media selected");
                 }
             });
+
+
+    private void uploadProfilePicture(){
+//        If default picture, do not upload
+        if(defaultPicture){
+            return;
+        }
+
+//        gs://app-f4755.appspot.com/pfp/DKWN4xhSpKQVkKdhpIcWLIivIkE2.jpg
+//        gs://app-f4755.appspot.com/pfp/NuMnoRO7crd8bcqL4H4VrEZ74iY2.jpg
+//        gs://app-f4755.appspot.com/pfp/6Mck1J6naYT5QccTudHaqZEjJU82.jpg
+//        gs://app-f4755.appspot.com/pfp/1.png
+        pfpRef = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/" + userId + ".jpg");
+
+        Log.d(TAG, "user id: " + userId);
+        Log.d(TAG, "Uploading profile picture: " + pfpRef.toString());
+
+
+        pfpRef.putFile(localURI).addOnSuccessListener(new OnSuccessListener(){
+            @Override
+            public void onSuccess(Object o) {
+               Log.d(TAG,  "Successfully uploaded profile picture");
+            }
+        }).addOnFailureListener(e -> Log.d(TAG, "Failed to upload profile picture"));
+    }
+
+
     /**
      * Run when take photo button is pressed
       */
@@ -169,17 +200,19 @@ public class CreateAccount extends AppCompatActivity {
         int height = pfpImageBitmap.getHeight();
         float aspectRatio = (float) width /height;
 
-        int dpwidth = width;
-        int dpheight = height;
+        int dpwidth = profileImg.getWidth();
+        int dpheight = profileImg.getWidth();
 
         if(aspectRatio > 1){
 //            Image is wider than it is tall
             dpheight = profileImg.getHeight();
             dpwidth = (int) (dpheight * aspectRatio);
+            Log.d("Aspect ratio" , "WIDE: " + aspectRatio);
         } else {
 //            Image is taller than it is wide
             dpwidth = profileImg.getWidth();
             dpheight = (int) (dpwidth / aspectRatio);
+            Log.d( "Aspect ratio" , "TALL: " + aspectRatio);
         }
 
 
@@ -199,7 +232,7 @@ public class CreateAccount extends AppCompatActivity {
      * Download the default profile picture
      */
     private void downloadProfilePicture(){
-        storageReference.getFile(localPfpFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>(){
+        defaultPfpRef.getFile(localPfpFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>(){
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot){
                 Log.d(TAG, "Successfully downloaded default profile picture");
@@ -250,7 +283,7 @@ public class CreateAccount extends AppCompatActivity {
 //        Can only create account with email and password.
         Log.d(TAG, "createAccount() started");
 
-        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, createAccountCallback());
+        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, defaultPicture,createAccountCallback());
 
     }
 
@@ -267,6 +300,13 @@ public class CreateAccount extends AppCompatActivity {
                 if (success) {
                     Log.w(TAG, "createUserWithEmail:success");
                     Toast.makeText(CreateAccount.this, "Account Creation succeeded.", Toast.LENGTH_LONG).show();
+
+//                    get user id and upload picture
+                    userId = FirebaseAuthConnection.getCurrentUser().getUid();
+                    uploadProfilePicture();
+
+
+
 //                    Redirect to HomeFeed
                     startActivity(new Intent(CreateAccount.this, HomeFeed.class));
                 } else {

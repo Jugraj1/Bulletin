@@ -116,14 +116,14 @@ public class FirebaseAuthConnection {
      * @param lastName
      * @param callback
      */
-    public void createAccount(String email, String password, String firstName, String lastName, AuthCallback callback){
+    public void createAccount(String email, String password, String firstName, String lastName, boolean defaultPicture, AuthCallback callback){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // sign in success
                         String currentUserID = mAuth.getCurrentUser().getUid();
                         if (currentUserID != null){
-                            updateAccount(currentUserID, firstName, lastName);
+                            updateAccount(currentUserID, firstName, lastName, defaultPicture);
                         } else {
                             Log.d(TAG, "Currently signed in user is null :(");
                         }
@@ -143,14 +143,20 @@ public class FirebaseAuthConnection {
      * @param firstName
      * @param lastName
      */
-    private void updateAccount(String userId, String firstName, String lastName){
+    private void updateAccount(String userId, String firstName, String lastName, boolean defaultPicture){
         // update the user with the first name and last name
+        String pfpStorageLink = "gs://app-f4755.appspot.com/pfp/" + userId + ".jpg";
 
 
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("firstName", firstName);
         newUser.put("lastName", lastName);
         newUser.put("following", Collections.emptyList());
+
+//        Only put profile storage link if it is not default picture
+        if(!defaultPicture) {
+            newUser.put("pfpStorageLink", pfpStorageLink);
+        }
 
         FirebaseFirestoreConnection.getDb()
                 .collection("users")

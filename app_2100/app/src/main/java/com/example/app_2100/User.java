@@ -210,7 +210,7 @@ public class User {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Log.d(TAG, "Download failed: "+ pfpStorageLink);
+                Log.d(TAG, "Download failed: "+ exception.toString() + " " + pfpStorageLink);
                 callback.onPfpLoadFailed(new FileNotFoundException("File not found"));
             }
         });
