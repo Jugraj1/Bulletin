@@ -75,9 +75,6 @@ public class CreateAccount extends AppCompatActivity {
         storageReference = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/1.png"
         );
         downloadProfilePicture();
-        updateProfileImageView();
-
-
 
     }
 
@@ -86,6 +83,7 @@ public class CreateAccount extends AppCompatActivity {
         ShapeableImageView profileImg = findViewById(R.id.activity_create_account_image_view);
 
 
+//       FIXME: null pointer exception below
         Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(pfpImageBitmap);
         Paint paint = new Paint();
@@ -110,6 +108,7 @@ public class CreateAccount extends AppCompatActivity {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot){
                 Log.d(TAG, "Successfully downloaded default profile picture");
+                updateProfileImageView();
             }
         }).addOnFailureListener(new OnFailureListener(){
             @Override

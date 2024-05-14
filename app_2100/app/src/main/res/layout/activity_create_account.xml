@@ -134,10 +134,17 @@
         android:id="@+id/activity_create_account_image_view"
         android:layout_width="126dp"
         android:layout_height="130dp"
+        android:background="#673AB7"
+        android:backgroundTint="#673AB7"
+        android:cropToPadding="false"
+        android:padding="5dp"
         app:layout_constraintBottom_toTopOf="@+id/activity_create_account_et_email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:shapeAppearanceOverlay="@style/ShapeableImageRound"
+        app:strokeColor="@color/design_default_color_primary"
+        app:strokeWidth="8px"
         tools:srcCompat="@tools:sample/avatars" />
 
     <ImageButton
@@ -149,10 +156,10 @@
         android:backgroundTint="#673AB7"
         app:layout_constraintBottom_toTopOf="@+id/activity_create_account_et_email"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.057"
+        app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="@+id/activity_create_account_image_view"
         app:layout_constraintTop_toTopOf="@+id/activity_create_account_image_view"
-        app:layout_constraintVertical_bias="0.811"
+        app:layout_constraintVertical_bias="0.181"
         app:srcCompat="@drawable/ic_add_photo_foreground" />
 
     <ImageButton
@@ -162,10 +169,10 @@
         android:backgroundTint="#673AB7"
         app:layout_constraintBottom_toTopOf="@+id/activity_create_account_et_email"
         app:layout_constraintEnd_toEndOf="@+id/activity_create_account_image_view"
-        app:layout_constraintHorizontal_bias="0.529"
+        app:layout_constraintHorizontal_bias="0.532"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/activity_create_account_image_view"
-        app:layout_constraintVertical_bias="0.917"
+        app:layout_constraintVertical_bias="0.691"
         app:srcCompat="@drawable/ic_add_image_foreground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
