@@ -314,6 +314,9 @@ public class CreateAccount extends AppCompatActivity {
 
               // Create account
            createAccount();
+           if(defaultPicture){
+               startActivity(new Intent(this, HomeFeed.class));
+           }
        }
     }
 
