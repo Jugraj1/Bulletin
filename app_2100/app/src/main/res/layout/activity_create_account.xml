@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".CreateAccount">
 
-<!--    TODO: Let user upload picture-->
-
 <!--    Create account Button-->
     <Button
         android:id="@+id/activity_create_account_bt_create_account"

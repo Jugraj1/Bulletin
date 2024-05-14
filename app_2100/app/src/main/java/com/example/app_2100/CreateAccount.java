@@ -66,6 +66,7 @@ public class CreateAccount extends AppCompatActivity {
     private Uri localURI;
     private String userId;
     private boolean defaultPicture = true;
+    private boolean pictureUploading = false;
 
 //    ------------------
 
@@ -183,6 +184,8 @@ public class CreateAccount extends AppCompatActivity {
             return;
         }
 
+        pictureUploading = true;
+
 //        gs://app-f4755.appspot.com/pfp/DKWN4xhSpKQVkKdhpIcWLIivIkE2.jpg
 //        gs://app-f4755.appspot.com/pfp/NuMnoRO7crd8bcqL4H4VrEZ74iY2.jpg
 //        gs://app-f4755.appspot.com/pfp/6Mck1J6naYT5QccTudHaqZEjJU82.jpg
@@ -197,6 +200,8 @@ public class CreateAccount extends AppCompatActivity {
             @Override
             public void onSuccess(Object o) {
                Log.d(TAG,  "Successfully uploaded profile picture");
+               pictureUploading = false;
+               startActivity(new Intent(CreateAccount.this, HomeFeed.class));
             }
         }).addOnFailureListener(e -> Log.d(TAG, "Failed to upload profile picture"));
     }
@@ -343,10 +348,6 @@ public class CreateAccount extends AppCompatActivity {
                     userId = FirebaseAuthConnection.getCurrentUser().getUid();
                     uploadProfilePicture();
 
-
-
-//                    Redirect to HomeFeed
-                    startActivity(new Intent(CreateAccount.this, HomeFeed.class));
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure");
                     Toast.makeText(CreateAccount.this, "Account Creation failed.",
