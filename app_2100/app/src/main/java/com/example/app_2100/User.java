@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import com.example.app_2100.observer.Observer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
@@ -27,6 +29,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -39,7 +43,7 @@ public class User {
 
     private String pfpLocalLink;
     private String TAG = "User";
-    private FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
+    private final FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
     private Boolean isInitialised = false;
     public InitialisationCallback initCallback;
 
@@ -94,6 +98,7 @@ public class User {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+
                             for (QueryDocumentSnapshot document : task.getResult()) { // todo change this later to ensure only 1 record for user (or we cna imply it from db rules>?)
 //                            Log.d(TAG, document.getId() + " => " + document.getData());
                                 Map<String, Object> userData = document.getData();
@@ -111,11 +116,11 @@ public class User {
                                     pfpRef = storage.getReferenceFromUrl(pfpStorageLink);
 
                                     if (userID.equals(CurrentUser.getCurrent().getUserID())){ // saves doing it unneccesarily.
-                                        Log.d(TAG, "link: "+pfpStorageLink);
+//                                        Log.d(TAG, "link: "+pfpStorageLink);
                                         initProfilePicBitmap();
                                     }
 
-                                    Log.d(TAG, "pfpLink: "+ pfpStorageLink);
+//                                    Log.d(TAG, "pfpLink: "+ pfpStorageLink);
                                 } else {
                                     Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
                                     pfpBitmap = App.drawableToBitmap(vectorDrawable);
@@ -124,7 +129,8 @@ public class User {
 
 //                                isInitialised = true;
 //                                initCallback.onUserInitialised();
-                                callback.onUserLoaded(fName, lName, pfpLink);
+
+                                callback.onUserLoaded(fName,lName, "pfpLink");
                             }
 
                         } else {
@@ -141,7 +147,7 @@ public class User {
 
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
-            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
+//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
             this.pfpBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
 
             if (pfpLoadedCallback != null) {
@@ -258,6 +264,8 @@ public class User {
         return pfpBitmap;
     }
 
+    public String getPfpStorageLink() {return pfpStorageLink; }
+
     public void setUserID(String userID) {
         this.userID = userID;
     }
@@ -280,6 +288,45 @@ public class User {
     public void setPfpBitmap(Bitmap bmp){
 
     }
+
+    public void getFollowing(DataLoadedListener listener){
+        db.collection("users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<String> following = (List<String>) documentSnapshot.get("following");
+                    listener.OnDataLoaded(following);
+                }
+        );
+    }
+
+    public void getPosts(DataLoadedListener listener){
+        Query postsQuery = db.collection("posts").whereEqualTo("author", this.userID);
+        postsQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Post> fetchedPosts = new ArrayList<Post>();
+                Map<String, Object> currData;
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    currData = document.getData();
+                    fetchedPosts.add(new Post(
+                            document.getId(),
+                            currData.get("title"),
+                            currData.get("body"),
+                            currData.get("author"),
+                            currData.get("publisher"),
+                            currData.get("sourceURL"),
+                            currData.get("timeStamp"),
+                            new PostLoadCallback() {
+                                @Override
+                                public void onPostLoaded(Post post) {
+
+                                }
+                            }
+                    ));
+                }
+                listener.OnDataLoaded(fetchedPosts);
+            }
+        });
+    }
+
 
 
     @Override

@@ -9,30 +9,37 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.app_2100.observer.Observer;
+import com.example.app_2100.observer.UpdatePostView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class PostViewActivity extends AppCompatActivity {
+public class PostViewActivity extends AppCompatActivity implements Observer {
 
     private Post post;
-    private ArrayList<String> commentsList;
+//    private ArrayList<String> commentsList;
+    private ArrayList<Comment> commentsList;
     private FirebaseFirestore firestore;
     private static final String TAG = "PostView";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
 
@@ -44,6 +51,8 @@ public class PostViewActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference postRef = db.collection("posts").document(post.getID());
+
+        initiateRefresh();
 
         postRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -61,28 +70,33 @@ public class PostViewActivity extends AppCompatActivity {
             displayPostDetails();
         }
 
-        System.out.println("after");
-
         firestore = FirebaseFirestore.getInstance();
         commentsList = new ArrayList<>();
-        ListView listViewComments = findViewById(R.id.Comments);
-        ArrayAdapter<String> commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, commentsList);
-        listViewComments.setAdapter(commentsAdapter);
+//        ListView listViewComments = findViewById(R.id.Comments);
+//        ArrayAdapter<String> commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, commentsList);
+//        listViewComments.setAdapter(commentsAdapter);
+
 
         CollectionReference commentsRef = firestore.collection("comments");
         commentsRef.whereEqualTo("parentID", post.getID())
-                .addSnapshotListener((value, error) -> {
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((values, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Error getting comments", error);
                         return;
                     }
 
                     commentsList.clear();
-                    for (QueryDocumentSnapshot document : value) {
+                    final int[] i = {values.size()};
+                    for (QueryDocumentSnapshot document : values) {
                         String commentText = document.getString("text");
-                        commentsList.add(commentText);
+                        String parentID = document.getString("parentID");
+                        Timestamp timeStamp = (Timestamp) document.getData().get("timeStamp");
+
+                        commentsList.add(new Comment(parentID, commentText, timeStamp));
+
                     }
-                    commentsAdapter.notifyDataSetChanged();
+                    generateComments();
                 });
 
         Button addCommentButton = findViewById(R.id.activity_postView_btn_addCom);
@@ -122,6 +136,32 @@ public class PostViewActivity extends AppCompatActivity {
 
     }
 
+    private void generateComments() {
+        Log.d(TAG, "generating comment");
+        LinearLayout commentsLayout = findViewById(R.id.Comments);
+        Log.d(TAG, commentsList.toString());
+        for (Comment comment : commentsList){
+            View commentView = getLayoutInflater().inflate(R.layout.activity_post_view_comment, null);
+
+            TextView textTv = commentView.findViewById(R.id.activity_post_view_comment_tv_text);
+//            TextView authorTv = commentView.findViewById(R.id.activity_post_view_comment_tv_author);
+            TextView dateTv = commentView.findViewById(R.id.activity_post_view_comment_tv_date);
+
+            textTv.setText(comment.getText());
+//            authorTv.setText(comment.getAuthorName());
+            dateTv.setText(comment.getFormattedDateTime());
+
+            commentsLayout.addView(commentView);
+
+        }
+    }
+
+    private void initiateRefresh() {
+        // Create a UpdateProfile instance and attach this class as an observer
+        UpdatePostView r = new UpdatePostView(post);
+        r.attach(this);
+    }
+
     private void displayPostDetails() {
         TextView titleTextView = findViewById(R.id.activity_postView_tv_Title);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
@@ -148,6 +188,7 @@ public class PostViewActivity extends AppCompatActivity {
         Map<String, Object> commentData = new HashMap<>();
         commentData.put("parentID", post.getID());
         commentData.put("text", commentText);
+        commentData.put("timeStamp", new Timestamp(new Date()));
 
         commentsRef.add(commentData)
                 .addOnSuccessListener(documentReference -> Log.d(TAG, "Comment added with ID: " + documentReference.getId()))
@@ -188,6 +229,13 @@ public class PostViewActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public <T> void update(T post) {
+        Log.d(TAG, "updating called T");
+        this.post = (Post) post;
+        displayPostDetails();
     }
 }
 

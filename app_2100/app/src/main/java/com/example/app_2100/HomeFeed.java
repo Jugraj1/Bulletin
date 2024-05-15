@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,24 +12,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.util.Log;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.app_2100.observer.UpdateFeed;
+import com.example.app_2100.observer.Observer;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,24 +27,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.Current;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
+public class HomeFeed extends AppCompatActivity implements OnItemClickListener, Observer {
     private static final String TAG = "HomeFeed_Screen";
+    private RecyclerView recyclerView;
+    private RecyclerViewAdapter recylerViewAdapter;
+    private List<Post> posts = new ArrayList<Post>();
+    private boolean isLoading = false;
+    private CurrentUser currUser;
+    private int scrollPosition;
 
-    RecyclerView recyclerView;
-    RecyclerViewAdapter recylerViewAdapter;
-
-    List<Post> posts = new ArrayList<Post>();
-
-    boolean isLoading = false;
-    private int postsBatchNum = 0;
-    CurrentUser currUser;
+    private int BATCH_NUMBER;
 
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
@@ -64,10 +49,14 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_feed);
+
+        BATCH_NUMBER = App.getBATCH_NUMBER();
+
         recyclerView = findViewById(R.id.activity_home_feed_rv_posts);
 
         currUser = CurrentUser.getCurrent();
@@ -81,16 +70,18 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
                     Log.d(TAG, "profile pib is clicked");// forward to profile viewer
                     Intent profileIntent = new Intent(HomeFeed.this, ProfileViewer.class);
                     profileIntent.putExtra("authorID", CurrentUser.getCurrent().getUserID());
-                    startActivity(profileIntent);
+                    startActivity(profileIntent); // go to the ProfileViewer screen for the current user
                 });
             }
         });
 
-        initAdapter(); // put this here so it waits for posts to be queried
+        // Initialise RecyclerViewAdapter and other processes to display/update the RecyclerView
+        initAdapter();
         initScrollListener();
+        populateFeed();
+        initiateRefresh();
 
-        populateFeed(); // this does all the recycle view stuff
-
+        // Set OnClick for buttons
         Button createPostBt = findViewById(R.id.activity_home_feed_bt_create_post);
         createPostBt.setOnClickListener(v -> {
             startActivity(new Intent(HomeFeed.this, CreatePost.class));
@@ -106,27 +97,45 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
             startActivity(new Intent(HomeFeed.this, SearchActivity.class));
         });
 
+        // Set SwipeRefreshLayout for manual refresh of the page by the user
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.activity_home_feed_srl_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the page goes here
-                Log.d(TAG, "REFRESH");
-                // For example, you might want to clear the existing posts list and reload them
+                Log.d(TAG, "REFRESH via swipe");
+                // Clear existing values and repopulate feed
                 posts.clear();
-//                recylerViewAdapter.notifyDataSetChanged();
-
-                // Then, fetch new data or reload the existing data
-//                initAdapter(); // put this here so it waits for posts to be queried
                 lastVisible = null;
                 initScrollListener();
+                populateFeed();
 
-                populateFeed(); // this does all the recycle view stuff
-
-                // When the data loading is complete, call setRefreshing(false) to hide the refresh indicator
+                // Hide the refresh indicator
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void reset(){
+        posts.clear();
+        lastVisible = null;
+        initScrollListener();
+        populateFeed();
+    }
+
+    private void initiateRefresh() {
+        // Create a UpdateProfile instance and attach this class as an observer
+        UpdateFeed r = new UpdateFeed(posts, false);
+        r.attach(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        posts.clear();
+        lastVisible = null;
+//        initScrollListener();
+        populateFeed();
     }
 
     /***
@@ -156,12 +165,12 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
         if (lastVisible == null){
             query = db.collection("posts")
                     .orderBy("score", Query.Direction.DESCENDING)// descending in like count
-                    .limit(15);
+                    .limit(BATCH_NUMBER);
         } else {
             query = db.collection("posts")
                     .orderBy("score", Query.Direction.DESCENDING) // descending in like count
                     .startAfter(lastVisible) // start from prev
-                    .limit(15);
+                    .limit(BATCH_NUMBER);
         }
 
         query.get()
@@ -203,7 +212,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
     @Override
     public void onItemClick(int position) {
-//        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+        if (posts == null || posts.size() == 0){
+            return;
+        }
         Intent postViewIntent = new Intent(HomeFeed.this, PostViewActivity.class);
         postViewIntent.putExtra("post", posts.get(position));
         Log.d(TAG, posts.get(position).toString());
@@ -231,10 +242,13 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
                 super.onScrolled(recyclerView, dx, dy);
 
                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (linearLayoutManager!=null){
+                    scrollPosition = linearLayoutManager.findFirstVisibleItemPosition();
+                }
 
                 if (!isLoading) {
                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == posts.size() - 1) {
-                        // bottom of list!
+                        // bottom of list! load more posts
                         loadMore();
                         isLoading = true;
                     }
@@ -245,7 +259,13 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
     private void loadMore() {
         posts.add(null);
-        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
+        recyclerView.post(new Runnable() {
+            public void run() {
+                // There is no need to use notifyDataSetChanged()
+                recylerViewAdapter.notifyItemInserted(posts.size() - 1);
+            }
+        });
+//        recylerViewAdapter.notifyItemInserted(posts.size() - 1);
 
         Handler handler = new Handler();
         handler.postDelayed(() -> {
@@ -320,4 +340,10 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener {
 
         profileImg.setImageBitmap(pfpImageBitmap);
     }
+
+    @Override
+    public <T> void update(T posts) {
+        reset();
+    }
+
 }

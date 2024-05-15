@@ -2,10 +2,8 @@ package com.example.app_2100;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -20,14 +18,20 @@ import android.util.Log;
 
 import com.example.app_2100.data_generators.PostGenerator;
 import com.example.app_2100.data_generators.UserGenerator;
-import com.example.app_2100.notification.Notification;
-import com.example.app_2100.notification.NotificationFactory;
-import com.example.app_2100.notification.NotificationType;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity";
+
+
+
+//    TODO: List of known bugs as of 15/05/24
+//    FIXME: - When searching yields no results, the app crashes
+//    FIXME: - When searching through posts, the posts cant be clicked on to open it
+//    FIXME: - Cant search for users
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +39,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
+
+
+
+
+//        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
 //        FirebaseAuth.getInstance().signOut();
 
 //        generateUsers(25);
 //        generatePosts(1);
+//        UpdateProfile r = new UpdateProfile();
+//        r.start();
 
 
         createNotificationChannel();
 
-        startActivity(new Intent(MainActivity.this, Login.class));
+//        startActivity(new Intent(MainActivity.this, Login.class));
 
 
         if (currentUser != null) { // user is logged in already

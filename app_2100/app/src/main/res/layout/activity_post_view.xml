@@ -74,7 +74,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="#00F6F5F5"
+                android:background="#00000000"
                 android:text="View Article"
                 android:textColor="#000000"
                 app:icon="@drawable/googleg_disabled_color_18"
@@ -96,7 +96,7 @@ Sit amet mauris commodo quis imperdiet. Tortor at auctor urna nunc id. At augue 
 
             <Button
                 android:id="@+id/activity_home_feed_post_thumbnail_bt_like"
-                style="@style/HomeFeedPostThumbnailButton"
+                style="@style/PostViewLikeButton"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginStart="280dp"
@@ -130,13 +130,14 @@ Sit amet mauris commodo quis imperdiet. Tortor at auctor urna nunc id. At augue 
                 android:layout_marginEnd="16dp"
                 android:background="#2e2e2e" />
 
-            <ListView
+            <LinearLayout
                 android:id="@+id/Comments"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical" />
 
         </LinearLayout>
     </ScrollView>
