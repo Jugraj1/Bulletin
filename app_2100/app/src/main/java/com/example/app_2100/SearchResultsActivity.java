@@ -1,6 +1,7 @@
 package com.example.app_2100;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -88,6 +89,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         populateFeed(tmTo, tmFrom);
 
 
+
         //load more posts
         load = findViewById(R.id.activity_searchResults_btn_more);
         load.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +104,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                         Log.d(TAG, String.valueOf(loadedPosts.size()));
 
                         LinearLayout linearLayout = findViewById(R.id.activity_home_feed_lv_posts);
+
 
                         for (Post post : loadedPosts) {
                             // Inflate the post thumbnail layout
@@ -156,6 +159,12 @@ public class SearchResultsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void onItemClick(Post post) {
+        Intent postViewIntent = new Intent(SearchResultsActivity.this, PostViewActivity.class);
+        postViewIntent.putExtra("post", post);
+        startActivity(postViewIntent);
     }
 
 
@@ -291,6 +300,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
                 LinearLayout linearLayout = findViewById(R.id.activity_home_feed_lv_posts);
 
+
                 for (Post post : loadedPosts) {
                     // Inflate the post thumbnail layout
                     View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
@@ -306,7 +316,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                     bodyTv.setText(post.getBody());
 
                     // Set onClickListeners for buttons if needed
-
+                    postThumbnail.setOnClickListener(view -> onItemClick(post));
                     // Add the post thumbnail to the LinearLayout
                     linearLayout.addView(postThumbnail);
                 }
