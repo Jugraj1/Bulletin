@@ -42,12 +42,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, Login.class));
 
 
-        if (currentUser != null) { // user is logged in already
-            startActivity(new Intent(MainActivity.this, HomeFeed.class));
-            Log.d(TAG, "logged in already");
-        } else { // no currently logged in user
-            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
-        }
+//        if (currentUser != null) { // user is logged in already
+//            startActivity(new Intent(MainActivity.this, HomeFeed.class));
+//            Log.d(TAG, "logged in already");
+//        } else { // no currently logged in user
+//            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
+//        }
     }
 
 
