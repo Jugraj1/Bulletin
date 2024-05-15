@@ -38,16 +38,15 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
 //        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
-//        FirebaseAuth.getInstance().signOut();
 
-//        generateUsers(1);
-//        generatePosts(1);
+//        generateUsers(200);
+//        generatePosts(2500);
 
         createNotificationChannel();
 
 
         if (currentUser != null) { // user is logged in already
-            startActivity(new Intent(MainActivity.this, HomeFeed.class));
+//            startActivity(new Intent(MainActivity.this, HomeFeed.class));
             Log.d(TAG, "logged in already");
         } else { // no currently logged in user
             startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
@@ -105,19 +104,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         for (int i=0; i<gen.getNUsers(); i++) {
-
-            gen.generateUsername(gen.generateFirstName(), gen.generateLastName(), new DataLoadedListener() {
-                @Override
-                public void OnDataLoaded(Object currUsername) {
-                    String fName = gen.getfName();
-                    String lName = gen.getlName();
-                    String email = gen.generateEmail(fName+lName);
-                    String username = (String) currUsername;
-                    gen.uploadUser(email, fName, lName, username);
-                }
-            });
-
-
+            String fName = gen.generateFirstName();
+            String lName = gen.generateLastName();
+            Log.d(TAG, fName+lName);
+            gen.generateUsername(fName, lName); // this will upload and get email inside the gen class.
         }
     }
 

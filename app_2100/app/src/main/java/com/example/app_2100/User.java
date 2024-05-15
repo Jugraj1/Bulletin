@@ -76,24 +76,18 @@ public class User {
     }
 
     /***
-     *  Used in the UserGenerator (making dummy accounts)
+     *  Used in the UserGenerator (making dummy accounts), we only need basic instance of User
      * @param userID
      * @param firstName
      * @param lastName
      */
-    public User(String userID, String firstName, String lastName){  // add more user details if needed
+    public User(String userID, String firstName, String lastName){
         this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public void addInitialisationCallback(InitialisationCallback initCallback) {
-        if (isInitialised) {
-            initCallback.onInitialised();
-        } else {
-            // !?
-        }
-    }
+
 
     public void queryUserByID(String userID, FirestoreCallback callback){
         db.collection("users")
@@ -164,13 +158,11 @@ public class User {
     }
 
     /***
-     * handle everything for getting pfp bitmap
+     * Handle everything for getting pfp bitmap
      */
     public void initProfilePicBitmap(){
-
         if (localPfpFile.exists()) {
             // file already exists locally, no need to redownload
-//            Log.d(TAG, "File already exists: " + localPfpFile.getAbsolutePath());
             this.pfpBitmap = BitmapFactory.decodeFile(localPfpFile.getAbsolutePath());
 
             if (pfpLoadedCallback != null) {
@@ -194,6 +186,9 @@ public class User {
         }
     }
 
+    /**
+     * Used for Fetching Profile picture
+     */
     public interface PfpLoadedCallback {
         void onPfpLoaded(Bitmap bitmap);
         void onPfpLoadFailed(Exception e);
@@ -209,6 +204,11 @@ public class User {
         return this.localPfpFile;
     }
 
+    /***
+     * Download the user's profile picture from the database if it doesn't currently exist in cache
+     * @param context
+     * @param callback
+     */
     public void dlProfilePicBitmap(Context context, PfpLoadedCallback callback) { // made public for temp solution to the big async problem (ask noah)
 //        File localFile = File.createTempFile("images", "jpg");
         Log.d(TAG, "downloading pfp from: "+pfpStorageLink);
@@ -223,10 +223,6 @@ public class User {
             );
             return;
         }
-//        File localFile = new File(context.getCacheDir(), this.pfpLocalLink);
-//       File localFile = new File(context.getCacheDir(), "pfp_1.jpg");
-
-//        Log.d(TAG, "local file: "+localFile.toString());
 
         pfpRef.getFile(localPfpFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
@@ -244,78 +240,40 @@ public class User {
             }
         });
     }
-
-    public void updateProfilePicture(Bitmap imgBitmap){
-//        task = storageRef.put(file);
-//
-//        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = pfpRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-            }
-        });
-    }
-
-    public User(){
-
-    }
     public String getFirstName() {
         return firstName;
     }
-
     public String getLastName() {
         return lastName;
     }
-
     public String getUserID() {
         return userID;
     }
-
     public String getUsername() {
         return username;
     }
-
     public Bitmap getPfpBitmap() {
         return pfpBitmap;
     }
-
-    public String getPfpStorageLink() {return pfpStorageLink; }
 
     public void setUserID(String userID) {
         this.userID = userID;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public void setPfpStorageLink(String pfpStorageLink) {
-        this.pfpStorageLink = pfpStorageLink;
-    }
-
+    /**
+     * Formats the name so it can be displayed on the screen
+     * @param fName
+     * @param lName
+     * @return Formatted name of "Firstname Lastname"
+     */
     public static String formatName(String fName, String lName){
         return String.format("%s %s", fName, lName); // e.g. "John Smith"
     }
 
-    public void setPfpBitmap(Bitmap bmp){
-
-    }
-
+    /***
+     * Fetch the accounts that the user is following
+     * @param listener
+     */
     public void getFollowing(DataLoadedListener listener){
         db.collection("users").document(userID).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -325,6 +283,10 @@ public class User {
         );
     }
 
+    /***
+     * Fetch the posts which are posted by this User
+     * @param listener
+     */
     public void getPosts(DataLoadedListener listener){
         Query postsQuery = db.collection("posts").whereEqualTo("author", this.userID);
         postsQuery.get().addOnCompleteListener(task -> {
@@ -354,7 +316,11 @@ public class User {
         });
     }
 
-
+    public void addInitialisationCallback(InitialisationCallback initCallback) {
+        if (isInitialised) {
+            initCallback.onInitialised();
+        }
+    }
 
     @Override
     public String toString() {

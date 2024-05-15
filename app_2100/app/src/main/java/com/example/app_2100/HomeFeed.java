@@ -182,6 +182,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         // last visible document
+                        if (documentSnapshots.size() == 0){
+                            return;
+                        }
                         lastVisible = documentSnapshots.getDocuments()
                                 .get(documentSnapshots.size() -1);
                         // TODO handle when we run out of posts to display (just refresh to top of page or come up with better solution)
