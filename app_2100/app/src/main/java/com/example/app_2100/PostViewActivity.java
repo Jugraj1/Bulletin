@@ -20,6 +20,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -78,6 +79,7 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
 
         CollectionReference commentsRef = firestore.collection("comments");
         commentsRef.whereEqualTo("parentID", post.getID())
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((values, error) -> {
                     if (error != null) {
                         Log.w(TAG, "Error getting comments", error);
@@ -91,18 +93,8 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
                         String parentID = document.getString("parentID");
                         Timestamp timeStamp = (Timestamp) document.getData().get("timeStamp");
 
-                        commentsList.add(new Comment(parentID, commentText, timeStamp));// , new DataLoadedListener() {
-//                            @Override
-//                            public void OnDataLoaded(Object comment) {
-//                                commentsList.add((Comment) comment);
-//                                Log.d(TAG, "ADDED COMMENT");
-//
-//                                i[0]--;
-//                                if (i[0] == 0 ) {
-//                                    generateComments();
-//                                }
-//                            }
-//                        });
+                        commentsList.add(new Comment(parentID, commentText, timeStamp));
+
                     }
                     generateComments();
                 });
