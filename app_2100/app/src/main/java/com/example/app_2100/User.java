@@ -98,6 +98,7 @@ public class User {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+
                             for (QueryDocumentSnapshot document : task.getResult()) { // todo change this later to ensure only 1 record for user (or we cna imply it from db rules>?)
 //                            Log.d(TAG, document.getId() + " => " + document.getData());
                                 Map<String, Object> userData = document.getData();
@@ -128,7 +129,8 @@ public class User {
 
 //                                isInitialised = true;
 //                                initCallback.onUserInitialised();
-                                callback.onUserLoaded(fName, lName, pfpLink);
+
+                                callback.onUserLoaded(fName,lName, "pfpLink");
                             }
 
                         } else {

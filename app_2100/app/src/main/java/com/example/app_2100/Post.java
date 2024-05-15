@@ -101,29 +101,8 @@ public class Post implements Parcelable {
                 } else {
                     Log.d(TAG, "failed to get document: ", task.getException());
                 }
-
-
-
-//                callback.onPostLoaded(Post.this);
             }
         });
-        /**
-        if (this.authorID != null){
-            FirestoreCallback userCallback = new FirestoreCallback(){
-                @Override
-                public void onUserLoaded(String fName, String lName, String pfpLink){
-                    authorName = User.formatName(fName, lName);
-                }
-            };
-
-//            this.authorName = postAuthor.getFormattedName(); // set to the actual author
-//            User postAuthor = new User(this.authorID, userCallback);
-
-//            Log.d(TAG, postAuthor.toString());
-        } else {
-            this.authorName = "INVALID";
-        }
-         **/
     }
 
     public void toggleLike(String likerID){

@@ -212,7 +212,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
 
     @Override
     public void onItemClick(int position) {
-//        Intent postViewIntent = new Intent(HomeFeed.this, PostView.class);
+        if (posts == null || posts.size() == 0){
+            return;
+        }
         Intent postViewIntent = new Intent(HomeFeed.this, PostViewActivity.class);
         postViewIntent.putExtra("post", posts.get(position));
         Log.d(TAG, posts.get(position).toString());

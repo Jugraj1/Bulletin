@@ -130,13 +130,14 @@ Sit amet mauris commodo quis imperdiet. Tortor at auctor urna nunc id. At augue 
                 android:layout_marginEnd="16dp"
                 android:background="#2e2e2e" />
 
-            <ListView
+            <LinearLayout
                 android:id="@+id/Comments"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical" />
 
         </LinearLayout>
     </ScrollView>
