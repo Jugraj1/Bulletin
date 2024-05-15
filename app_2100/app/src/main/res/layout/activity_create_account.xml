@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".CreateAccount">
 
-<!--    TODO: Let user upload picture-->
-
 <!--    Create account Button-->
     <Button
         android:id="@+id/activity_create_account_bt_create_account"
@@ -57,12 +55,14 @@
         app:layout_constraintTop_toBottomOf="@+id/activity_create_account_et_last_name" />
 
 <!--    Email Text Field-->
+
+    <!--    First Name Text Field-->
     <EditText
         android:id="@+id/activity_create_account_et_email"
         android:layout_width="308dp"
         android:layout_height="49dp"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="196dp"
         android:layout_marginEnd="25dp"
         android:autofillHints="emailAddress"
         android:background="@drawable/login_custom_et"
@@ -72,11 +72,10 @@
         android:padding="10dp"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintHorizontal_bias="0.452"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-<!--    First Name Text Field-->
     <EditText
         android:id="@+id/activity_create_account_et_first_name"
         android:layout_width="308dp"
@@ -128,5 +127,35 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/activity_create_account_image_view"
+        android:layout_width="126dp"
+        android:layout_height="130dp"
+        android:background="#673AB7"
+        android:backgroundTint="#673AB7"
+        android:cropToPadding="false"
+        android:padding="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/activity_create_account_et_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:shapeAppearanceOverlay="@style/ShapeableImageRound"
+        app:strokeColor="@color/design_default_color_primary"
+        app:strokeWidth="8px"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <ImageButton
+        android:id="@+id/activity_create_account_bt_choose_image"
+        android:layout_width="51dp"
+        android:layout_height="51dp"
+        android:backgroundTint="#673AB7"
+        app:layout_constraintBottom_toTopOf="@+id/activity_create_account_et_email"
+        app:layout_constraintEnd_toEndOf="@+id/activity_create_account_image_view"
+        app:layout_constraintHorizontal_bias="0.532"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/activity_create_account_image_view"
+        app:layout_constraintVertical_bias="0.691"
+        app:srcCompat="@drawable/ic_add_image_foreground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
