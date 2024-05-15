@@ -19,6 +19,9 @@
             android:name=".SearchResultsActivity"
             android:exported="false" />
         <activity
+            android:name=".ArticleWebViewer"
+            android:exported="false" />
+        <activity
             android:name=".CreateAccount"
             android:exported="false" />
         <activity

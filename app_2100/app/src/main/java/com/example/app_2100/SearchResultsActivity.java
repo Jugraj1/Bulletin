@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,8 +15,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.listeners.OnPostsLoadedListener;
 import com.example.app_2100.search.AVLTree;
-import com.example.app_2100.search.EmptyTree;
 import com.example.app_2100.search.FieldIndex;
 import com.example.app_2100.search.SearchUtils;
 import com.example.app_2100.search.Tree;
@@ -29,7 +29,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;

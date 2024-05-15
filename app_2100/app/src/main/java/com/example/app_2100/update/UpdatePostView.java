@@ -1,4 +1,4 @@
-package com.example.app_2100.observer;
+package com.example.app_2100.update;
 
 import android.util.Log;
 
@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.example.app_2100.FirebaseFirestoreConnection;
 import com.example.app_2100.Post;
-import com.example.app_2100.PostLoadCallback;
+import com.example.app_2100.callbacks.PostLoadCallback;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -59,7 +59,7 @@ public class UpdatePostView implements Subject<Post>{
                             data.get("body"),
                             data.get("author"),
                             data.get("publisher"),
-                            data.get("sourceURL"),
+                            data.get("url"),
                             data.get("timeStamp"),
                             new PostLoadCallback() {
                                 @Override

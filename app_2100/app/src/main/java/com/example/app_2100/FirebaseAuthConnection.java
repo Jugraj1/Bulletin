@@ -2,16 +2,12 @@ package com.example.app_2100;
 
 import android.util.Log;
 
-import com.google.firebase.Timestamp;
+import com.example.app_2100.callbacks.AuthCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FirebaseAuthConnection {

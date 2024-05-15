@@ -5,8 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.app_2100.FirebaseFirestoreConnection;
-import com.example.app_2100.InitialisationCallback;
-import com.example.app_2100.Post;
+import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

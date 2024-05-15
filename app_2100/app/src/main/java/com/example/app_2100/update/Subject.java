@@ -1,4 +1,4 @@
-package com.example.app_2100.observer;
+package com.example.app_2100.update;
 
 public interface Subject<T> {
     public void attach(Observer observer);

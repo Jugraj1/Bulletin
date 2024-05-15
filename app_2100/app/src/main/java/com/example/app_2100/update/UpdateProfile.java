@@ -1,26 +1,17 @@
-package com.example.app_2100.observer;
+package com.example.app_2100.update;
 
 import android.util.Log;
 
-import com.example.app_2100.App;
-import com.example.app_2100.DataLoadedListener;
-import com.example.app_2100.FirebaseFirestoreConnection;
-import com.example.app_2100.FirestoreCallback;
+import com.example.app_2100.listeners.DataLoadedListener;
+import com.example.app_2100.callbacks.FirestoreCallback;
 import com.example.app_2100.User;
 import com.example.app_2100.Post;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class UpdateProfile implements Subject<User> {
     private final ArrayList<Observer> observers;

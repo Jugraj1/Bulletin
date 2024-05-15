@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.data_generators.PostGenerator;
 import com.example.app_2100.data_generators.UserGenerator;
 import com.google.firebase.auth.FirebaseUser;

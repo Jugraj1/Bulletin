@@ -2,13 +2,14 @@ package com.example.app_2100;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ArticleWebViewer extends AppCompatActivity {
-
+    public static final String TAG = "ArticleWebViewer";
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class ArticleWebViewer extends AppCompatActivity {
         else{
             webView.loadUrl("https://www.google.com.au/");
             webView.setWebViewClient(new WebViewClient());
+            Log.e(TAG, "LINK IS NULL");
         }
     }
 }

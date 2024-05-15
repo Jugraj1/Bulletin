@@ -17,8 +17,12 @@ import android.os.Handler;
 import android.widget.Button;
 import android.util.Log;
 
-import com.example.app_2100.observer.UpdateFeed;
-import com.example.app_2100.observer.Observer;
+import com.example.app_2100.callbacks.InitialisationCallback;
+import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.listeners.OnItemClickListener;
+import com.example.app_2100.listeners.OnPostsLoadedListener;
+import com.example.app_2100.update.UpdateFeed;
+import com.example.app_2100.update.Observer;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.DocumentSnapshot;

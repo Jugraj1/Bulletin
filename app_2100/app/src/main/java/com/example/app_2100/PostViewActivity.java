@@ -6,15 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.app_2100.observer.Observer;
-import com.example.app_2100.observer.UpdatePostView;
+import com.example.app_2100.update.Observer;
+import com.example.app_2100.update.UpdatePostView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -27,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class PostViewActivity extends AppCompatActivity implements Observer {
 
@@ -128,6 +124,7 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 // Open WebViewActivity and pass the source URL as an extra
                 Intent webViewIntent = new Intent(PostViewActivity.this, ArticleWebViewer.class);
+                Log.d(TAG, "url: "+post.getSourceURL());
                 webViewIntent.putExtra("url", post.getSourceURL());
                 startActivity(webViewIntent);
             }
@@ -233,7 +230,7 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
 
     @Override
     public <T> void update(T post) {
-        Log.d(TAG, "updating called T");
+        Log.d(TAG, "refreshing postview: "+post.toString());
         this.post = (Post) post;
         displayPostDetails();
     }

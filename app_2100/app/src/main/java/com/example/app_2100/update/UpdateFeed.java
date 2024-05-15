@@ -1,4 +1,4 @@
-package com.example.app_2100.observer;
+package com.example.app_2100.update;
 
 import android.util.Log;
 

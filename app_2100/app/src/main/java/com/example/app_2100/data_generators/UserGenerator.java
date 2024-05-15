@@ -1,7 +1,7 @@
 package com.example.app_2100.data_generators;
 
 import android.util.Log;
-import com.example.app_2100.AuthCallback;
+import com.example.app_2100.callbacks.AuthCallback;
 import com.example.app_2100.FirebaseFirestoreConnection;
 import com.google.firebase.firestore.CollectionReference;
 import java.util.Arrays;

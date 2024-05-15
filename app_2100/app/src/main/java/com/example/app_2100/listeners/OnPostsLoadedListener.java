@@ -1,4 +1,6 @@
-package com.example.app_2100;
+package com.example.app_2100.listeners;
+
+import com.example.app_2100.Post;
 
 import java.util.List;
 

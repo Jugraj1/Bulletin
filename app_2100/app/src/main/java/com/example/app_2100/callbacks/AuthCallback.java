@@ -1,4 +1,4 @@
-package com.example.app_2100;
+package com.example.app_2100.callbacks;
 
 /**
  * Callback interface for authentication

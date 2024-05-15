@@ -1,7 +1,9 @@
 package com.example.app_2100;
 
 import android.graphics.Bitmap;
-import android.util.Log;
+
+import com.example.app_2100.callbacks.FirestoreCallback;
+import com.example.app_2100.callbacks.InitialisationCallback;
 import com.google.firebase.auth.FirebaseUser;
 
 
