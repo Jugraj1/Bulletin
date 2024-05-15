@@ -19,6 +19,7 @@ import android.util.Log;
 import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.data_generators.PostGenerator;
 import com.example.app_2100.data_generators.UserGenerator;
+import com.example.app_2100.listeners.DataLoadedListener;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 //        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
 //        FirebaseAuth.getInstance().signOut();
 
-//        generateUsers(25);
+        generateUsers(1);
 //        generatePosts(1);
 
         createNotificationChannel();
@@ -101,15 +102,22 @@ public class MainActivity extends AppCompatActivity {
      */
     private void generateUsers(int n){
         UserGenerator gen = new UserGenerator(n);
-        String email;
-        String fName;
-        String lName;
-        for (int i=0; i<gen.getNUsers(); i++) {
-            fName = gen.getFirstName();
-            lName = gen.getLastName();
-            email = gen.getEmail(fName+lName);
 
-            gen.uploadUser(email, fName, lName);
+
+        for (int i=0; i<gen.getNUsers(); i++) {
+
+            gen.generateUsername(gen.generateFirstName(), gen.generateLastName(), new DataLoadedListener() {
+                @Override
+                public void OnDataLoaded(Object currUsername) {
+                    String fName = gen.getfName();
+                    String lName = gen.getlName();
+                    String email = gen.generateEmail(fName+lName);
+                    String username = (String) currUsername;
+                    gen.uploadUser(email, fName, lName, username);
+                }
+            });
+
+
         }
     }
 

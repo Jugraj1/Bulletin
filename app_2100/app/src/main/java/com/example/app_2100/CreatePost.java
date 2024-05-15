@@ -86,7 +86,7 @@ public class CreatePost extends AppCompatActivity {
             post.put("author", currUserID);
             post.put("timeStamp", currTime);
             post.put("likes", Collections.emptyList()); // empty likes arr, we need it to exist so we can OrderBy
-            post.put("score", 0.0); // empty likes arr, we need it to exist so we can OrderBy
+            post.put("score", 0.0); // cloud function will calc the value
 
             // Add to "posts" collection in firestore
             CollectionReference postsCollection = db.collection("posts");

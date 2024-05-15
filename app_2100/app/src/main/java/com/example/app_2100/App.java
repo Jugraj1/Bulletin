@@ -9,14 +9,45 @@ import android.util.Log;
 
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 public class App extends Application {
     private static Context mContext;
+    private final static String TAG = "App";
     private static final int BATCH_NUMBER = 15; // number of posts to fetch in each batch for Feeds
 
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+    }
+
+    /**
+     * Read the lines from the text file
+     * @param filename Filename for the textfile to read
+     * @return List of each line
+     */
+    public static List<String> readTextFile(String filename) {
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getContext().getAssets().open(filename)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading filename: " + filename, e);
+        }
+        return lines;
     }
 
     /***

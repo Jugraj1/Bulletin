@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -39,6 +40,8 @@ public class User {
     private String lastName;
     private String userID;
     private String pfpStorageLink;
+
+    private String username;
     private String pfpFileLink;
     private String defaultpfpStorageLink = "gs://app-f4755.appspot.com/pfp/1.png";
 
@@ -80,7 +83,7 @@ public class User {
     public User(String userID, String firstName, String lastName){  // add more user details if needed
         this.userID = userID;
         this.firstName = firstName;
-        this.lastName =lastName;
+        this.lastName = lastName;
     }
 
     public void addInitialisationCallback(InitialisationCallback initCallback) {
@@ -106,12 +109,14 @@ public class User {
                                 String fName = (String) userData.get("firstName");
                                 String lName = (String) userData.get("lastName");
                                 String pfpLink = (String) userData.get("pfpStorageLink");
+                                String uName = (String) userData.get("username");
 
 //                                If the pfpLink is null, then set it to the default pfp link
                                 // Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
 
                                 firstName = fName;
                                 lastName = lName;
+                                username = uName;
                                 if (pfpLink != null){
                                     pfpStorageLink = pfpLink;
                                     pfpRef = storage.getReferenceFromUrl(pfpStorageLink);
@@ -139,6 +144,51 @@ public class User {
                         }
                     }
                 });
+    }
+
+//    public void checkUsernameExists(String username, OnCompleteListener<QuerySnapshot> onCompleteListener) {
+//        CollectionReference usersCollection = db.collection("users");
+//        Query query = usersCollection.whereEqualTo("username", username);
+//        query.get().addOnCompleteListener(onCompleteListener);
+//    }
+
+    public void checkUsernameExists(String username, DataLoadedListener listener) {
+
+        CollectionReference usersCollection = db.collection("users");
+        Query query = usersCollection.whereEqualTo("username", username);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        listener.OnDataLoaded(true);
+
+                    } else {
+                        listener.OnDataLoaded(false);
+                    }
+                } else {
+                    Log.d(TAG, "err checking username");
+                }
+            }
+        });
+
+//        checkUsernameExists(username, new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    QuerySnapshot querySnapshot = task.getResult();
+//                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+//                        listener.OnDataLoaded("");
+//
+//                    } else {
+//                        listener.OnDataLoaded(username);
+//                    }
+//                } else {
+//                    Log.d(TAG, "err checking username");
+//                }
+//            }
+//        });
     }
 
     /***
