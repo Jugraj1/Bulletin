@@ -23,12 +23,27 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity";
 
+
+
+//    TODO: List of known bugs as of 15/05/24
+//    FIXME: - When searching yields no results, the app crashes
+//    FIXME: - When searching through posts, the posts cant be clicked on to open it
+//    FIXME: - Cant search for users
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
+
+
+
+
+//        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
 //        FirebaseAuth.getInstance().signOut();
 
 //        generateUsers(25);
@@ -39,15 +54,15 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
-        startActivity(new Intent(MainActivity.this, Login.class));
+//        startActivity(new Intent(MainActivity.this, Login.class));
 
 
-//        if (currentUser != null) { // user is logged in already
-//            startActivity(new Intent(MainActivity.this, HomeFeed.class));
-//            Log.d(TAG, "logged in already");
-//        } else { // no currently logged in user
-//            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
-//        }
+        if (currentUser != null) { // user is logged in already
+            startActivity(new Intent(MainActivity.this, HomeFeed.class));
+            Log.d(TAG, "logged in already");
+        } else { // no currently logged in user
+            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
+        }
     }
 
 
