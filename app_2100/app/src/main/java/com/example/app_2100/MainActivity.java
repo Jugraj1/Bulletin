@@ -39,12 +39,10 @@ public class MainActivity extends AppCompatActivity {
 //        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
 //        FirebaseAuth.getInstance().signOut();
 
-        generateUsers(1);
+//        generateUsers(1);
 //        generatePosts(1);
 
         createNotificationChannel();
-
-//        startActivity(new Intent(MainActivity.this, Login.class));
 
 
         if (currentUser != null) { // user is logged in already
@@ -52,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "logged in already");
         } else { // no currently logged in user
             startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
+            finish();
         }
     }
 

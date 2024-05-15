@@ -58,7 +58,7 @@ public class UserGenerator {
     public String generateUsername(String firstName, String lastName, DataLoadedListener listener){
         int randomNum = rand.nextInt(999);
         String joinedName = firstName+lastName;
-        currUsername = String.format("%s%d", firstName+lastName, randomNum).toLowerCase();
+        currUsername = String.format("%s%d", joinedName, randomNum).toLowerCase();
         User tempUser = new User("email", firstName, lastName);
         tempUser.checkUsernameExists(currUsername, new DataLoadedListener() {
             @Override

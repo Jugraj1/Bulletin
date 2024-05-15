@@ -110,16 +110,17 @@ public class FirebaseAuthConnection {
      * @param password
      * @param firstName
      * @param lastName
+     * @param username
      * @param callback
      */
-    public void createAccount(String email, String password, String firstName, String lastName, boolean defaultPicture, AuthCallback callback){
+    public void createAccount(String email, String password, String firstName, String lastName, boolean defaultPicture, String username, AuthCallback callback){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // sign in success
                         String currentUserID = mAuth.getCurrentUser().getUid();
                         if (currentUserID != null){
-                            updateAccount(currentUserID, firstName, lastName, defaultPicture);
+                            updateAccount(currentUserID, firstName, lastName, defaultPicture, username);
                         } else {
                             Log.d(TAG, "Currently signed in user is null :(");
                         }
@@ -138,8 +139,9 @@ public class FirebaseAuthConnection {
      * @param userId
      * @param firstName
      * @param lastName
+     * @param username
      */
-    private void updateAccount(String userId, String firstName, String lastName, boolean defaultPicture){
+    private void updateAccount(String userId, String firstName, String lastName, boolean defaultPicture, String username){
         // update the user with the first name and last name
         String pfpStorageLink = "gs://app-f4755.appspot.com/pfp/" + userId + ".jpg";
 
@@ -148,6 +150,7 @@ public class FirebaseAuthConnection {
         newUser.put("firstName", firstName);
         newUser.put("lastName", lastName);
         newUser.put("following", Collections.emptyList());
+        newUser.put("username", username);
 
 //        Only put profile storage link if it is not default picture
         if(!defaultPicture) {

@@ -63,6 +63,7 @@ public class Login extends AppCompatActivity {
         // sign up "text" (which is acting like a button) onclick handling
         signupTv.setOnClickListener(v -> {
             startActivity(new Intent(Login.this, CreateAccount.class));
+            finish();
 //            createAccount("email@email.com", "password","f","l"); // leave it as does nothing, but should link to create acc screen!?
         });
     }
@@ -81,6 +82,7 @@ public class Login extends AppCompatActivity {
                     FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
                     if (currUser != null){
                         startActivity(new Intent(Login.this, HomeFeed.class)); // go to home page since login validated
+                        finish();
                     } else {
                         Log.w(TAG, "signInWithEmail: logged in account is null");
                         // uh oh somethign that shouldnt happen has happened!
@@ -93,49 +95,5 @@ public class Login extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void createAccount(String email, String password, String firstName, String lastName ) {
-       FirebaseAuthConnection.getInstance().createAccount(email, password, new AuthCallback() {
-           @Override
-           public void onAuthentication(boolean success) {
-               if (success) {
-                   Log.d(TAG, "createUserWithEmail:success");
-
-
-
-                   Toast.makeText(Login.this, "Account Creation succeeded.",
-                           Toast.LENGTH_LONG).show();
-                   startActivity(new Intent(Login.this, HomeFeed.class)); // user is automatically logged in - go to home feed
-               } else {
-                   Log.w(TAG, "createUserWithEmail:failure");
-                   Toast.makeText(Login.this, "Account Creation failed.",
-                           Toast.LENGTH_LONG).show();
-               }
-           }
-       });
-
-
-
-
-
-
-//        mAuth.createUserWithEmailAndPassword(email, password)
-//                .addOnCompleteListener(this, task -> {
-//                    if (task.isSuccessful()) {
-//                        // Sign in success, update UI with the signed-in user's information
-//                        Log.d(TAG, "createUserWithEmail:success");
-//                        Toast.makeText(Login.this, "Authentication succeeded.",
-//                                Toast.LENGTH_SHORT).show();
-//                        FirebaseUser user = mAuth.getCurrentUser();
-////                            updateUI(user);
-//                    } else {
-//                        // If sign in fails, display a message to the user.
-//                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-//                        Toast.makeText(Login.this, "Authentication failed.",
-//                                Toast.LENGTH_SHORT).show();
-////                            updateUI(null);
-//                    }
-//                });
     }
 }

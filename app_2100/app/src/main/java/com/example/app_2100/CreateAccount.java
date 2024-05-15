@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.example.app_2100.callbacks.AuthCallback;
+import com.example.app_2100.listeners.DataLoadedListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -37,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +49,7 @@ public class CreateAccount extends AppCompatActivity {
     private String passwordString;
     private String firstNameString;
     private String lastNameString;
+    private String usernameString;
 
 //     profile picture variables
     private StorageReference defaultPfpRef;
@@ -199,6 +202,7 @@ public class CreateAccount extends AppCompatActivity {
                Log.d(TAG,  "Successfully uploaded profile picture");
                pictureUploading = false;
                startActivity(new Intent(CreateAccount.this, HomeFeed.class));
+               finish();
             }
         }).addOnFailureListener(e -> Log.d(TAG, "Failed to upload profile picture"));
     }
@@ -310,10 +314,18 @@ public class CreateAccount extends AppCompatActivity {
               // Redirect to login page
 
               // Create account
-           createAccount();
-           if(defaultPicture){
-               startActivity(new Intent(this, HomeFeed.class));
-           }
+           Intent homeFeedIntent = new Intent(this, HomeFeed.class);
+           generateUsername(firstNameString, lastNameString, 1, new DataLoadedListener() {
+               @Override
+               public void OnDataLoaded(Object username) {
+                   usernameString = (String) username;
+                   createAccount();
+//                   if(defaultPicture){
+//                       startActivity(homeFeedIntent);
+//                   }
+               }
+           });
+
        }
     }
 
@@ -324,9 +336,9 @@ public class CreateAccount extends AppCompatActivity {
      */
     private void createAccount(){
 //        Can only create account with email and password.
-        Log.d(TAG, "createAccount() started");
+        Log.d(TAG, "createAccount() started: "+this.usernameString);
 
-        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, defaultPicture,createAccountCallback());
+        FirebaseAuthConnection.getInstance().createAccount(emailString, passwordString, firstNameString, lastNameString, defaultPicture, usernameString, createAccountCallback());
 
     }
 
@@ -347,6 +359,8 @@ public class CreateAccount extends AppCompatActivity {
 //                    get user id and upload picture
                     userId = FirebaseAuthConnection.getCurrentUser().getUid();
                     uploadProfilePicture();
+                    startActivity(new Intent(CreateAccount.this, HomeFeed.class));
+                    finish();
 
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure");
@@ -368,12 +382,12 @@ public class CreateAccount extends AppCompatActivity {
         EditText passwordEditText = findViewById(R.id.activity_create_account_et_password);
         EditText firstNameEditText = findViewById(R.id.activity_create_account_et_first_name);
         EditText lastNameEditText = findViewById(R.id.activity_create_account_et_last_name);
+//        EditText usernameNameEditText = findViewById(R.id.activity_create_account_et_last_name);
 
         emailString = emailEditText.getText().toString();
         passwordString = passwordEditText.getText().toString();
         firstNameString = firstNameEditText.getText().toString();
         lastNameString = lastNameEditText.getText().toString();
-
 
 //        Validate for empty fields
         if (emailString.isEmpty() || passwordString.isEmpty() || firstNameString.isEmpty() || lastNameString.isEmpty()){
@@ -400,5 +414,25 @@ public class CreateAccount extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public String generateUsername(String firstName, String lastName, int num, DataLoadedListener listener){
+//        Random rand = new Random();
+//        int randomNum = rand.nextInt(9999);
+        String joinedName = firstName+lastName;
+        String currUsername = String.format("%s%d", joinedName, num).toLowerCase();
+        User tempUser = new User("email", firstName, lastName);
+        tempUser.checkUsernameExists(currUsername, new DataLoadedListener() {
+            @Override
+            public void OnDataLoaded(Object exists) {
+                Boolean usernameExists = (Boolean) exists;
+                if (usernameExists){
+                    generateUsername(firstName, lastName, num+1, listener);
+                } else {
+                    listener.OnDataLoaded(currUsername);
+                }
+            }
+        });
+        return "";
     }
 }
