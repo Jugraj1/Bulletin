@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
 import com.example.app_2100.notification.NewPostNotificationData;
 import com.example.app_2100.notification.Notification;
 import com.example.app_2100.notification.NotificationFactory;

@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.app_2100.callbacks.FirestoreCallback;
 import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.firebase.FirebaseAuthConnection;
 import com.example.app_2100.listeners.DataLoadedListener;
 import com.example.app_2100.update.Observer;
 import com.example.app_2100.update.UpdateProfile;

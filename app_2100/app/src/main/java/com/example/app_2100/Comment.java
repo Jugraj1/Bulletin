@@ -1,7 +1,6 @@
 package com.example.app_2100;
 
-import android.util.Log;
-
+import com.example.app_2100.helper.DateFormatter;
 import com.google.firebase.Timestamp;
 
 import java.util.Date;

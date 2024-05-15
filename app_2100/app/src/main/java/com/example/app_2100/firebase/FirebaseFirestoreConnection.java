@@ -1,4 +1,4 @@
-package com.example.app_2100;
+package com.example.app_2100.firebase;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 

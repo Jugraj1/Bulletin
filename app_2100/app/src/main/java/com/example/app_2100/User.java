@@ -12,6 +12,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import com.example.app_2100.callbacks.FirestoreCallback;
 import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
 import com.example.app_2100.listeners.DataLoadedListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

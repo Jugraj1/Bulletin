@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.app_2100.callbacks.AuthCallback;
+import com.example.app_2100.firebase.FirebaseAuthConnection;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity {

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.example.app_2100.callbacks.FirestoreCallback;
 import com.example.app_2100.callbacks.InitialisationCallback;
+import com.example.app_2100.firebase.FirebaseAuthConnection;
 import com.google.firebase.auth.FirebaseUser;
 
 

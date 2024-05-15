@@ -1,13 +1,11 @@
 package com.example.app_2100.data_generators;
 
-import static com.example.app_2100.App.getContext;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.app_2100.App;
-import com.example.app_2100.FirebaseFirestoreConnection;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
 import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,7 +23,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;

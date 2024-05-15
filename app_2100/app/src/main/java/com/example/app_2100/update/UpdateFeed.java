@@ -3,7 +3,7 @@ package com.example.app_2100.update;
 import android.util.Log;
 
 import com.example.app_2100.App;
-import com.example.app_2100.FirebaseFirestoreConnection;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
 import com.example.app_2100.Post;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;

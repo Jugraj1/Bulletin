@@ -2,17 +2,12 @@ package com.example.app_2100.data_generators;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.example.app_2100.App;
 import com.example.app_2100.User;
 import com.example.app_2100.callbacks.AuthCallback;
-import com.example.app_2100.FirebaseFirestoreConnection;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
 import com.example.app_2100.listeners.DataLoadedListener;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
 import java.util.HashMap;

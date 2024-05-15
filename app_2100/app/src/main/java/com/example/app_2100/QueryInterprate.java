@@ -1,5 +1,9 @@
 package com.example.app_2100;
 
+import com.example.app_2100.helper.IDValidator;
+import com.example.app_2100.helper.TitleValidator;
+import com.example.app_2100.helper.URLValidator;
+
 import java.util.*;
 
 public class QueryInterprate {

@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.app_2100.FirebaseFirestoreConnection;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
 import com.example.app_2100.Post;
 import com.example.app_2100.callbacks.PostLoadCallback;
 import com.google.firebase.firestore.DocumentReference;
