@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.example.app_2100.observer.Observer;
 import com.example.app_2100.observer.UpdateProfile;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -59,12 +61,22 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
 
         // Set onClickListener for Follow Button
         Button followButton = findViewById(R.id.Follow);
-        // Remove onClickListener for followButton
-         followButton.setOnClickListener(view -> followAuthor(userID));
 
-        TabLayout myTabLayout = findViewById(R.id.tabLayout);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
 
-        myTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        TabItem postsTab = findViewById(R.id.postsTab);
+
+        if (userID.equals(loggedInUserID)) {
+            followButton.setVisibility(View.GONE);
+            tabLayout.getTabAt(0).setText("My Posts");
+//            postsTab.setText("t")
+        } else {
+            followButton.setVisibility(View.VISIBLE);
+            followButton.setOnClickListener(view -> followAuthor(userID));
+
+        }
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 updatePosts(tab.getPosition());
@@ -128,7 +140,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         scrollViewChildLayout.removeAllViews();
 
         currentTab = tab;
-        Log.d("ProfileViewer mytablayoutlistner", "current tab is " + currentTab);
+        Log.d("ProfileViewer tablayoutlistner", "current tab is " + currentTab);
 //        String userID = getIntent().getStringExtra("authorID");
         // Query Firebase for posts by that user
         Query postsQuery = db.collection("posts").whereEqualTo("author", userID);
