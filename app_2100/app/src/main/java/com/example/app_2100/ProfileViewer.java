@@ -103,7 +103,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     private void fetchUser(String userID){
         user = new User(userID, new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String fName, String lName, String empty) {
+            public void onUserLoaded(String fName, String lName, String username, String empty) {
                 Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
 
                 // Set the text for firstname, lastname
@@ -122,6 +122,11 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
 
         TextView lastNameTextView = findViewById(R.id.LName);
         lastNameTextView.setText(user.getLastName());
+
+        TextView usernameTextView = findViewById(R.id.username);
+        String formattedUser = "@"+user.getUsername();
+        usernameTextView.setText(formattedUser);
+
     }
 
     private void initiateRefresh() {
@@ -210,13 +215,13 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         // Untested
         ScrollView scrollView1 = findViewById(R.id.scrollView1);
         if (currentTab == 0) {
-            Log.d("ProfileViewer", "tabhost.get current tab is " + currentTab);
+//            Log.d("ProfileViewer", "tabhost.get current tab is " + currentTab);
             for(Post post: posts){
 //                Log.d("ProfileViewer", "post title: " + post.getTitle());
                 addPostToLayout(post, scrollView1);
             }
         } else if (currentTab == 1) {
-            Log.d("ProfileViewer", "tabhost.get current tab is " + currentTab);
+//            Log.d("ProfileViewer", "tabhost.get current tab is " + currentTab);
             displayFollowingUsersOfAuthor(userID, scrollView1);
         }
     }
@@ -488,13 +493,5 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         updateUserText(); // update name text
         updatePosts(currentTab);
 //        displayFollowingUsersOfAuthor("", findViewById(R.id.scrollView1)); // update following
-        // update posts
-
-
-//        finish();
-//        overridePendingTransition(0, 0);
-//        startActivity(getIntent());
-//        overridePendingTransition(0, 0);
-//        recreate();
     }
 }

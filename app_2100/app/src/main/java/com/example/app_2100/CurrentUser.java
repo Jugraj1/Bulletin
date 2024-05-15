@@ -18,7 +18,7 @@ public class CurrentUser extends User{
     private CurrentUser() { // Private constructor to prevent instantiation from outside
         super(FirebaseAuthConnection.getInstance().getAuth().getCurrentUser().getUid(), new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String firstName, String lastName, String pfpLink) {
+            public void onUserLoaded(String firstName, String lastName, String username, String pfpLink) {
                 // do nothing rn i guess.
             }
         });
@@ -62,12 +62,12 @@ public class CurrentUser extends User{
     public void queryUserByID(String userID, FirestoreCallback callback) {
         super.queryUserByID(userID, new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String fName, String lName, String pfpLink) {
+            public void onUserLoaded(String fName, String lName, String username, String pfpLink) {
                 initialised = true;
                 if (initialisationCallback != null) {
                     initialisationCallback.onInitialised();
                 }
-                callback.onUserLoaded(fName, lName, pfpLink);
+                callback.onUserLoaded(fName, lName, username, pfpLink);
             }
         });
     }

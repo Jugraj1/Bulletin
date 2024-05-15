@@ -82,9 +82,11 @@ public class UpdateProfile implements Subject<User> {
 //        Log.d("UpdateProfile", "currUser: " + currUser.toString());
         newUser = new User(currUser.getUserID(), new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String fName, String lName, String pfpStorageLink) {
-                if (!fName.equals(currUser.getFirstName()) || !lName.equals(currUser.getLastName())){ // id never changes, only first/last name
-                    notify = true;
+            public void onUserLoaded(String fName, String lName, String username, String pfpStorageLink) {
+                if(fName != null && lName != null && username != null){
+                    if (!fName.equals(currUser.getFirstName()) || !lName.equals(currUser.getLastName()) || !username.equals(currUser.getUsername())){ // id never changes, only first/last name
+                        notify = true;
+                    }
                 }
 
                 newUser.getFollowing(new DataLoadedListener() {

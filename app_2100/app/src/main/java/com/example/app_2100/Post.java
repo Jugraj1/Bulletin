@@ -67,9 +67,8 @@ public class Post implements Parcelable {
         this.authorID = (String) authorID;
         User postAuthor = new User((String) authorID, new FirestoreCallback(){
             @Override
-            public void onUserLoaded(String fName, String lName, String pfpLink){
+            public void onUserLoaded(String fName, String lName, String username, String pfpLink){
                 authorName = User.formatName(fName, lName);
-
 //                        Log.d(TAG, "authorName: "+authorName);
                 callback.onPostLoaded(Post.this);
             }

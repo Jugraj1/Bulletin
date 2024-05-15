@@ -108,12 +108,12 @@ public class User {
                                 Map<String, Object> userData = document.getData();
                                 String fName = (String) userData.get("firstName");
                                 String lName = (String) userData.get("lastName");
-                                String pfpLink = (String) userData.get("pfpStorageLink");
                                 String uName = (String) userData.get("username");
+                                String pfpLink = (String) userData.get("pfpStorageLink");
 
 //                                If the pfpLink is null, then set it to the default pfp link
                                 // Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
-
+                                
                                 firstName = fName;
                                 lastName = lName;
                                 username = uName;
@@ -122,21 +122,15 @@ public class User {
                                     pfpRef = storage.getReferenceFromUrl(pfpStorageLink);
 
                                     if (userID.equals(CurrentUser.getCurrent().getUserID())){ // saves doing it unneccesarily.
-//                                        Log.d(TAG, "link: "+pfpStorageLink);
                                         initProfilePicBitmap();
                                     }
 
-//                                    Log.d(TAG, "pfpLink: "+ pfpStorageLink);
                                 } else {
                                     Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
                                     pfpBitmap = App.drawableToBitmap(vectorDrawable);
-//
+
                                 }
-
-//                                isInitialised = true;
-//                                initCallback.onUserInitialised();
-
-                                callback.onUserLoaded(fName,lName, "pfpLink");
+                                callback.onUserLoaded(fName,lName, username, "pfpLink");
                             }
 
                         } else {
@@ -145,12 +139,6 @@ public class User {
                     }
                 });
     }
-
-//    public void checkUsernameExists(String username, OnCompleteListener<QuerySnapshot> onCompleteListener) {
-//        CollectionReference usersCollection = db.collection("users");
-//        Query query = usersCollection.whereEqualTo("username", username);
-//        query.get().addOnCompleteListener(onCompleteListener);
-//    }
 
     public void checkUsernameExists(String username, DataLoadedListener listener) {
 
@@ -172,23 +160,6 @@ public class User {
                 }
             }
         });
-
-//        checkUsernameExists(username, new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    QuerySnapshot querySnapshot = task.getResult();
-//                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-//                        listener.OnDataLoaded("");
-//
-//                    } else {
-//                        listener.OnDataLoaded(username);
-//                    }
-//                } else {
-//                    Log.d(TAG, "err checking username");
-//                }
-//            }
-//        });
     }
 
     /***
@@ -309,6 +280,10 @@ public class User {
 
     public String getUserID() {
         return userID;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public Bitmap getPfpBitmap() {

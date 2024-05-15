@@ -24,8 +24,6 @@ public class Login extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-
-
 //        Uncomment this code to automatically log in the user if they are already logged in
 //        this is just for testing purposes
         // Check if user is signed in (non-null) and update UI accordingly.
