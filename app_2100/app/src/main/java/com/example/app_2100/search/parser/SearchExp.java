@@ -29,4 +29,12 @@ public class SearchExp extends Exp {
 		}
 		return "\n[Title]:" + titleExp.show() + "\n[Author]:" + authorExp.show();
 	}
+
+	public String getTitle() {
+		return titleExp.show();
+	}
+
+	public String getAuthor() {
+		return authorExp.show();
+	}
 }

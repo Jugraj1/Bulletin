@@ -24,6 +24,7 @@
         android:textColor="#ffffff" />
 
     <ScrollView
+        android:id="@+id/scrollView3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/activity_search_results_rl_header"
@@ -54,7 +55,7 @@
             android:text="Relevant results" />
 
         <Button
-            android:id="@+id/activity_search_results_bt_search"
+            android:id="@+id/activity_search_results_page_bt_search"
             android:layout_width="40dp"
             android:layout_height="45dp"
             android:layout_alignParentEnd="true"
@@ -77,6 +78,27 @@
             android:scaleType="centerCrop" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/scrollView3"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="300dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="300dp"
+        android:text="Search failed!"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.704" />
+
 
     <!-- footer -->
 

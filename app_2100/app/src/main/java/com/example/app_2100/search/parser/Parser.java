@@ -93,7 +93,7 @@ public class Parser {
      *
      * @return type: SearchExp.
      */
-    public SearchExp parseSearchExp() {
+    public SearchExp parseSearchExp() throws IllegalProductionException{
         TitleExp titleExp = parseTitleExp();
 
 //        System.out.println(tokenizer.current().getToken());
@@ -152,7 +152,7 @@ public class Parser {
      *
      * @return type: TitleExp.
      */
-    public TitleExp parseTitleExp() {
+    public TitleExp parseTitleExp() throws IllegalProductionException{
         /*
          TODO: Implement parse function for <term>.
          TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
@@ -185,7 +185,7 @@ public class Parser {
      *
      * @return type: Exp.
      */
-    public AuthorExp parseAuthorExp() {
+    public AuthorExp parseAuthorExp() throws IllegalProductionException {
         /*
          TODO: Implement parse function for <factor>.
          TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
@@ -230,7 +230,7 @@ public class Parser {
      *
      * @return type: Exp.
      */
-    public NameExp parseNameExp() {
+    public NameExp parseNameExp() throws IllegalProductionException{
         /*
          TODO: Implement parse function for <coefficient>.
          TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
@@ -261,7 +261,7 @@ public class Parser {
      * <word> ::= a <word> | b <word> | ... | z <word> | ... | a  | ... | z |
      * @return type: Exp.
      */
-    public WordExp parseWordExp() {
+    public WordExp parseWordExp() throws IllegalProductionException {
         /*
          TODO: Implement parse function for <coefficient>.
          TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
@@ -307,6 +307,14 @@ public class Parser {
 
 //        return ; // Change this return (if you want). It is simply a placeholder to prevent an error.
         // ########## YOUR CODE ENDS HERE ##########
+    }
+
+    public String getTitle() {
+        return parseSearchExp().getTitle();
+    }
+
+    public String getAuthor() {
+        return parseSearchExp().getAuthor();
     }
 
 }

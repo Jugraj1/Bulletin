@@ -1,6 +1,7 @@
 package com.example.app_2100;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,8 @@ import com.example.app_2100.search.EmptyTree;
 import com.example.app_2100.search.FieldIndex;
 import com.example.app_2100.search.SearchUtils;
 import com.example.app_2100.search.Tree;
+import com.example.app_2100.search.parser.Parser;
+import com.example.app_2100.search.tokenizer.Tokenizer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -40,6 +43,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     LinearLayout listView;
     //    ArrayAdapter arrayAdapter;
     Button load;
+    TextView displayInfo;
 
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
@@ -51,6 +55,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     List<Post> posts = new ArrayList<Post>();
     //    List<Post> topNPosts = new ArrayList<>();
 //    boolean isLoading = false;
+
     String queryTitle;
     Tree<FieldIndex<Double, String>> simTree;
     HashMap<String, Post> postMap = new HashMap<>();
@@ -67,29 +72,45 @@ public class SearchResultsActivity extends AppCompatActivity {
             return insets;
         });
         listView = findViewById(R.id.activity_home_feed_lv_posts);
+        displayInfo = (TextView) findViewById(R.id.auth);
+        Button searchBt = findViewById(R.id.activity_search_results_page_bt_search);
+        searchBt.setOnClickListener(v -> {
+            startActivity(new Intent(SearchResultsActivity.this, SearchActivity.class));
+        });
 
         Bundle extras = getIntent().getExtras();
         String searchFieldString = extras.getString("searchField");
 
-        //IMP!!!!!!!!! THIS THING NEEDS TO BE FOUND BY A PARSER :::::: IMP!!!!!!!!!!!!
-        queryTitle = searchFieldString;
+        // If grammar rules are followed correctly, search results are shown
+        // otherwise nothing can really be displayed
+//        queryTitle = parseTitle(searchFieldString);
 
+        load = findViewById(R.id.activity_searchResults_btn_more);
+        Log.d("Hello::", "error1");
+        try {
+            queryTitle = parseTitle(searchFieldString);
+            Log.d("Hello::", "error2");
+            String dateButtonString = extras.getString("dateButton");
+            String dateButtonToString = extras.getString("dateButtonTo");
+            assert dateButtonToString != null;
+            String[] tokens = dateButtonToString.split(" ");
+            int tmToYear = Integer.parseInt(tokens[2]);
+            int tmToMonth = getMonth(tokens[0]);
+            int tmToDate = Integer.parseInt(tokens[1]);
 
-        String dateButtonString = extras.getString("dateButton");
-        String dateButtonToString = extras.getString("dateButtonTo");
-        assert dateButtonToString != null;
-        String[] tokens = dateButtonToString.split(" ");
-        int tmToYear = Integer.parseInt(tokens[2]);
-        int tmToMonth = getMonth(tokens[0]);
-        int tmToDate = Integer.parseInt(tokens[1]);
-
-        Timestamp tmFrom = new Timestamp(new Date(dateButtonString));
-        Timestamp tmTo = new Timestamp(new Date(tmToYear, tmToMonth, tmToDate, 23, 59, 59));
-        populateFeed(tmTo, tmFrom);
+            Timestamp tmFrom = new Timestamp(new Date(dateButtonString));
+            Timestamp tmTo = new Timestamp(new Date(tmToYear, tmToMonth, tmToDate, 23, 59, 59));
+            populateFeed(tmTo, tmFrom);
+        } catch (Exception e) {
+            // Catching a more general exception
+            displayInfo.setText("Invalid input");
+            displayInfo.setVisibility(View.VISIBLE);
+            load.setVisibility(View.INVISIBLE);
+        }
 
 
         //load more posts
-        load = findViewById(R.id.activity_searchResults_btn_more);
+
         load.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -178,6 +199,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                                         postLoadCallback
                                 );
 
+//                                Log.d("Query before attempting:", queryTitle);
+
                                 double titleSimilarity = SearchUtils.getTextsSimilarity((String) currData.get("title"), queryTitle);
                                 FieldIndex<Double, String> simIndex = new FieldIndex<Double, String>(titleSimilarity, document.getId());
 
@@ -203,13 +226,18 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 
 
-
     }
 
     private List<Post> retrieveTopNPostsFromTree(int topN) {
         List<Post> topNPosts = new ArrayList<Post>();
 
 //        int curNumPosts = 0;
+
+        if (simTree == null) {
+            displayInfo.setText("No results found");
+            displayInfo.setVisibility(View.VISIBLE);
+            return new ArrayList<>();
+        }
         HashSet<String> mostRel =  simTree.max().getIndices();
         for (int curNumPosts = 0; curNumPosts < topN; curNumPosts++) {
             for (Iterator<String> iterator = mostRel.iterator(); curNumPosts < topN && iterator.hasNext(); ) {
@@ -233,6 +261,12 @@ public class SearchResultsActivity extends AppCompatActivity {
             mostRel = simTree.max().getIndices();
         }
         return topNPosts;
+    }
+
+    private String parseTitle(String input) throws Parser.IllegalProductionException {
+        Tokenizer tokenizer = new Tokenizer(input);
+        Parser parser = new Parser(tokenizer);
+        return parser.getTitle();
     }
 
     private int getMonth(String month) {

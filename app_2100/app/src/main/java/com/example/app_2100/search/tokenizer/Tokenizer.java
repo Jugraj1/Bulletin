@@ -60,7 +60,7 @@ public class Tokenizer {
      * **** please do not modify this part ****
      */
     public Tokenizer(String text) {
-        buffer = text;          // save input text (string)
+        buffer = removeRedundantSpaces(text);          // save input text (string)
         next();                 // extracts the first token.
     }
 
@@ -134,5 +134,19 @@ public class Tokenizer {
      */
     public boolean hasNext() {
         return currentToken != null;
+    }
+
+
+    public static String removeRedundantSpaces(String input) {
+
+        // Replace multiple spaces with a single space
+        input = input.replaceAll("\\s+", " ");
+        if (input.charAt(0) == ' ') {
+            input = input.substring(1);
+        }
+        if (input.charAt(input.length() - 1) == ' ') {
+            input = input.substring(0, input.length() - 1);
+        }
+        return input;
     }
 }
