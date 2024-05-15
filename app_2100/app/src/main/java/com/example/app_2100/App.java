@@ -18,14 +18,28 @@ public class App extends Application {
         super.onCreate();
         mContext = getApplicationContext();
     }
+
+    /***
+     * Used for classes that arent acitivities, in which they need application context
+     * @return Context of the application
+     */
     public static Context getContext() {
         return mContext;
     }
 
+    /***
+     *
+     * @return Batch number for how many posts to query from database (Homefeed / Following feed
+     */
     public static int getBATCH_NUMBER() {
         return BATCH_NUMBER;
     }
 
+    /**
+     * Converts a drawable asset into a bitmap, to be used for profile picture displaying (default pfp)
+     * @param drawable Drawable to be converted to bitmap
+     * @return The drawable as a bitmap
+     */
     public static Bitmap drawableToBitmap(Drawable drawable) {
         Bitmap bitmap;
 

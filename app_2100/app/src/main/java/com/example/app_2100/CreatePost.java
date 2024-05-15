@@ -92,16 +92,10 @@ public class CreatePost extends AppCompatActivity {
             CollectionReference postsCollection = db.collection("posts");
             postsCollection.add(post)
                     .addOnSuccessListener(documentReference -> {
-
-
-//                        Log.d(TAG, uploadedPost.toString());
-//
-//                        Log.d(TAG, "Created post!");
                         Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
 
                         Intent postViewIntent = new Intent(this, PostViewActivity.class);
                         Context context = this;
-
 
                         String authorID = documentReference.getId();
                         Post uploadedPost = new Post(
@@ -119,6 +113,7 @@ public class CreatePost extends AppCompatActivity {
 
                                         postViewIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+                                        // Create pending intent used for then notification to open the post
                                         PendingIntent pendingIntent = PendingIntent.getActivity(
                                                 context, 0,
                                                 postViewIntent,
@@ -169,18 +164,14 @@ public class CreatePost extends AppCompatActivity {
             channel.canBubble();
             channel.enableVibration(true);
 
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this.
+            // Register the channel with the system, can't change the importance or other notification behaviors after this.
             notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
-
-//            Notification notif = NotificationFactory.createNotification(NotificationType.NEW_POST);
 
             // we need this for android 13 (api 33) and above
             if (ContextCompat.checkSelfPermission(
                     this, android.Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "we have perm");
                 // You can use the API that requires the permission.
 
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -195,7 +186,6 @@ public class CreatePost extends AppCompatActivity {
                             Manifest.permission.POST_NOTIFICATIONS);
                 }
             }
-//            notificationManager.notify(1, notif.getNotificationBuilder().build());
         }
     }
 

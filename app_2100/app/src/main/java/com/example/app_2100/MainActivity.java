@@ -24,15 +24,10 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity";
 
-
-
 //    TODO: List of known bugs as of 15/05/24
 //    FIXME: - When searching yields no results, the app crashes
 //    FIXME: - When searching through posts, the posts cant be clicked on to open it
 //    FIXME: - Cant search for users
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +35,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
-
-
-
-
 //        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
 //        FirebaseAuth.getInstance().signOut();
 
 //        generateUsers(25);
 //        generatePosts(1);
-//        UpdateProfile r = new UpdateProfile();
-//        r.start();
-
 
         createNotificationChannel();
 
@@ -66,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private static NotificationManager notificationManager;
     public static NotificationManager getNotificationManager(){
         return notificationManager;
@@ -76,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is not in the Support Library.
         String CHANNEL_ID = "channel_1";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // standard docs code
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -88,33 +75,30 @@ public class MainActivity extends AppCompatActivity {
             notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
 
-//            Notification notif = NotificationFactory.createNotification(NotificationType.NEW_POST);
-
             // we need this for android 13 (api 33) and above
             if (ContextCompat.checkSelfPermission(
                     this, Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "we have perm");
-                // You can use the API that requires the permission.
+                Log.d(TAG, "Permission granted for 'POST_NOTIFICATIONS'");
 
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.POST_NOTIFICATIONS)) {
-                // do stuff
             } else {
-                Log.d(TAG, "no perm");
-                // You can directly ask for the permission.
+                Log.d(TAG, "No permission for 'POST_NOTIFICATIONS'");
+                // Directly ask for the permission.
                 // The registered ActivityResultCallback gets the result of this request.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // for api 33 +
                     requestPermissionLauncher.launch(
                             Manifest.permission.POST_NOTIFICATIONS);
                 }
             }
-
-            Log.d(TAG, "sending notif");
-//            notificationManager.notify(1, notif.getNotificationBuilder().build());
         }
     }
 
+    /***
+     * Generate n users, used to populate the database with simulated users
+     * @param n amount of users to generate
+     */
     private void generateUsers(int n){
         UserGenerator gen = new UserGenerator(n);
         String email;
@@ -143,13 +127,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+    /***
+     * Generate n posts, used to populate the database with simulated posts
+     * @param n Amount of posts to generate
+     */
     private void generatePosts(int n) {
         PostGenerator gen = new PostGenerator(n, new InitialisationCallback() {
             @Override
             public void onInitialised() {
-                Log.d(TAG, "initialised post gen");
-                // This method will be called when PostGenerator initialization is complete
-
+                Log.d(TAG, "initialised post generator");
             }
         });
     }

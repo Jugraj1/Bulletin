@@ -29,7 +29,6 @@ import java.util.Map;
 public class PostViewActivity extends AppCompatActivity implements Observer {
 
     private Post post;
-//    private ArrayList<String> commentsList;
     private ArrayList<Comment> commentsList;
     private FirebaseFirestore firestore;
     private static final String TAG = "PostView";
@@ -68,10 +67,6 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
 
         firestore = FirebaseFirestore.getInstance();
         commentsList = new ArrayList<>();
-//        ListView listViewComments = findViewById(R.id.Comments);
-//        ArrayAdapter<String> commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, commentsList);
-//        listViewComments.setAdapter(commentsAdapter);
-
 
         CollectionReference commentsRef = firestore.collection("comments");
         commentsRef.whereEqualTo("parentID", post.getID())
@@ -90,7 +85,6 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
                         Timestamp timeStamp = (Timestamp) document.getData().get("timeStamp");
 
                         commentsList.add(new Comment(parentID, commentText, timeStamp));
-
                     }
                     generateComments();
                 });
@@ -108,7 +102,7 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
                 }
             }
         });
-
+        // Like button updates likes in database
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,9 +110,8 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
             }
         });
 
-        // Inside your PostViewActivity class
-
         Button viewArticleButton = findViewById(R.id.button3);
+        // Open link in browser when clicked
         viewArticleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,8 +126,10 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
 
     }
 
+    /**
+     * Display the comments in the layout
+     */
     private void generateComments() {
-        Log.d(TAG, "generating comment");
         LinearLayout commentsLayout = findViewById(R.id.Comments);
         Log.d(TAG, commentsList.toString());
         for (Comment comment : commentsList){
@@ -153,12 +148,18 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
         }
     }
 
+    /**
+     * Setup the Subject which monitors the post updates in firebase, to refresh if theres change
+     */
     private void initiateRefresh() {
         // Create a UpdateProfile instance and attach this class as an observer
         UpdatePostView r = new UpdatePostView(post);
         r.attach(this);
     }
 
+    /***
+     * Display all the post information on the screen
+     */
     private void displayPostDetails() {
         TextView titleTextView = findViewById(R.id.activity_postView_tv_Title);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
@@ -179,6 +180,10 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
         dateTextView.setText(post.getFormattedDateTime());
     }
 
+    /***
+     * Upload a new comment to the database (postID which the comment belongs to, text of the comment, and the time it was made)
+     * @param commentText
+     */
     private void addCommentToFirestore(String commentText) {
         CollectionReference commentsRef = firestore.collection("comments");
 
@@ -192,6 +197,11 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
                 .addOnFailureListener(e -> Log.w(TAG, "Error adding comment", e));
     }
 
+    /**
+     * Toggle the like button appearance when clicked/unclicked
+     * @param likeButton The like button
+     * @param isLiked Whether it is currently liked or not, so it can be toggled
+     */
     private void updateLikeButtonUI(Button likeButton, boolean isLiked) {
         if (isLiked) {
             likeButton.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
@@ -200,6 +210,11 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
         }
     }
 
+    /**
+     * Add/Remove likes to a post in the database
+     * @param likeButton
+     * @param postId
+     */
     private void updatePostLikesInFirestore(Button likeButton, String postId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference postRef = db.collection("posts").document(postId);
@@ -228,6 +243,11 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
         });
     }
 
+    /**
+     * Refresh the post data, when the Subject detects a change in database (since we are observing for those changes)
+     * @param post The new post queried from database
+     * @param <T>
+     */
     @Override
     public <T> void update(T post) {
         Log.d(TAG, "refreshing postview: "+post.toString());
