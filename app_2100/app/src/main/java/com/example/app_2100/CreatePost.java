@@ -37,11 +37,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Adith Iyer
+ * Noah Vendrig
+ * Jugraj Singh
+ */
+
 public class CreatePost extends AppCompatActivity {
     private EditText titleEditText, publisherEditText, urlEditText, contentEditText;
     private Button createButton;
     private FirebaseFirestore db;
 
+
+    /**
+     * @param savedInstanceState
+     * Adith Iyer
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,37 +73,41 @@ public class CreatePost extends AppCompatActivity {
     }
 
     /**
-     * Initialize views by finding them from layout XML.
+     * Initialize views by finding them from layout XML
+     * Adith Iyer
      */
     private void initViews() {
+         publisherEditText = findViewById(R.id.activity_create_post_et_publisher);
+         urlEditText = findViewById(R.id.activity_create_post_et_url);
+         createButton = findViewById(R.id.activity_create_post_bt_submit);
         titleEditText = findViewById(R.id.activity_create_post_et_title);
-        publisherEditText = findViewById(R.id.activity_create_post_et_publisher);
-        urlEditText = findViewById(R.id.activity_create_post_et_url);
         contentEditText = findViewById(R.id.activity_create_post_et_content);
-        createButton = findViewById(R.id.activity_create_post_bt_submit);
     }
 
     /**
-     * Set onClick listener for the create post button.
-     * This listener validates input fields and creates a new post.
+     * Set onClick listener for the create post button
+     * This listener validates input fields and creates a new post
+     * Adith Iyer
      */
     private void setCreateButtonClickListener() {
         View.OnClickListener createClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String title = titleEditText.getText().toString().trim();
+
+                String URL = urlEditText.getText().toString().trim();
+
+                String heading = titleEditText.getText().toString().trim();
+
+                String text = contentEditText.getText().toString().trim();
+
                 String publisher = publisherEditText.getText().toString().trim();
-                String url = urlEditText.getText().toString().trim();
-                String content = contentEditText.getText().toString().trim();
 
-                // Check Fields
-                if (title.isEmpty() || publisher.isEmpty() || url.isEmpty() || content.isEmpty()) {
-                    Toast.makeText(CreatePost.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
+                // Check fields
+                if (publisher.isEmpty() || URL.isEmpty() || text.isEmpty() || heading.isEmpty()) {
+                    Toast.makeText(CreatePost.this, "Please fill in all required fields", Toast.LENGTH_SHORT).show();
+                    return;                }
                 // Generate Post Data and create post
-                createPost(title, publisher, url, content);
+                createPost(heading, publisher, URL, text);
             }
         };
 
@@ -101,12 +116,12 @@ public class CreatePost extends AppCompatActivity {
 
 
     /**
-     * Create a new post with the provided data and add it to the Firestore database.
-     *
+     * Create a new post with the provided data and add it to the Firestore database
      * @param title     Title of the post
      * @param publisher Publisher of the post
      * @param url       URL associated with the post
      * @param content   Content/body of the post
+     * Adith Iyer
      */
     private void createPost(String title, String publisher, String url, String content) {
         Map<String, Object> post = new HashMap<>();
@@ -137,9 +152,9 @@ public class CreatePost extends AppCompatActivity {
 
     /**
      * Handle successful creation of a post.
-     * This method is called when a post is successfully added to the Firestore database.
-     *
+     * This method is called when a post is successfully added to the Firestore database
      * @param documentReference Reference to the document of the newly created post
+     * Noah Vendrig and Adith Iyer
      */
     private void handlePostCreationSuccess(DocumentReference documentReference) {
         // Show toast notification for successful post creation
@@ -190,7 +205,8 @@ public class CreatePost extends AppCompatActivity {
 
     /**
      * Handle failure in post creation.
-     * This method is called when there is an error while adding a post to the Firestore database.
+     * This method is called when there is an error while adding a post to the Firestore database
+     * Adith Iyer
      */
     private void handlePostCreationFailure() {
         // Show toast notification for failure in post creation
@@ -198,8 +214,9 @@ public class CreatePost extends AppCompatActivity {
     }
 
     /**
-     * Set onClick listener for the "Go Back" button.
-     * This listener navigates back to the home feed activity when clicked.
+     * Set onClick listener for the "Go Back" button
+     * This listener navigates back to the home feed activity when clicked
+     * Jugraj Singh
      */
     private void setGoBackButtonClickListener() {
         Button goBackBt = findViewById(R.id.activity_search_bt_go_back);
@@ -210,7 +227,8 @@ public class CreatePost extends AppCompatActivity {
 
     /**
      * Creates a notification channel for displaying notifications, but only on devices running
-     * Android API level 26 (Android 8.0, Oreo) or higher.
+     * Android API level 26 (Android 8.0, Oreo) or higher
+     * Noah Vendrig
      */
     private void createNotificationChannel() {
         // Define the channel ID
@@ -263,6 +281,7 @@ public class CreatePost extends AppCompatActivity {
     /**
      * Activity result launcher for requesting the POST_NOTIFICATIONS permission.
      * Handles the result of the permission request.
+     * Noah Vendrig and Adith Iyer
      */
     private final ActivityResultLauncher<String> requestPermissionLaunch =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
