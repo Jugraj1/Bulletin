@@ -2,6 +2,11 @@ package com.example.app_2100.search;
 
 import java.util.HashSet;
 
+/**
+ * A class used to store both the relevance/similarity and post ids
+ *
+ * @author Jinzheng Ren (u7641234)
+ */
 public class FieldIndex<T extends Comparable<T>, K extends Comparable<K>> implements Comparable<FieldIndex<T, K>> {
     private T field;
     private HashSet<K> indices = new HashSet<>();
@@ -46,9 +51,6 @@ public class FieldIndex<T extends Comparable<T>, K extends Comparable<K>> implem
 
     @Override
     public int compareTo(FieldIndex<T, K> other) {
-        // Implement comparison logic here
-        // For example, if T is Date, you can compare the dates
-        // Assuming T extends Comparable<T>
         return field.compareTo(other.field);
     }
 
