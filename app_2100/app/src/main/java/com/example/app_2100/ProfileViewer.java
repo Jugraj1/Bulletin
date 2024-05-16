@@ -478,7 +478,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     @Override
     public <T> void update(T newUser) {
         this.user = (User) newUser;
-        updateUserText(); // update name text
+        updateUserTexts(); // update name text
         getPosts(currentTab);
     }
 }
