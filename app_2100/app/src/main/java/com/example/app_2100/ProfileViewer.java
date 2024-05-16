@@ -36,7 +36,6 @@ import java.util.Objects;
 
 /**
  * Adith Iyer
- * Raj Nitin Gar
  */
 
 public class ProfileViewer extends AppCompatActivity implements Observer {
