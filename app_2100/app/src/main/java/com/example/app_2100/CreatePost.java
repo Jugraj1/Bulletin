@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import com.example.app_2100.notification.NotificationFactory;
 import com.example.app_2100.notification.NotificationType;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Collections;
@@ -36,12 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreatePost extends AppCompatActivity {
-
     private EditText titleEditText, publisherEditText, urlEditText, contentEditText;
     private Button createButton;
     private FirebaseFirestore db;
-
-    private Post currPost;
     private static String TAG = "CreatePost";
     private NotificationManager notificationManager;
 
@@ -50,157 +49,227 @@ public class CreatePost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
 
-        // Firestore init
+        // Firestore initialization
         db = FirebaseFirestoreConnection.getDb();
 
+        // Create notification channel for notifications
         createNotificationChannel();
 
-        // Views init
+        // Initialize views
+        initViews();
+
+        // Set onClick listeners for buttons
+        setCreateButtonClickListener();
+        setGoBackButtonClickListener();
+    }
+
+    /**
+     * Initialize views by finding them from layout XML.
+     */
+    private void initViews() {
         titleEditText = findViewById(R.id.activity_create_post_et_title);
         publisherEditText = findViewById(R.id.activity_create_post_et_publisher);
         urlEditText = findViewById(R.id.activity_create_post_et_url);
         contentEditText = findViewById(R.id.activity_create_post_et_content);
         createButton = findViewById(R.id.activity_create_post_bt_submit);
+    }
 
-        // OnClick Listener
-        createButton.setOnClickListener(v -> {
-            String title = titleEditText.getText().toString().trim();
-            String publisher = publisherEditText.getText().toString().trim();
-            String url = urlEditText.getText().toString().trim();
-            String content = contentEditText.getText().toString().trim();
+    /**
+     * Set onClick listener for the create post button.
+     * This listener validates input fields and creates a new post.
+     */
+    private void setCreateButtonClickListener() {
+        View.OnClickListener createClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = titleEditText.getText().toString().trim();
+                String publisher = publisherEditText.getText().toString().trim();
+                String url = urlEditText.getText().toString().trim();
+                String content = contentEditText.getText().toString().trim();
 
-            // Check Fields
-            if (title.isEmpty() || publisher.isEmpty() || url.isEmpty() || content.isEmpty()) {
-                Toast.makeText(CreatePost.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                return;
+                // Check Fields
+                if (title.isEmpty() || publisher.isEmpty() || url.isEmpty() || content.isEmpty()) {
+                    Toast.makeText(CreatePost.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Generate Post Data and create post
+                createPost(title, publisher, url, content);
             }
+        };
 
-            // Generate Post Data
-            Map<String, Object> post = new HashMap<>();
-            Timestamp currTime = new Timestamp(new Date());
-            String currUserID = CurrentUser.getCurrent().getUserID();
+        createButton.setOnClickListener(createClickListener);
+    }
 
-            post.put("title", title);
-            post.put("publisher", publisher);
-            post.put("url", url);
-            post.put("body", content);
-            post.put("author", currUserID);
-            post.put("timeStamp", currTime);
-            post.put("likes", Collections.emptyList()); // empty likes arr, we need it to exist so we can OrderBy
-            post.put("score", 0.0); // cloud function will calc the value
 
-            // Add to "posts" collection in firestore
-            CollectionReference postsCollection = db.collection("posts");
-            postsCollection.add(post)
-                    .addOnSuccessListener(documentReference -> {
-                        Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
+    /**
+     * Create a new post with the provided data and add it to the Firestore database.
+     *
+     * @param title     Title of the post
+     * @param publisher Publisher of the post
+     * @param url       URL associated with the post
+     * @param content   Content/body of the post
+     */
+    private void createPost(String title, String publisher, String url, String content) {
+        Map<String, Object> post = new HashMap<>();
+        Timestamp currTime = new Timestamp(new Date());
+        String currUserID = CurrentUser.getCurrent().getUserID();
 
-                        Intent postViewIntent = new Intent(this, PostViewActivity.class);
-                        Context context = this;
+        // Populate post data
+        post.put("title", title);
+        post.put("publisher", publisher);
+        post.put("url", url);
+        post.put("body", content);
+        post.put("author", currUserID);
+        post.put("timeStamp", currTime);
+        post.put("likes", Collections.emptyList()); // empty likes array, needed for ordering
+        post.put("score", 0.0); // score will be calculated by cloud function
 
-                        String authorID = documentReference.getId();
-                        Post uploadedPost = new Post(
-                                authorID,
-                                title,
-                                content,
-                                currUserID,
-                                publisher,
-                                url,
-                                currTime,
-                                new PostLoadCallback() {
-                                    @Override
-                                    public void onPostLoaded(Post loadedPost) {
-                                        postViewIntent.putExtra("post", loadedPost);
+        // Add post to "posts" collection in Firestore
+        CollectionReference postsCollection = db.collection("posts");
+        postsCollection.add(post)
+                .addOnSuccessListener(documentReference -> {
+                    handlePostCreationSuccess(documentReference);
+                })
+                .addOnFailureListener(e -> {
+                    handlePostCreationFailure();
+                });
+    }
 
-                                        postViewIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    /**
+     * Handle successful creation of a post.
+     * This method is called when a post is successfully added to the Firestore database.
+     *
+     * @param documentReference Reference to the document of the newly created post
+     */
+    private void handlePostCreationSuccess(DocumentReference documentReference) {
+        // Show toast notification for successful post creation
+        Toast.makeText(CreatePost.this, "Post created successfully", Toast.LENGTH_SHORT).show();
 
-                                        // Create pending intent used for then notification to open the post
-                                        PendingIntent pendingIntent = PendingIntent.getActivity(
-                                                context, 0,
-                                                postViewIntent,
-                                                PendingIntent.FLAG_UPDATE_CURRENT
-                                        );
-                                        NewPostNotificationData data = new NewPostNotificationData(loadedPost, NotificationType.NEW_POST, pendingIntent);
+        // Prepare intent to view the newly created post
+        Intent postViewIntent = new Intent(this, PostViewActivity.class);
+        Context context = this;
 
-                                        Notification postCreatedNotif = NotificationFactory.createNotification(data);
-//                        notificationManager.notify(2, postCreatedNotif.getNotificationBuilder().build());
-                                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build()); // create notification
+        // Extract necessary data for the post
+        String authorID = documentReference.getId();
+        Post uploadedPost = new Post(
+                authorID,
+                titleEditText.getText().toString(),
+                contentEditText.getText().toString(),
+                CurrentUser.getCurrent().getUserID(),
+                publisherEditText.getText().toString(),
+                urlEditText.getText().toString(),
+                new Timestamp(new Date()),
+                new PostLoadCallback() {
+                    @Override
+                    public void onPostLoaded(Post loadedPost) {
+                        // Add post data to intent for viewing
+                        postViewIntent.putExtra("post", loadedPost);
 
-                                        startActivity(postViewIntent); // go to the post they just created
-                                        finish(); // Finish the activity after creating the post
-                                    }
-                                }
+                        // Set flags for intent
+                        postViewIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        // Create pending intent used for the notification to open the post
+                        PendingIntent pendingIntent = PendingIntent.getActivity(
+                                context, 0,
+                                postViewIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
                         );
+                        NewPostNotificationData data = new NewPostNotificationData(loadedPost, NotificationType.NEW_POST, pendingIntent);
 
-                    })
-                    .addOnFailureListener(e -> {
-                        // boohoo
-                        Toast.makeText(CreatePost.this, "Failed to create post", Toast.LENGTH_SHORT).show();
-                    });
-        });
+                        // Create and display notification for the new post
+                        Notification postCreatedNotif = NotificationFactory.createNotification(data);
+                        MainActivity.getNotificationManager().notify(2, postCreatedNotif.getNotificationBuilder().build());
 
+                        // Open the newly created post and finish this activity
+                        startActivity(postViewIntent);
+                        finish();
+                    }
+                }
+        );
+    }
+
+    /**
+     * Handle failure in post creation.
+     * This method is called when there is an error while adding a post to the Firestore database.
+     */
+    private void handlePostCreationFailure() {
+        // Show toast notification for failure in post creation
+        Toast.makeText(CreatePost.this, "Failed to create post", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Set onClick listener for the "Go Back" button.
+     * This listener navigates back to the home feed activity when clicked.
+     */
+    private void setGoBackButtonClickListener() {
         Button goBackBt = findViewById(R.id.activity_search_bt_go_back);
         goBackBt.setOnClickListener(v -> {
             startActivity(new Intent(CreatePost.this, HomeFeed.class));
         });
     }
 
-    private final PostLoadCallback postLoadCallback = new PostLoadCallback() {
-        @Override
-        public void onPostLoaded(Post post) {
-
-        }
-    };
-
+    /**
+     * Creates a notification channel for displaying notifications, but only on devices running
+     * Android API level 26 (Android 8.0, Oreo) or higher.
+     */
     private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is not in the Support Library.
+        // Define the channel ID
         String CHANNEL_ID = "channel_1";
+
+        // Check if the device's API level is 26 or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Get the name and description of the notification channel from string resources
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
+
+            // Set the importance level of the notification channel
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            // Create the notification channel
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-            channel.canBubble();
+
+            // Enable vibration for notifications on this channel
             channel.enableVibration(true);
 
-            // Register the channel with the system, can't change the importance or other notification behaviors after this.
+            // Register the notification channel with the system
             notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
 
-            // we need this for android 13 (api 33) and above
+            // Check for the POST_NOTIFICATIONS permission
             if (ContextCompat.checkSelfPermission(
                     this, android.Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED) {
-                // You can use the API that requires the permission.
+                // Permission is already granted, perform necessary actions
 
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this, android.Manifest.permission.POST_NOTIFICATIONS)) {
-                // do stuff
+                // Permission was previously denied by the user, handle the rationale
+
             } else {
+                // Permission has not been granted, request it from the user
                 Log.d(TAG, "no perm");
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // for api 33 +
-                    requestPermissionLauncher.launch(
+                // Check if the device's API level is 33 or higher (Android 13 or later)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    // Launch the permission request
+                    requestPermissionLaunch.launch(
                             Manifest.permission.POST_NOTIFICATIONS);
                 }
             }
         }
     }
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
+    /**
+     * Activity result launcher for requesting the POST_NOTIFICATIONS permission.
+     * Handles the result of the permission request.
+     */
+    private final ActivityResultLauncher<String> requestPermissionLaunch =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // feature requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
-                }
+                // Handle the result of the permission request
+                // If permission is granted, continue with the action or workflow in the app
+                // If permission is denied, explain to the user that the feature is unavailable
+                // and respect the user's decision without prompting them to change it.
             });
+
 }
