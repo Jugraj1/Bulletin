@@ -99,6 +99,10 @@ public class UpdateProfile implements Subject<User> {
 
                                 newPosts = (List<Post>) postsList;
 
+                                if (currFollowing == null){
+                                    return;
+                                }
+
                                 if (!currFollowing.equals(newFollowing) || currPosts.size() != newPosts.size()){
                                     notify = true;
                                 }
