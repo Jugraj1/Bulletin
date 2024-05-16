@@ -29,6 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * Noah Vendrig
+ */
 public class UpdateWorker extends Worker {
     public static final String TAG = "UpdateWorker";
     private String currID;
@@ -64,7 +68,7 @@ public class UpdateWorker extends Worker {
             String postID = entry.getKey();
             int diff = entry.getValue();
             Log.d(TAG, "notifying");
-            NewLikesNotificationData data = new NewLikesNotificationData(null, diff, NotificationType.NEW_LIKES, null);
+            NewLikesNotificationData data = new NewLikesNotificationData(null, diff, NotificationType.NEW_LIKES);
             Notification postCreatedNotif = NotificationFactory.createNotification(data);
             MainActivity.getNotificationManager().notify(3, postCreatedNotif.getNotificationBuilder().build()); // create notific
         }

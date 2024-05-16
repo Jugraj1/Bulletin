@@ -4,16 +4,17 @@ import android.app.PendingIntent;
 
 import com.example.app_2100.Post;
 
+/**
+ * Noah Vendrig
+ */
 public class NewLikesNotificationData implements NotificationData {
     private Post post;
     private int likesDiff;
     NotificationType notifType;
-    PendingIntent pendingIntent;
-    public NewLikesNotificationData(Post post, int likesDiff, NotificationType notifType, PendingIntent pendingIntent) {
+    public NewLikesNotificationData(Post post, int likesDiff, NotificationType notifType) {
         this.post = post;
         this.likesDiff = likesDiff;
         this.notifType = notifType;
-        this.pendingIntent = pendingIntent;
     }
     @Override
     public NotificationType getNotificationType(){
@@ -25,10 +26,6 @@ public class NewLikesNotificationData implements NotificationData {
     }
     public int getlikesDiff(){
         return likesDiff;
-    }
-
-    public PendingIntent getPendingIntent() {
-        return pendingIntent;
     }
 
     @Override

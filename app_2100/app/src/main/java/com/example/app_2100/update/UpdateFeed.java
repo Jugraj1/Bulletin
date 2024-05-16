@@ -27,6 +27,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * Noah Vendrig
+ */
 public class UpdateFeed implements Subject<List<Post>> {
 
     private final ArrayList<Observer> observers;
@@ -97,14 +100,14 @@ public class UpdateFeed implements Subject<List<Post>> {
         executor.shutdown();
     }
 
+    /**
+     * Noah Vendrig
+     * Query the database for the posts to display on feed
+     */
     private void queryDatabase() {
         newPosts = new ArrayList<>();
         if (useFollowingCondition){
-            // query for following
-//            currQuery = db.collection("posts")
-//                    .orderBy("score", Query.Direction.DESCENDING)// descending in like count
-                        // filter by following
-//                    .limit(App.getBATCH_NUMBER());
+            // following feed not implemented
         } else{
             currQuery = db.collection("posts")
                     .orderBy("score", Query.Direction.DESCENDING)// descending in like count
@@ -153,12 +156,22 @@ public class UpdateFeed implements Subject<List<Post>> {
                 });
     }
 
+    /**
+     * Noah Vendrig
+     * Get the author id's for each post
+     * @param posts
+     * @return
+     */
     private List<String> getPostAuthorIDs(List<Post> posts){
         return posts.stream()
                 .map(Post::getID) // Extract the ID of each Post object
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Noah Vendrig
+     * Notify all the posts that have a like count that has increased by >= 2
+     */
     private void getChange(){
         detectChangeInLikes(new DataLoadedListener() {
             @Override
@@ -169,7 +182,7 @@ public class UpdateFeed implements Subject<List<Post>> {
                 for (Map.Entry<String, Integer> entry : posts.entrySet()) {
                     String postID = entry.getKey();
                     int diff = entry.getValue();
-                    NewLikesNotificationData data = new NewLikesNotificationData(null, diff, NotificationType.NEW_LIKES, null);
+                    NewLikesNotificationData data = new NewLikesNotificationData(null, diff, NotificationType.NEW_LIKES);
                     Notification postCreatedNotif = NotificationFactory.createNotification(data);
                     MainActivity.getNotificationManager().notify(3, postCreatedNotif.getNotificationBuilder().build()); // create notific
                 }
@@ -177,6 +190,11 @@ public class UpdateFeed implements Subject<List<Post>> {
         });
     }
 
+    /***
+     * Noah Vendrig
+     * Find which posts have changed the number of likes, belongign to the current user
+     * @param listener
+     */
     private void detectChangeInLikes (DataLoadedListener listener) {
         getPosts(new DataLoadedListener() {
             @Override
@@ -217,6 +235,7 @@ public class UpdateFeed implements Subject<List<Post>> {
     }
 
     /**
+     * Noah Vendrig
      * Get the posts belonging to the current user, and the like count corresponding to each post
      * @return Post
      */
