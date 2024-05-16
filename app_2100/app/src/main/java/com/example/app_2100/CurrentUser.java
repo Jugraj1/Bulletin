@@ -1,10 +1,15 @@
 package com.example.app_2100;
 
 import android.graphics.Bitmap;
-import android.util.Log;
+
+import com.example.app_2100.callbacks.FirestoreCallback;
+import com.example.app_2100.callbacks.InitialisationCallback;
+import com.example.app_2100.firebase.FirebaseAuthConnection;
 import com.google.firebase.auth.FirebaseUser;
 
-
+/**
+ * Noah Vendrig
+ */
 public class CurrentUser extends User{
     // The current user logged into the app
     private static CurrentUser instance;
@@ -13,22 +18,23 @@ public class CurrentUser extends User{
     private boolean initialised = false;
     private InitialisationCallback initialisationCallback;
 
+    /**
+     * Represents the current user of the application
+     */
     private CurrentUser() { // Private constructor to prevent instantiation from outside
-        super(FirebaseAuthConnection.getInstance().getAuth().getCurrentUser().getUid(), new FirestoreCallback() {
-            @Override
-            public void onUserLoaded(String firstName, String lastName, String pfpLink) {
-                // do nothing rn i guess.
-            }
-        });
+        // Initialize the CurrentUser object with the UID of the current Firebase user
+        super(FirebaseAuthConnection.getInstance().getAuth().getCurrentUser().getUid(), (firstName, lastName, username, pfpLink) -> {});
+
         FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
         if (currUser != null){
-            this.setUserID(currUser.getUid()); // set current user id according to current logged in firebase user from auth
-//            this.queryUserByID(getUserID(), userCallback);
+            // Set the user ID according to the currently logged in Firebase user
+            this.setUserID(currUser.getUid());
 
+            // Set a callback for when the profile picture is loaded successfully or failed to load
             setPfpLoadedCallback(new PfpLoadedCallback() {
                 @Override
                 public void onPfpLoaded(Bitmap bitmap) {
-                    // Call your initialization callback here if not null
+                    // Call Initialization callback if not null when profile picture loaded
                     if (initCallback != null) {
                         initCallback.onInitialised();
                     }
@@ -36,12 +42,16 @@ public class CurrentUser extends User{
 
                 @Override
                 public void onPfpLoadFailed(Exception e) {
-                    // Handle failure if needed
+                    // Handle failure if needed when profile picture failed to load
                 }
             });
         }
     }
 
+    /**
+     * Retrieves the instance of the CurrentUser
+     * @return The instance of the CurrentUser
+     */
     public static CurrentUser getCurrent() {
         if (instance == null) {
             instance = new CurrentUser();
@@ -49,25 +59,36 @@ public class CurrentUser extends User{
         return instance;
     }
 
+    /**
+     * Sets the callback to be executed upon initialization of the CurrentUser
+     * @param callback The callback to be executed upon initialization
+     */
     public void setInitialisationCallback(InitialisationCallback callback) {
         initialisationCallback = callback;
+        // Call the callback immediately if the user is already initialized
         if (initialised) {
             callback.onInitialised();
         }
     }
 
+    /**
+     * Queries user information by user ID from Firestore
+     * @param userID The user ID to query
+     * @param callback The callback to be executed upon user information retrieval
+     */
     @Override
     public void queryUserByID(String userID, FirestoreCallback callback) {
         super.queryUserByID(userID, new FirestoreCallback() {
             @Override
-            public void onUserLoaded(String fName, String lName, String pfpLink) {
+            public void onUserLoaded(String fName, String lName, String username, String pfpLink) {
                 initialised = true;
+                // Call initialization callback if not null
                 if (initialisationCallback != null) {
                     initialisationCallback.onInitialised();
                 }
-                callback.onUserLoaded(fName, lName, pfpLink);
+                callback.onUserLoaded(fName, lName, username, pfpLink);
             }
         });
     }
-}
 
+}

@@ -4,9 +4,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.app_2100.FirebaseFirestoreConnection;
-import com.example.app_2100.InitialisationCallback;
-import com.example.app_2100.Post;
+import com.example.app_2100.App;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
+import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -43,6 +43,13 @@ public class PostGenerator {
     private final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
     private static final String TAG = "PostGenerator";
 
+    private final List<String> places;
+    private final List<String> firstNames;
+    private final List<String> lastNames;
+
+    private List<String> likerIDs;
+    private final List<String> urls;
+
     private final List<String> PUBLISHERS = Arrays.asList(
             "Penguin Random House", "HarperCollins", "Simon & Schuster", "Hachette Livre",
             "Macmillan Publishers", "Pearson PLC", "Wiley", "Scholastic Corporation",
@@ -77,43 +84,16 @@ public class PostGenerator {
             "Controversial"
     );
 
-    private final List<String> COUNTRIES = Arrays.asList(
-            "United States",
-            "China",
-            "India",
-            "Indonesia",
-            "Pakistan",
-            "Brazil",
-            "Nigeria",
-            "Bangladesh",
-            "Russia",
-            "Mexico",
-            "Japan",
-            "Ethiopia",
-            "Philippines",
-            "Egypt",
-            "Vietnam",
-            "DR Congo",
-            "Turkey",
-            "Iran",
-            "Germany",
-            "Thailand",
-            "United Kingdom",
-            "France",
-            "Italy",
-            "South Africa",
-            "Myanmar",
-            "Tanzania",
-            "Kenya",
-            "South Korea",
-            "Colombia",
-            "Spain"
-    );
-
     public PostGenerator(int nPosts, InitialisationCallback callback){
         this.nPosts = nPosts;
         this.callback = callback;
         this.users = new ArrayList<>();
+
+        places = App.readTextFile("places.txt");
+        firstNames = App.readTextFile("first_names.txt");
+        lastNames = App.readTextFile("last_names.txt");
+        urls = App.readTextFile("urls.txt");
+
         db = FirebaseFirestoreConnection.getDb();
 
         db.collection("users")
@@ -138,13 +118,14 @@ public class PostGenerator {
                         nUsers = users.size();
 
                         Random rand = new Random();
+                        // Generate the required number of posts
                         for (int i = 0; i < nPosts; i++) {
                             // generate post
                             User user = getRandomUser(); // set to random user
-                            getAPIOutput(rand.nextInt(4), new ProcessedAPIResCallback(){
+                            List<String> likes = createLikerIDs();
+                            getAPIOutput(rand.nextInt(4)+1, new ProcessedAPIResCallback(){
                                 @Override
                                 public void onResProcessed(String title, String body) {
-                                    Log.d(TAG, "body after: "+body);
                                     Map<String, Object> post = new HashMap<>();
                                     post.put("title", createTitle(title));
                                     post.put("publisher", createPublisher());
@@ -152,6 +133,8 @@ public class PostGenerator {
                                     post.put("body", body);
                                     post.put("author", user.getUserID());
                                     post.put("timeStamp", createTimestamp());
+                                    post.put("likes", likes);
+                                    post.put("score", 0.0);
 
                                     uploadPost(post);
                                 }
@@ -163,9 +146,8 @@ public class PostGenerator {
                             });
                         }
 
-                        // callback not needed if everything doen internally which is probbably what will happen
                         if (callback != null) {
-                            callback.onInitialised(); // Call the callback when initialization is complete
+                            callback.onInitialised(); // Call the callback when initialisation is complete
                         }
                         //
                     } else {
@@ -175,10 +157,33 @@ public class PostGenerator {
             });
     }
 
+    /**
+     *  Generates a list of random user ID's to simulate users liking the post
+     * @return A list of random user ID's
+     */
+    private List<String> createLikerIDs(){
+        List<String> likes = new ArrayList<>();
+        int randomNLikes = rand.nextInt(10);
+
+        for (int i=0; i<randomNLikes; i++){
+            likes.add(getRandomUser().getUserID());
+        }
+        return likes;
+    }
+
+
+
+
     public interface ProcessedAPIResCallback {
         void onResProcessed(String title, String body);
         void onError(Exception e);
     }
+
+    /**
+     * Get the Article data from this API
+     * @param nParagraphs number of paragraphs to generate (random)
+     * @param callback
+     */
     public void getAPIOutput(int nParagraphs, ProcessedAPIResCallback callback){
         String apiURL = String.format("https://corporatelorem.kovah.de/api/%d?format=text", nParagraphs);
         makeHttpGetRequest(apiURL, new HttpCallback() {
@@ -200,16 +205,15 @@ public class PostGenerator {
     }
 
     /***
-     * First line is the title, but not useful to post body
+     * Format the api result to get the title. First line is the title, but not useful to post body.
      * @param input
-     * @return
+     * @return Formatted title
      */
     public String[] separateTitle(String input) {
         int indexOfFirstNewline = input.indexOf('\n');
         if (indexOfFirstNewline != -1) {
             String title = input.substring(0, indexOfFirstNewline);
             String body = input.substring(indexOfFirstNewline + 1);
-            Log.d(TAG, "body before: "+input.substring(indexOfFirstNewline + 1));
             return new String[]{title, removePTags(body)};
         }
         return new String[]{"", ""}; // If there is no newline, return an empty string
@@ -218,24 +222,34 @@ public class PostGenerator {
     /***
      * Get rid of the html tags from the API output. Looks clunky to keep it in
      * @param htmlIn
-     * @return
+     * @return Title without any html <p></p> tags
      */
     public String removePTags(String htmlIn) {
         return htmlIn.replaceAll("<p>|</p>", "");
     }
 
+    /***
+     *
+     * @return A random user that exists in the database
+     */
     public User getRandomUser(){
         return this.users.get(rand.nextInt(users.size()));
     }
 
+    /***
+     * Add more details to the title (random adjective, random location)
+     * @param keyword The keyword from the API which says what the article is about
+     * @return
+     */
     private String createTitle(String keyword){
-        int randomIndex = rand.nextInt(TITLE_ADJECTIVES.size());
-        return String.format("%s %s Article in %s", TITLE_ADJECTIVES.get(randomIndex), keyword, COUNTRIES.get(randomIndex)); // e.g. "{Interesting} {Sports} in {France}"
+        int randomPlacesIndex = rand.nextInt(places.size());
+        int randomAdjIndex = rand.nextInt(TITLE_ADJECTIVES.size());
+        return String.format("%s %s Article in %s", TITLE_ADJECTIVES.get(randomAdjIndex), keyword, places.get(randomPlacesIndex)); // e.g. "{Interesting} {Sports} in {Pyongyang}"
     }
 
     /***
-     * Generate random timestamp between now and 4 months ago (later we can change this to 1 year ago or something like that)
-     * @return
+     * Generate random timestamp between now and 4 months ago - Generate posts within this age
+     * @return random timestamp
      */
     private Timestamp createTimestamp(){
         long now = System.currentTimeMillis();
@@ -249,17 +263,13 @@ public class PostGenerator {
         return PUBLISHERS.get(randomIndex);
     }
     public String createURL(){
-        StringBuilder stringBuilder = new StringBuilder(7); // make url 7 char
-
-        // Generate random characters and append them to the string
-        for (int i = 0; i < 7; i++) {
-            int randomIndex = rand.nextInt(CHARACTERS.length());
-            char randomChar = CHARACTERS.charAt(randomIndex);
-            stringBuilder.append(randomChar);
-        }
-        return String.format("https://%s.com", stringBuilder);
+        int randomIndex = rand.nextInt(urls.size());
+        return urls.get(randomIndex);
     }
 
+    /**
+     * Callback used for performing API request
+     */
     public interface HttpCallback {
         void onResponse(String response);
         void onError(Exception e);
@@ -298,14 +308,12 @@ public class PostGenerator {
         });
     }
 
-
-
     public void uploadPost(Map<String, Object> post){
         CollectionReference postsCollection = db.collection("posts");
         postsCollection.add(post)
                 .addOnSuccessListener(documentReference -> {
                     // success
-                    Log.d("PostGenerator", "Success");
+                    Log.d("PostGenerator", "Success, Post ID: "+documentReference.getId());
                 })
                 .addOnFailureListener(e -> {
                     // boohoo
@@ -327,25 +335,5 @@ public class PostGenerator {
 
     public FirebaseFirestore getDb() {
         return db;
-    }
-    public static void main(String[] args) {
-        System.out.println("HELLO WORLD");
-//        PostGenerator gen = new PostGenerator(20);
-//        FirebaseFirestore db = FirebaseFirestoreConnection.getDb();
-//        Random rand = new Random();
-//        for (int i=0; i<gen.getNPosts(); i++) {
-//            // generate post
-//            User user = gen.getRandomUser(); // set to random user
-//
-//            Map<String, Object> post = new HashMap<>();
-//            post.put("title", createTitle());
-//            post.put("publisher", createPublisher());
-//            post.put("url", createURL());
-//            post.put("body", createBody(2));
-//            post.put("author", user.getUserID());
-//            post.put("timeStamp", new Timestamp(new Date()));
-//
-//            uploadPost(post, db);
-//        }
     }
 }

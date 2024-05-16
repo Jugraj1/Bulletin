@@ -5,9 +5,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.app_2100.callbacks.FirestoreCallback;
+import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
+import com.example.app_2100.helper.DateFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -15,6 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +34,9 @@ public class Post implements Parcelable {
     private Timestamp timeStamp;
     private Date dateTime;
 
+    private double score;
+    private List<String> likes;
+
     private Boolean isLikedByCurrUser;
     private Boolean isSharedByCurrUser;
     private DocumentReference ref;
@@ -37,15 +44,55 @@ public class Post implements Parcelable {
     private String TAG = "Post";
     private PostLoadCallback postLoadCallback;
 
+    /***
+     * This constructor is used for CreatePost, since we need a Post object but we dont have an id for it yet
+     * @param title
+     * @param body
+     * @param authorID
+     * @param publisher
+     * @param sourceURL
+     * @param timeStamp
+     */
+    public Post(String title, String body, String authorID, String publisher, String sourceURL, Timestamp timeStamp){
+        this.title = title;
+        this.body = body;
+        this.authorID = authorID;
+        this.publisher = publisher;
+        this.sourceURL = sourceURL;
+        this.timeStamp = timeStamp;
+    }
+
+    /**
+     * This constructor is when displaying posts from the database
+     * @param ID
+     * @param title
+     * @param body
+     * @param authorID
+     * @param publisher
+     * @param sourceURL
+     * @param timeStamp
+     * @param callback
+     */
     public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp, PostLoadCallback callback){
         this.ID = (String) ID;
         this.title = (String) title;
         this.body = (String) body;
         this.authorID = (String) authorID;
+        User postAuthor = new User((String) authorID, new FirestoreCallback(){
+            @Override
+            public void onUserLoaded(String fName, String lName, String username, String pfpLink){
+                authorName = User.formatName(fName, lName);
+//                        Log.d(TAG, "authorName: "+authorName);
+                callback.onPostLoaded(Post.this);
+            }
+        });
+
         this.publisher = (String) publisher;
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
         this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
+        this.score = 0;
+        this.likes = new ArrayList<>();
         db = FirebaseFirestoreConnection.getDb();
         ref = db.collection("posts").document(this.ID);
         isLikedByCurrUser = false;
@@ -55,17 +102,11 @@ public class Post implements Parcelable {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        if (document.get("likes") != null){
-                            List<String> likerIDs = (List<String>) document.get("likes");
-                            isLikedByCurrUser = likerIDs.contains(CurrentUser.getCurrent().getUserID());
-//                            Log.d(TAG, "liker by curr from db: "+String.valueOf(isLikedByCurrUser));
-//                            if (likerIDs != null){
-//
-//                            } else {
-//                                isLikedByCurrUser = false; // post doesnt have any likes - therefore this user cant be one of the likers
-//                            }
-                        } else {
-                            isLikedByCurrUser = false;
+                        score = (double) document.get("score");
+
+                        if (likes != null){
+                            likes = (List<String>) document.get("likes");
+                            isLikedByCurrUser = likes.contains(CurrentUser.getCurrent().getUserID());
                         }
 //
                     } else {
@@ -74,30 +115,15 @@ public class Post implements Parcelable {
                 } else {
                     Log.d(TAG, "failed to get document: ", task.getException());
                 }
-
-                callback.onPostLoaded(Post.this);
             }
         });
-
-        if (this.authorID != null){
-            FirestoreCallback userCallback = new FirestoreCallback(){
-                @Override
-                public void onUserLoaded(String fName, String lName, String pfpLink){
-                    authorName = User.formatName(fName, lName);
-                }
-            };
-
-//            this.authorName = postAuthor.getFormattedName(); // set to the actual author
-            User postAuthor = new User(this.authorID, userCallback);
-
-//            Log.d(TAG, postAuthor.toString());
-        } else {
-            this.authorName = "INVALID";
-        }
     }
 
     public void toggleLike(String likerID){
 //        Log.d(TAG, String.valueOf(isLikedByCurrUser));
+
+        // update score
+
         if (isLikedByCurrUser){
             ref.update("likes", FieldValue.arrayRemove(likerID))
                 .addOnFailureListener(new OnFailureListener() {
@@ -122,6 +148,10 @@ public class Post implements Parcelable {
     public Boolean getLikedByCurrUser() {
         return isLikedByCurrUser;
     }
+    public void setIsLikedByCurrUser(boolean b) {
+        this.isLikedByCurrUser = b;
+    }
+
 
     public Boolean getSharedByCurrUser() {
         return isSharedByCurrUser;
@@ -161,6 +191,9 @@ public class Post implements Parcelable {
                 ", body='" + body + '\'' +
                 ", authorID='" + authorID + '\'' +
                 ", authorName='" + authorName + '\'' +
+                ", isLikedByCurrUser=" + isLikedByCurrUser  +
+//                ", likes=" + likes.toString() +
+//                ", score=" + String.valueOf(score) +
                 ", publisher='" + publisher + '\'' +
                 ", sourceURL='" + sourceURL + '\'' +
                 ", timeStamp=" + timeStamp +
@@ -230,6 +263,8 @@ public class Post implements Parcelable {
         sourceURL = in.readString();
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         dateTime = new Date(timeStamp.getSeconds()*1000);
+
+//        isLikedByCurrUser = in.readByte() != 0;
     }
 
     @Override
@@ -241,6 +276,7 @@ public class Post implements Parcelable {
         dest.writeString(authorName);
         dest.writeString(publisher);
         dest.writeString(sourceURL);
+//        dest.writeByte((byte) (isLikedByCurrUser ? 1 : 0)); // needed for writing bools
         dest.writeParcelable(timeStamp, flags);
     }
 
