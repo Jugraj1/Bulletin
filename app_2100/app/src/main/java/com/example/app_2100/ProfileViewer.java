@@ -99,7 +99,6 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
             public void onTabReselected(TabLayout.Tab tab) {
                 // Handle tab reselected event if needed
             }});
-
         updatePosts(0);
     }
 
@@ -337,65 +336,6 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
                 }
             }
         });
-
-        // Retrieve the list of user IDs the profile is following
-//        db.collection("users").document(userID).get()
-//                .addOnSuccessListener(documentSnapshot -> {
-//                    List<String> following = (List<String>) documentSnapshot.get("following");
-//                    if (following != null) {
-//                        // Create a LinearLayout to contain all user layouts
-//                        LinearLayout linearLayout = new LinearLayout(ProfileViewer.this);
-//                        linearLayout.setOrientation(LinearLayout.VERTICAL);
-//
-//                        for (String followingUserID : following) {
-//                            // Retrieve user details
-//                            db.collection("users").document(followingUserID).get()
-//                                    .addOnSuccessListener(userDocument -> {
-//                                        // New layout to display relevant user details
-//                                        LinearLayout userLayout = new LinearLayout(ProfileViewer.this);
-//                                        userLayout.setOrientation(LinearLayout.VERTICAL);
-//
-//                                        String firstName = userDocument.getString("firstName");
-//                                        String lastName = userDocument.getString("lastName");
-//
-//                                        // Display user details in a TextView
-//                                        TextView userTextView = new TextView(ProfileViewer.this);
-//                                        userTextView.setText(firstName + " " + lastName);
-//                                        userTextView.setLayoutParams(new ViewGroup.LayoutParams(
-//                                                ViewGroup.LayoutParams.MATCH_PARENT,
-//                                                ViewGroup.LayoutParams.WRAP_CONTENT));
-//                                        // Set text properties
-//                                        userTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
-//                                        userTextView.setTypeface(userTextView.getTypeface(), Typeface.BOLD); // Make text bold
-//
-//                                        // Add space between user details
-//                                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                                                ViewGroup.LayoutParams.MATCH_PARENT,
-//                                                ViewGroup.LayoutParams.WRAP_CONTENT);
-//                                        layoutParams.setMargins(0, 16, 0, 0); // Add top margin for space
-//                                        userLayout.addView(userTextView, layoutParams);
-//
-//                                        // Important for re-opening profileViewer with the new user as the subject
-//                                        // Onclick listener for the user in question
-//                                        userLayout.setOnClickListener(v -> openProfileViewer(followingUserID));
-//
-//                                        // Add the userLayout to the LinearLayout
-//                                        linearLayout.addView(userLayout);
-//
-//                                        // Add space between user layouts
-//                                        LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
-//                                                ViewGroup.LayoutParams.MATCH_PARENT,
-//                                                16); // Space height
-//                                        linearLayout.addView(new Space(ProfileViewer.this), spaceParams);
-//                                    })
-//                                    .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve user details.", Toast.LENGTH_SHORT).show());
-//                        }
-//                        // Add the LinearLayout to the ScrollView
-//                        scrollView.removeAllViews();
-//                        scrollView.addView(linearLayout);
-//                    }
-//                })
-//                .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve following list.", Toast.LENGTH_SHORT).show());
     }
 
     // Intent to view profile of the clicked user
