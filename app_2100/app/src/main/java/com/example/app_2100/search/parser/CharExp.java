@@ -5,7 +5,7 @@ public class CharExp {
     public CharExp(Character h) {
         this.character = h;
     }
-    public static final String specialCharacters = "!#$%^&*-_=+[]{};:'\"<>,.?/\\|";
+    public static final String specialCharacters = "!#$%^&*-_=+[]{};:'\"<>,.?/\\|1234567890";
     public static boolean isCharValid(char ch) {
         return (ch >= 'a') && (ch <= 'z')
                 || (ch >= 'A') && (ch <= 'Z')

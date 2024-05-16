@@ -7,6 +7,37 @@
     android:layout_height="match_parent"
     tools:context=".SearchResultsActivity">
 
+    <LinearLayout
+        android:id="@+id/activity_search_results_ll_profile"
+        android:layout_width="374dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/activity_search_results_rl_header"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="70dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/activity_search_results_ib_searchedAuthor"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/default_profile_pic"
+            android:contentDescription="Profile picture"
+            android:gravity="left"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/activity_search_results_tv_searchedAuthorID"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Loading... Please Wait!"
+            android:textSize="24sp"
+            android:textStyle="bold|italic" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/activity_searchResults_btn_more"
         style="@style/CreatePostSubmitButtonStyle"
@@ -26,9 +57,9 @@
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="590dp"
         android:layout_below="@+id/activity_search_results_rl_header"
-        android:layout_marginTop="-1dp">
+        android:layout_marginTop="70dp">
 
         <LinearLayout
             android:id="@+id/activity_home_feed_lv_posts"
@@ -88,11 +119,14 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="250dp"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="300dp"
-        android:text="Search failed!"
-        android:visibility="invisible"
+        android:gravity="center"
+        android:text="Loading... Please Wait!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
