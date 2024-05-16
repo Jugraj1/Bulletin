@@ -5,9 +5,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.app_2100.callbacks.FirestoreCallback;
+import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.firebase.FirebaseFirestoreConnection;
+import com.example.app_2100.helper.DateFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -64,6 +67,15 @@ public class Post implements Parcelable {
         this.title = (String) title;
         this.body = (String) body;
         this.authorID = (String) authorID;
+        User postAuthor = new User((String) authorID, new FirestoreCallback(){
+            @Override
+            public void onUserLoaded(String fName, String lName, String username, String pfpLink){
+                authorName = User.formatName(fName, lName);
+//                        Log.d(TAG, "authorName: "+authorName);
+                callback.onPostLoaded(Post.this);
+            }
+        });
+
         this.publisher = (String) publisher;
         this.sourceURL = (String) sourceURL;
         this.timeStamp = (Timestamp) timeStamp;
@@ -92,35 +104,8 @@ public class Post implements Parcelable {
                 } else {
                     Log.d(TAG, "failed to get document: ", task.getException());
                 }
-
-                User postAuthor = new User((String) authorID, new FirestoreCallback(){
-                    @Override
-                    public void onUserLoaded(String fName, String lName, String pfpLink){
-                        authorName = User.formatName(fName, lName);
-                        Log.d(TAG, "authorName: "+authorName);
-                        callback.onPostLoaded(Post.this);
-                    }
-                });
-
-//                callback.onPostLoaded(Post.this);
             }
         });
-
-        if (this.authorID != null){
-            FirestoreCallback userCallback = new FirestoreCallback(){
-                @Override
-                public void onUserLoaded(String fName, String lName, String pfpLink){
-                    authorName = User.formatName(fName, lName);
-                }
-            };
-
-//            this.authorName = postAuthor.getFormattedName(); // set to the actual author
-            User postAuthor = new User(this.authorID, userCallback);
-
-//            Log.d(TAG, postAuthor.toString());
-        } else {
-            this.authorName = "INVALID";
-        }
     }
 
     public void toggleLike(String likerID){
@@ -152,6 +137,10 @@ public class Post implements Parcelable {
     public Boolean getLikedByCurrUser() {
         return isLikedByCurrUser;
     }
+    public void setIsLikedByCurrUser(boolean b) {
+        this.isLikedByCurrUser = b;
+    }
+
 
     public Boolean getSharedByCurrUser() {
         return isSharedByCurrUser;
@@ -191,6 +180,7 @@ public class Post implements Parcelable {
                 ", body='" + body + '\'' +
                 ", authorID='" + authorID + '\'' +
                 ", authorName='" + authorName + '\'' +
+                ", isLikedByCurrUser=" + isLikedByCurrUser  +
 //                ", likes=" + likes.toString() +
 //                ", score=" + String.valueOf(score) +
                 ", publisher='" + publisher + '\'' +
@@ -262,6 +252,8 @@ public class Post implements Parcelable {
         sourceURL = in.readString();
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         dateTime = new Date(timeStamp.getSeconds()*1000);
+
+//        isLikedByCurrUser = in.readByte() != 0;
     }
 
     @Override
@@ -273,6 +265,7 @@ public class Post implements Parcelable {
         dest.writeString(authorName);
         dest.writeString(publisher);
         dest.writeString(sourceURL);
+//        dest.writeByte((byte) (isLikedByCurrUser ? 1 : 0)); // needed for writing bools
         dest.writeParcelable(timeStamp, flags);
     }
 

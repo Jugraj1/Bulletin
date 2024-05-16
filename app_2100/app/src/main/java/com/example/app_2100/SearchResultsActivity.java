@@ -3,6 +3,7 @@ package com.example.app_2100;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.app_2100.callbacks.PostLoadCallback;
+import com.example.app_2100.listeners.OnPostsLoadedListener;
 import com.example.app_2100.search.AVLTree;
 import com.example.app_2100.search.FieldIndex;
 import com.example.app_2100.search.SearchUtils;
@@ -201,6 +204,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 
 
+
         //load more posts
 
         load.setOnClickListener(new View.OnClickListener() {
@@ -215,6 +219,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                         Log.d(TAG, String.valueOf(loadedPosts.size()));
 
                         LinearLayout linearLayout = findViewById(R.id.activity_home_feed_lv_posts);
+
 
                         for (Post post : loadedPosts) {
                             // Inflate the post thumbnail layout
@@ -233,7 +238,27 @@ public class SearchResultsActivity extends AppCompatActivity {
                             dateTv.setText(post.getFormattedDateTime());
                             bodyTv.setText(post.getBody());
 
+                            // handle likes
+                            Button likeBt = postThumbnail.findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
+
+                            if (post.getLikedByCurrUser()) // user has liked the post
+                            {
+                                likeBt.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+                            } else { // user hasnt liked the post yet
+                                likeBt.setBackground(null);
+                            }
+
                             // Set onClickListeners for buttons if needed
+                            likeBt.setOnClickListener(v -> {
+                                Log.d(TAG, "toggling like");
+                                if (post.getLikedByCurrUser()) // user has liked the post, now wants to unlike
+                                {
+                                    likeBt.setBackground(null);
+                                } else { // user hasnt liked the post yet, and wants to like
+                                    likeBt.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
+                                }
+                                post.toggleLike(CurrentUser.getCurrent().getUserID());
+                            });
 
                             // Add the post thumbnail to the LinearLayout
                             linearLayout.addView(postThumbnail);
@@ -258,6 +283,12 @@ public class SearchResultsActivity extends AppCompatActivity {
 //        parseAuthor()
 //    }
 
+
+    private void onItemClick(Post post) {
+        Intent postViewIntent = new Intent(SearchResultsActivity.this, PostViewActivity.class);
+        postViewIntent.putExtra("post", post);
+        startActivity(postViewIntent);
+    }
 
 
     private void getRelevantPosts(final OnPostsLoadedListener listener, Timestamp tmTo, Timestamp tmFrom) {
@@ -411,6 +442,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
                 LinearLayout linearLayout = findViewById(R.id.activity_home_feed_lv_posts);
 
+
                 for (Post post : loadedPosts) {
                     // Inflate the post thumbnail layout
                     View postThumbnail = getLayoutInflater().inflate(R.layout.activity_home_feed_post_thumbnail, null);
@@ -426,7 +458,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                     bodyTv.setText(post.getBody());
 
                     // Set onClickListeners for buttons if needed
-
+                    postThumbnail.setOnClickListener(view -> onItemClick(post));
                     // Add the post thumbnail to the LinearLayout
                     linearLayout.addView(postThumbnail);
                 }

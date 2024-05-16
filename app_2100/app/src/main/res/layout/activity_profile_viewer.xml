@@ -7,6 +7,42 @@
     tools:context=".ProfileViewer">
 
 
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/activity_home_feed_sv_profile"
+        android:layout_width="79dp"
+        android:layout_height="79dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Profile picture"
+        android:gravity="end"
+        android:padding="2dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeableImageRound"
+        app:srcCompat="@mipmap/ic_launcher"
+        app:strokeColor="@android:color/black"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/activity_home_feed_sv_profile"
+        app:layout_constraintEnd_toEndOf="@+id/activity_home_feed_sv_profile"
+        app:layout_constraintTop_toBottomOf="@+id/activity_home_feed_sv_profile"
+
+        android:gravity="center_horizontal" />
+
+
     <Button
         android:id="@+id/homeButton"
         style="@style/Widget.Material3.Button"
@@ -19,6 +55,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 
+
+
     <Button
         android:id="@+id/Follow"
         android:layout_width="wrap_content"
@@ -29,62 +67,52 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/Name" />
 
-
-    <TextView
-        android:id="@+id/authorID"
+    <Button
+        android:id="@+id/Signout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="ID"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="#656565"
-        android:textSize="14sp"
+        android:layout_marginEnd="16dp"
+        android:text="Signout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/Follow"
-        app:layout_constraintTop_toBottomOf="@+id/Follow" />
+        app:layout_constraintTop_toTopOf="@+id/Name" />
+
 
 
     <TextView
         android:id="@+id/Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
         android:text="Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/Follow"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.336"
+        app:layout_constraintStart_toEndOf="@+id/activity_home_feed_sv_profile"
+        app:layout_constraintTop_toTopOf="@+id/activity_home_feed_sv_profile" />
 
 
     <TextView
         android:id="@+id/LName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
         android:text="LName"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/authorID"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/Name"
         app:layout_constraintTop_toBottomOf="@+id/Name" />
-
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
-        android:layout_width="391dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/homeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LName"
+        app:layout_constraintTop_toBottomOf="@+id/activity_home_feed_sv_profile"
         app:layout_constraintVertical_bias="0.031">
 
 
@@ -107,17 +135,20 @@
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="356dp"
-        android:layout_height="489dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/homeButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
+
+
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-        app:layout_constraintVertical_bias="0.306"
-
-
-        >
+        app:layout_constraintVertical_bias="1.0">
 
 
         <LinearLayout
@@ -127,4 +158,7 @@
     </ScrollView>
 
 
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
