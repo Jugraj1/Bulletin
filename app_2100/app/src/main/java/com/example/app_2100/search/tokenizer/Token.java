@@ -3,18 +3,8 @@ package com.example.app_2100.search.tokenizer;
 import java.util.Objects;
 
 /**
- * Token class to save extracted token from tokenizer.
- * Each token has its surface form saved in {@code token}
- * and type saved in {@code type} which is one of the predefined type in Type enum.
- * The following are the different types of tokens:
- * INT: integer
- * ADD: +
- * SUB: -
- * MUL: *
- * DIV: /
- * FAC: !
- * LBRA: (
- * RBRA: )
+ * This class builds upon codes from lab exercises however overall content has been modified to fit our own requirement.
+ * @author Jinzheng Ren (u7641234) and Jugraj Singh (u7614074)
  */
 public class Token {
     // The following enum defines different types of tokens. Example of accessing these: Token.Type.INT

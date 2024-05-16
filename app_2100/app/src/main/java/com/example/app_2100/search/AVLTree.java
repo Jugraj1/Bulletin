@@ -4,19 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Welcome! Make sure to check out 'readme.md' for a rundown of requirements/description of this implementation
- * that may differ from normal implementations. Before starting, it may also be worth checking out Tree.java
- * and BinarySearchTree.java as all method description is contained in the superclass unless edited. For
- * example: the description for 'insert' cannot be found here. It is in the superclass!
- * <p>
- * Please note that you may edit this class as much as you like (i.e.create helper methods if you want!).
- * So long as you genuinely pass the tests (i.e. do not change existing methods signatures). Ask questions if you are
- * lost or unsure.
- * You SHALL NOT edit any other classes.
- * <p>
- * Lastly, if you are looking to better visualise the results of your insertion, you are free print the contents
- * of the method '.display()' (found in Tree.java which class, AVLTree, extends through BinarySearchTree). This
- * method will provide you with a graphical representation of the tree.
+ * This class builds upon codes from lab exercises and introduces additional functionalities such as the 'delete()' and 'searchByRange()' methods.
+ * These new methods enhance the class by providing capabilities to remove elements and search for items within a specified range.
  */
 public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
     /*
@@ -52,6 +41,13 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
         return leftNode.getHeight() - rightNode.getHeight();
     }
 
+    /**
+     * Insert element into the tree
+     *
+     * @author Jinzheng Ren (u7641234) and Jugraj Singh (u7614074)
+     * @param element element to be inserted
+     * @return Tree after insertion
+     */
     @Override
     public AVLTree<T> insert(T element) {
         // Ensure input is not null.
@@ -60,13 +56,10 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
         AVLTree<T> tree;
         if (element.compareTo(value) > 0) {
-            // COMPLETE
             tree = new AVLTree<>(value, leftNode, rightNode.insert(element));
         } else if (element.compareTo(value) < 0) {
-            // COMPLETE
             tree = new AVLTree<>(value, leftNode.insert(element), rightNode);
         } else {
-            // COMPLETE
             tree = new AVLTree<>(value, leftNode, rightNode);
         }
         if (Math.abs(tree.getBalanceFactor()) > 1) {
@@ -75,6 +68,13 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
         return tree;
     }
 
+    /**
+     * Restructure the tree if the tree is imbalanced.
+     *
+     * @author Jinzheng Ren (u7641234) and Jugraj Singh (u7614074)
+     * @param treeToBeChecked tree to be restructured
+     * @return Tree after restructuring
+     */
     public AVLTree<T> reStructure(Tree<T> treeToBeChecked) {
 
         if ( ((AVLTree<T> ) treeToBeChecked).getBalanceFactor() < - 1) {
@@ -105,6 +105,13 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
     }
 
 
+    /**
+     * Delete an element from the tree.
+     *
+     * @author Jinzheng Ren (u7641234)
+     * @param element Element to remove
+     * @return Tree after deletion
+     */
     public Tree<T> delete(T element) {
         // This return either an empty tree or a binary search tree.
         // Return the tree if the input is null.
@@ -184,6 +191,14 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * Return a series of elements that are within a given range
+     *
+     * @author Jinzheng Ren (u7641234)
+     * @param start start range
+     * @param end end range
+     * @return A list of elements fell within the given range in the tree
+     */
     public List<T> searchByRange(T start, T end) {
         if (start.compareTo(end) >= 0) {
             throw new IllegalArgumentException("!!! Start cannot be greater than end");
@@ -209,11 +224,6 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
         if (tree.value.compareTo(end) < 0) {
             searchByRangeHelper(tree.rightNode, start, end, result);
         }
-
-    }
-
-
-    public static void main(String[] args) {
 
     }
 }

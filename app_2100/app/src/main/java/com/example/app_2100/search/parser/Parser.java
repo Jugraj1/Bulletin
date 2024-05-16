@@ -10,23 +10,15 @@ import com.example.app_2100.search.tokenizer.Tokenizer;
 import java.util.Scanner;
 
 /**
- * Note: You will need to have completed task 1 to complete this task.
+ * This class builds upon codes from lab exercises however overall content has been modified to fit our own requirement.
+ * @author Jinzheng Ren (u7641234) and Jugraj Singh (u7614074)
  *
- * Welcome to task 2. In this task your job is to implement a simple parser.
- * It should be able to parser the following grammar rule:
- * <search>    ::=  <title> <author> | <title>
- * <title>   ::=  <word> <space> <title> | <space> <title> | <word>
- * <author> ::=  @ LBRA <name> RBRA
- * <name> ::= <word> <space> <name> | <word>
- * <word> ::= a <word> | b <word> | ... | z <word> | ... | a  | ... | z |
- *
- * Here are some rules you must abide by for this task:
- * 1. You may NOT modify any other classes in this task 2 package.
- * 2. You may create additional fields or methods to finish you implementation within this class.
- * <p>
- * Parsing, within the context of this lab, is the process of taking a bunch of tokens and
- * evaluating them. You will not need to 'evaluate' them within this class, instead, just
- * return an expression which can be evaluated.
+ * Grammar rule
+ * <search>  ::= <title> <author> | <title>
+ * <title>   ::= <word> space <title> | <word>
+ * <author>  ::= @ LBRA <name> RBRA
+ * <name>    ::= <word> space <name> | <word>
+ * <word>    ::= char <word> | char
  */
 public class Parser {
     /**
@@ -104,47 +96,6 @@ public class Parser {
         }
         return new SearchExp(titleExp);
     }
-        /*
-         TODO: Implement parse function for <exp>.
-         TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
-         Hint 1: you know that the first item will always be a term (according to the grammar).
-         Hint 2: the possible grammar return '<term> + <exp>' correlates with the class (SearchExp(term, exp)).
-         */
-        // ########## YOUR CODE STARTS HERE ##########
-
-
-
-//        return null; // Change this return (if you want). It is simply a placeholder to prevent an error.
-        // ########## YOUR CODE ENDS HERE ##########
-
-
-//    public Exp parseExp2() {
-//        /*
-//         TODO: Implement parse function for <exp>.
-//         TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
-//         Hint 1: you know that the first item will always be a term (according to the grammar).
-//         Hint 2: the possible grammar return '<term> + <exp>' correlates with the class (SearchExp(term, exp)).
-//         */
-//        // ########## YOUR CODE STARTS HERE ##########
-//        Exp term = parseTerm();
-//        if (tokenizer.hasNext()) {
-//            Exp exp;
-//            if (tokenizer.current().getToken().equals("+")) {
-//                tokenizer.next();
-//                exp = parseExp2();
-//                term =  new AddExp(term, exp);
-//            } else if (tokenizer.current().getToken().equals("-")) {
-//                tokenizer.next();
-//                exp = parseExp2();
-//                term = new SubExp(term, exp);
-//            } else if (tokenizer.current().getType().equals(Token.Type.INT)) {
-//                throw new IllegalProductionException("BBBB");
-//            }
-//        }
-//        return term;
-//        return null; // Change this return (if you want). It is simply a placeholder to prevent an error.
-        // ########## YOUR CODE ENDS HERE ##########
-//    }
 
     /**
      * Adheres to the grammar rule:
@@ -153,30 +104,15 @@ public class Parser {
      * @return type: TitleExp.
      */
     public TitleExp parseTitleExp() throws IllegalProductionException{
-        /*
-         TODO: Implement parse function for <term>.
-         TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
-         Hint: you know that the first item will always be a factor (according to the grammar).
-         */
-        // ########## YOUR CODE STARTS HERE ##########
         WordExp wordExp = parseWordExp();
         if (tokenizer.hasNext()) {
             TitleExp restTitle;
             if (tokenizer.current().getType().equals(Token.Type.CHAR)) {
-//                tokenizer.next();
                 restTitle = parseTitleExp();
-//                if (is it space) {
-//                    tokenizer.next();
-//                    if (is null?) {
-//
-//                    }
-//                }
                 return new TitleExp(wordExp, restTitle);
             }
         }
         return new TitleExp(wordExp);
-//        return null; // Change this return (if you want). It is simply a placeholder to prevent an error.
-        // ########## YOUR CODE ENDS HERE ##########
     }
 
     /**
@@ -219,28 +155,17 @@ public class Parser {
             throw new IllegalProductionException("parseAuthorExp()");
         }
 
-
-//        return null; // Change this return (if you want). It is simply a placeholder to prevent an error.
-        // ########## YOUR CODE ENDS HERE ##########
     }
 
     /**
      * Adheres to the grammar rule:
-     * <name> ::= <word> <space> <name> | <word>
+     * <name> ::= <word> space <name> | <word>
      *
      * @return type: Exp.
      */
     public NameExp parseNameExp() throws IllegalProductionException{
-        /*
-         TODO: Implement parse function for <coefficient>.
-         TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
-         Hint: you can use Integer.parseInt() to convert a string into an integer.
-         Fun fact: Integer.parseInt() is using a parser!
-
-         */
         WordExp wordExp = parseWordExp();
         if (tokenizer.hasNext() && tokenizer.current().getType().equals(Token.Type.CHAR)) {
-//            tokenizer.next();
             NameExp nameExp = parseNameExp();
             if (tokenizer.hasNext() && tokenizer.current().getType().equals(Token.Type.SPACE)) {
                 tokenizer.next();
@@ -249,33 +174,20 @@ public class Parser {
             return new NameExp(wordExp, nameExp);
         }
         return new NameExp(wordExp);
-
-//        return ; // Change this return (if you want). It is simply a placeholder to prevent an error.
-        // ########## YOUR CODE ENDS HERE ##########
     }
 
 
     /**
      * Adheres to the grammar rule:
-     * <word> ::= <char> <word> | <char>
-     * <word> ::= a <word> | b <word> | ... | z <word> | ... | a  | ... | z |
+     * <word> ::= char <word> | char
+     * Here, 'char' is an element in the set {a, ..., z, A, ..., Z} and the set of special characters (see further details in the CharExp class)
      * @return type: Exp.
      */
     public WordExp parseWordExp() throws IllegalProductionException {
-        /*
-         TODO: Implement parse function for <coefficient>.
-         TODO: Throw an IllegalProductionException if provided with tokens not conforming to the grammar.
-         Hint: you can use Integer.parseInt() to convert a string into an integer.
-         Fun fact: Integer.parseInt() is using a parser!
-
-         */
-//        String word = tokenizer.current().getToken();
-//        for (int i = 0; i < word.length(); i++) {
         String charExp = tokenizer.current().getToken();
         if (!(CharExp.isCharValid(charExp.charAt(0)))) {
             throw new IllegalProductionException("parseWordExp()");
         }
-//        }
         WordExp wordExp = null;
         tokenizer.next();
         if (tokenizer.hasNext()) {
@@ -286,27 +198,10 @@ public class Parser {
             }
 
             else if (tokenizer.current().getType().equals(Token.Type.SPACE)) {
-//                wordExp = new WordExp(" ");
                 tokenizer.next();
             }
         }
         return new WordExp(charExp, wordExp);
-//        char charExp = word.charAt(0);
-//        if (tokenizer.hasNext()) {
-//            WordExp wordExp = parseWordExp();
-
-//            var token = tokenizer.current().getToken();
-//            wordExp = new WordExp(charExp, wordExp);
-//            while (ch : ken[]) {
-//                wordExp.append(...)
-//            }
-
-//            return new WordExp(charExp, wordExp);
-//        }
-//        return new WordExp(charExp);
-
-//        return ; // Change this return (if you want). It is simply a placeholder to prevent an error.
-        // ########## YOUR CODE ENDS HERE ##########
     }
 
     public String getTitle() {

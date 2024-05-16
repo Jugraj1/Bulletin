@@ -348,6 +348,10 @@ public class User {
         }
     }
 
+    public void setPfpBitmap(Bitmap bit) {
+        this.pfpBitmap = bit;
+    }
+
     @Override
     public String toString() {
         return "User{" +

@@ -9,12 +9,6 @@ import android.util.Log;
 
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
