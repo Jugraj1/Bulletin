@@ -447,6 +447,12 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
      * Adith Iyer
      */
     private void updateProfileImageView(Bitmap immutableBitmap) {
+
+//        null check for bitmap, temp solution. untested app behaviour
+        if (immutableBitmap == null) {
+            return;
+        }
+
         // Create a mutable copy of the bitmap
         Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
 

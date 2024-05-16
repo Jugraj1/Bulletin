@@ -35,6 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * @author Noah Vendrig
+ */
 public class HomeFeed extends AppCompatActivity implements OnItemClickListener, Observer {
     private static final String TAG = "HomeFeed_Screen";
     private RecyclerView recyclerView;
