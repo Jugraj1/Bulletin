@@ -19,19 +19,6 @@ public class Comment {
         if (timeStamp!= null){
             this.dateTime = new Date(this.timeStamp.getSeconds()*1000);
         }
-
-        // onUserLoaded callback isnt being triggered for some weird reason, leave comment author out
-//        User commentAuthor = new User((String) authorID, new FirestoreCallback(){
-//            @Override
-//            public void onUserLoaded(String fName, String lName, String pfpLink){
-//                Log.d("PostView", "done");
-//                authorName = User.formatName(fName, lName);
-//
-////                        Log.d(TAG, "authorName: "+authorName);
-//                listener.OnDataLoaded(authorName);
-//            }
-//        });
-
     }
 
 
