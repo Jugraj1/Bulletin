@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,6 +23,7 @@ import com.example.app_2100.callbacks.InitialisationCallback;
 import com.example.app_2100.callbacks.PostLoadCallback;
 import com.example.app_2100.listeners.OnItemClickListener;
 import com.example.app_2100.listeners.OnPostsLoadedListener;
+import com.example.app_2100.notification.UpdateWorker;
 import com.example.app_2100.update.UpdateFeed;
 import com.example.app_2100.update.Observer;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,6 +37,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class HomeFeed extends AppCompatActivity implements OnItemClickListener, Observer {
     private static final String TAG = "HomeFeed_Screen";
@@ -58,6 +62,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_feed);
+
+        startUpdateWorker();
 
         BATCH_NUMBER = App.getBATCH_NUMBER();
 
@@ -119,6 +125,30 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
         });
     }
 
+    private void startUpdateWorker(){
+//        Constraints constraints = new Constraints.Builder()
+//                .setRequiresCharging(false)
+//                .setRequiredNetworkType(NetworkType.CONNECTED)
+//                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                UpdateWorker.class, 15, TimeUnit.MINUTES)
+//                .setConstraints(constraints)
+                .build();
+//        WorkManager.getInstance(this).enqueue(workRequest);
+
+//        WorkManager.getInstance(this)
+//                .getWorkInfoByIdLiveData(workRequest.getId())
+//                .observe(this, workInfo -> {
+//                    if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+//                        // Handle the successful completion of the background task
+//                    }
+//                });
+    }
+
+    /**
+     * Reset the Posts displayed on the homescreen
+     */
     private void reset(){
         posts.clear();
         lastVisible = null;
@@ -126,6 +156,9 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
         populateFeed();
     }
 
+    /***
+     * Initiate the object which detects changes in posts, so that the homescreen can be regularly updated
+     */
     private void initiateRefresh() {
         // Create a UpdateProfile instance and attach this class as an observer
         UpdateFeed r = new UpdateFeed(posts, false);
@@ -202,7 +235,6 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
                         }
                         // call listener with the loaded posts
                         listener.onPostsLoaded(posts);
-
                     }
                 });
     }

@@ -7,6 +7,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.Manifest;
 
@@ -23,30 +27,31 @@ import com.example.app_2100.data_generators.PostGenerator;
 import com.example.app_2100.data_generators.UserGenerator;
 import com.example.app_2100.firebase.FirebaseAuthConnection;
 import com.example.app_2100.listeners.DataLoadedListener;
+import com.example.app_2100.notification.NewLikesNotificationData;
+import com.example.app_2100.notification.Notification;
+import com.example.app_2100.notification.NotificationFactory;
+import com.example.app_2100.notification.NotificationType;
+import com.example.app_2100.notification.UpdateWorker;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity";
-
-//    TODO: List of known bugs as of 15/05/24
-//    FIXME: - When searching yields no results, the app crashes
-//    FIXME: - When searching through posts, the posts cant be clicked on to open it
-//    FIXME: - Cant search for users
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         FirebaseUser currentUser = FirebaseAuthConnection.getCurrentUser();
-//        TODO: All this commented out code is for testing purposes only. REMOVE it before final release
 
+        // Code used to generate the simulated data:
 //        generateUsers(200);
 //        generatePosts(2500);
 
         createNotificationChannel();
+//        startUpdateWorker();
 
-
+        // Check if user is logged in or not, forward to relevant screens
         if (currentUser != null) { // user is logged in already
             startActivity(new Intent(MainActivity.this, HomeFeed.class));
             Log.d(TAG, "logged in already");
@@ -58,11 +63,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void startUpdateWorker(){
+//        Constraints constraints = new Constraints.Builder()
+//                .setRequiresCharging(false)
+//                .setRequiredNetworkType(NetworkType.CONNECTED)
+//                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                UpdateWorker.class, 15, TimeUnit.MINUTES)
+//                .setConstraints(constraints)
+                .build();
+        WorkManager.getInstance(this).enqueue(workRequest);
+//        WorkManager.getInstance(this)
+//                .getWorkInfoByIdLiveData(workRequest.getId())
+//                .observe(this, workInfo -> {
+//                    if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+//                        // Handle the successful completion of the background task
+//                    }
+//                });
+    }
     private static NotificationManager notificationManager;
     public static NotificationManager getNotificationManager(){
         return notificationManager;
     }
 
+    /***
+     * Creates the notification channel used by other classes to send notifications
+     */
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is not in the Support Library.
@@ -99,22 +126,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /***
-     * Generate n users, used to populate the database with simulated users
-     * @param n amount of users to generate
+     * Used to get permission for sending notifications
      */
-    private void generateUsers(int n){
-        UserGenerator gen = new UserGenerator(n);
-
-
-        for (int i=0; i<gen.getNUsers(); i++) {
-            String fName = gen.generateFirstName();
-            String lName = gen.generateLastName();
-            Log.d(TAG, fName+lName);
-            gen.generateUsername(fName, lName); // this will upload and get email inside the gen class.
-        }
-    }
-
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -142,4 +157,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /***
+     * Generate n users, used to populate the database with simulated users
+     * @param n amount of users to generate
+     */
+    private void generateUsers(int n){
+        UserGenerator gen = new UserGenerator(n);
+
+
+        for (int i=0; i<gen.getNUsers(); i++) {
+            String fName = gen.generateFirstName();
+            String lName = gen.generateLastName();
+            Log.d(TAG, fName+lName);
+            gen.generateUsername(fName, lName); // this will upload and get email inside the gen class.
+        }
+    }
 }
