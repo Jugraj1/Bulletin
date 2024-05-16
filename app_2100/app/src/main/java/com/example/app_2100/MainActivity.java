@@ -1,5 +1,7 @@
 package com.example.app_2100;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,10 +48,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (currentUser != null) { // user is logged in already
-//            startActivity(new Intent(MainActivity.this, HomeFeed.class));
+            startActivity(new Intent(MainActivity.this, HomeFeed.class));
             Log.d(TAG, "logged in already");
         } else { // no currently logged in user
-            startActivity(new Intent(MainActivity.this, Login.class)); // route to login screen
+            Intent signoutIntent = new Intent(MainActivity.this, Login.class);
+            signoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(signoutIntent); // route to login screen
             finish();
         }
     }

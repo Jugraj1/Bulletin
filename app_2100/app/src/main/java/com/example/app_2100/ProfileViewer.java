@@ -64,18 +64,24 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         });
 
         // Set onClickListener for Follow Button
-        Button followButton = findViewById(R.id.Follow);
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
 
-        TabItem postsTab = findViewById(R.id.postsTab);
+        Button followButton = findViewById(R.id.Follow);
+        Button signOutButton = findViewById(R.id.Signout);
 
         if (userID.equals(loggedInUserID)) {
             followButton.setVisibility(View.GONE);
+
+            followButton.setVisibility(View.GONE); // Hide follow bt
+            signOutButton.setVisibility(View.VISIBLE); // displayhow Signout bt
+            // Set onClickListener for Sign Out button
+            signOutButton.setOnClickListener(view -> signOut());
             tabLayout.getTabAt(0).setText("My Posts");
-//            postsTab.setText("t")
+
         } else {
             followButton.setVisibility(View.VISIBLE);
+            signOutButton.setVisibility(View.GONE);
             followButton.setOnClickListener(view -> followAuthor(userID));
 
         }
@@ -97,8 +103,10 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         updatePosts(0);
     }
 
-    private void updateUser(User newUser){
-        this.user = newUser;
+    private void signOut(){
+        FirebaseAuthConnection.getAuth().signOut();
+        startActivity(new Intent(ProfileViewer.this, Login.class));
+        finish();
     }
 
     private void fetchUser(String userID){
