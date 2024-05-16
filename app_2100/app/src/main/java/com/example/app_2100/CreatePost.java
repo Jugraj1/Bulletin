@@ -41,8 +41,6 @@ public class CreatePost extends AppCompatActivity {
     private EditText titleEditText, publisherEditText, urlEditText, contentEditText;
     private Button createButton;
     private FirebaseFirestore db;
-    private static String TAG = "CreatePost";
-    private NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,15 +113,16 @@ public class CreatePost extends AppCompatActivity {
         Timestamp currTime = new Timestamp(new Date());
         String currUserID = CurrentUser.getCurrent().getUserID();
 
-        // Populate post data
-        post.put("title", title);
-        post.put("publisher", publisher);
-        post.put("url", url);
-        post.put("body", content);
-        post.put("author", currUserID);
+// Populate post data
         post.put("timeStamp", currTime);
+        post.put("author", currUserID);
+        post.put("publisher", publisher);
+        post.put("title", title);
+        post.put("body", content);
+        post.put("url", url);
         post.put("likes", Collections.emptyList()); // empty likes array, needed for ordering
         post.put("score", 0.0); // score will be calculated by cloud function
+
 
         // Add post to "posts" collection in Firestore
         CollectionReference postsCollection = db.collection("posts");
@@ -234,7 +233,7 @@ public class CreatePost extends AppCompatActivity {
             channel.enableVibration(true);
 
             // Register the notification channel with the system
-            notificationManager = getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
 
             // Check for the POST_NOTIFICATIONS permission
@@ -249,6 +248,7 @@ public class CreatePost extends AppCompatActivity {
 
             } else {
                 // Permission has not been granted, request it from the user
+                String TAG = "CreatePost";
                 Log.d(TAG, "no perm");
                 // Check if the device's API level is 33 or higher (Android 13 or later)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
