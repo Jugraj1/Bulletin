@@ -186,7 +186,7 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
      */
     private void displayPostDetails() {
         // Find TextViews in the layout by their respective IDs
-        TextView titleTextView = findViewById(R.id.activity_postView_tv_Title);
+        TextView titleTextView = findViewById(R.id.activity_postView_tv_Title_1);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
         TextView authorTextView = findViewById(R.id.activity_postView_tv_author);
         TextView dateTextView = findViewById(R.id.activity_postView_tv_timestamp);
