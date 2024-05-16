@@ -25,36 +25,36 @@ declaration: >-
 
 # add as many "name+comment" entries as necessary
 # (or remove it altogether if you haven't collaborated with anyone outside your group)
-collaboration:
-  - name:
-    comment: >-
+# collaboration:
+#   - name:
+#     comment: >-
   
 
 # add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external code)
-code:
-  - comment:
-    url:
-    licence:
+# code:
+#   - comment:
+#     url:
+#     licence:
 
 
 # add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external assets)
-assets:
+# assets:
   # NOTE: "Bliss" is just here as an example, you SHOULD REMOVE IT
-  - comment: "_Bliss_ by Charles O'Rear"
-    url: https://en.wikipedia.org/wiki/Bliss_(image)
-    licence: fair use
+  # - comment: "_Bliss_ by Charles O'Rear"
+  #   url: https://en.wikipedia.org/wiki/Bliss_(image)
+  #   licence: fair use
 
 
 ### Questions (answer before final submission):
 1. You (as a group) completed this work (tick the most appropriate option):
-  - [ ] by yourself (as a group) without the help of others;
-      [ ] with Gen AI tools (e.g., ChatGPT, Co-Pilot).
-      [ ] using online resources (e.g., Stackoverflow, blogs)
+  - [x] by yourself (as a group) without the help of others;
+      [x] with Gen AI tools (e.g., ChatGPT, Co-Pilot).
+      [x] using online resources (e.g., Stackoverflow, blogs)
 
 2. If not completed by yourself only, how did the use of Gen AI tools (and which ones), contribute to completing this assignment?
-  - Tool(s): <tools used here>
+  - Tool(s): used Stable diffusion for the app icon, and Photopea to edit the icon.
   
 3. How did they contribute to the completion of this assignment?
   - <your answer here>
@@ -66,10 +66,10 @@ assets:
 
 # for each member, sign by inputting your name and uid here (remove any empty "name+uid" entries)
 members:
+  - name: Nitin Gar Raj
+    uid: u7527120
   - name:
-    uid:
-  - name:
-    uid:
+    uid: 
   - name:
     uid:
   - name:

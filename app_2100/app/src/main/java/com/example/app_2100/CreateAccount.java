@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class CreateAccount extends AppCompatActivity {
 
 
@@ -72,6 +73,10 @@ public class CreateAccount extends AppCompatActivity {
 
     private static final String TAG = "CreateAccount";
 
+    /**
+     * Run when the activity is first created
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,22 +114,8 @@ public class CreateAccount extends AppCompatActivity {
 
 
 //        FIXME: this take photo stuff doesn't work. IT is a low priority so only fix it later if we have time
-//        FIXME: this requires android sdk leevel 34 or higher. our app is on 33
-//        It is disabled for now
-        takePhotoLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Bitmap imageBitmap = (Bitmap) result.getData().getExtras().get("data");
-
-//                        update the profile picture with the selected image
-                        if(imageBitmap != null) {
-                            updateProfileImageView(imageBitmap);
-                            defaultPicture = false;
-                        }
-                    }
-                });
     }
+
 
     /**
      * Run when select image button is pressed to select an image from the gallery
@@ -186,10 +177,8 @@ public class CreateAccount extends AppCompatActivity {
 
         pictureUploading = true;
 
+//        Example url of the profile picture path
 //        gs://app-f4755.appspot.com/pfp/DKWN4xhSpKQVkKdhpIcWLIivIkE2.jpg
-//        gs://app-f4755.appspot.com/pfp/NuMnoRO7crd8bcqL4H4VrEZ74iY2.jpg
-//        gs://app-f4755.appspot.com/pfp/6Mck1J6naYT5QccTudHaqZEjJU82.jpg
-//        gs://app-f4755.appspot.com/pfp/1.png
         pfpRef = storage.getReferenceFromUrl("gs://app-f4755.appspot.com/pfp/" + userId + ".jpg");
 
         Log.d(TAG, "user id: " + userId);
@@ -205,23 +194,6 @@ public class CreateAccount extends AppCompatActivity {
                finish();
             }
         }).addOnFailureListener(e -> Log.d(TAG, "Failed to upload profile picture"));
-    }
-
-
-    /**
-     * Run when take photo button is pressed
-      */
-    private void takePhotoButtonPressed(){
-
-        // Check for camera permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
-        }
-
-        // Launch the camera to take a photo.
-
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePhotoLauncher.launch(takePictureIntent);
     }
 
 
@@ -346,7 +318,7 @@ public class CreateAccount extends AppCompatActivity {
      * Callback for createAccount specify what happens after account creation
      * Redirect to HomeFeed if successful
      * Display error message if unsuccessful
-     * @return
+     * @return AuthCallback object to be used after account is created
      */
     private AuthCallback createAccountCallback (){
         return new AuthCallback() {
@@ -416,6 +388,14 @@ public class CreateAccount extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Generate a username for the user which is just the user first name and last name plus a number
+     * @param firstName
+     * @param lastName
+     * @param num
+     * @param listener
+     * @return
+     */
     public String generateUsername(String firstName, String lastName, int num, DataLoadedListener listener){
 //        Random rand = new Random();
 //        int randomNum = rand.nextInt(9999);
