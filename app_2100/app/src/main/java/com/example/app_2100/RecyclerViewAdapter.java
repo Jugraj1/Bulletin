@@ -16,6 +16,9 @@ import com.example.app_2100.listeners.OnItemClickListener;
 
 import java.util.List;
 
+/**
+ * Noah Vendrig
+ */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Post> posts;
@@ -25,7 +28,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     /**
      * Constructor for RecyclerViewAdapter.
-     * @param posts List of Post objects to be displayed in the RecyclerView.
+     * @param posts List of Post objects to be displayed in the RecyclerView
+     * Noah Vendrig
      */
     public RecyclerViewAdapter(List<Post> posts) {
         this.posts = posts;
@@ -33,7 +37,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * Loads posts by initialising postLoadCallback for each post.
+     * Loads posts by initialising postLoadCallback for each post
+     * Noah Vendrig
      */
     private void loadPosts() {
         for (Post post : posts) {
@@ -44,12 +49,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     /**
      * Once the post has finished creating, notify the RecyclerView that a new post has loaded
      * @param post The post to be loaded in the RecyclerView
+     * Noah Vendrig
      */
     private void postLoadCallback(Post post) {
+        // Set a callback for post loading
         post.setPostLoadCallback(new PostLoadCallback() {
             @Override
             public void onPostLoaded(Post post) {
-                notifyDataSetChanged(); // Notify RecyclerViewAdapter when a post is loaded
+                // Notify RecyclerViewAdapter when a post is loaded
+                notifyDataSetChanged(); // Refresh the RecyclerView
             }
         });
     }
@@ -61,21 +69,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param viewType The view type of the new View.
      *
      * @return The ViewHolder to be displayed
+     * Noah Vendrig
      */
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_ITEM) {
+            // Inflate the layout for post thumbnail
             View postThumbnail = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_home_feed_post_thumbnail, parent, false);
-            return new PostThumbnailViewHolder(postThumbnail);
+            return new PostThumbnailViewHolder(postThumbnail); // Return ViewHolder for post thumbnail
         } else {
+            // Inflate the layout for loading indicator
             View loading = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_thumbnail_loading, parent, false);
-            return new LoadingViewHolder(loading);
+            return new LoadingViewHolder(loading); // Return ViewHolder for loading indicator
         }
     }
 
+
     /**
      * Check the type of ViewHolder instance and populating the row if neccessary, otherwise displaying loading
+     * Noah Vendrig
       */
 
     @Override
@@ -88,8 +101,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     *
      * @return The number of items in the list of posts, or 0 if the list is null
+     * Noah Vendrig
      */
     @Override
     public int getItemCount() {
@@ -100,6 +113,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * Checks element of the list at a position. If the element is NULL we set the view type as 1 else 0
      * @param position position to query
      * @return Number corresponding to whether the item or loading icon should be displayed
+     * Noah Vendrig
      */
     public int getItemViewType(int position) {
         return posts.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
@@ -107,16 +121,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private OnItemClickListener mListener;
 
+
     /**
-     * Sets the item click listener for items in the RecyclerView.
-     * @param listener The OnItemClickListener to be set.
+     * Sets the item click listener for items in the RecyclerView
+     * @param listener The OnItemClickListener to be set
+     * Noah Vendrig
      */
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
     }
 
     /**
-     * ViewHolder for a PostThumbnail in the RecyclerView.
+     * ViewHolder for a PostThumbnail in the RecyclerView
+     * Noah Vendrig
      */
     private class PostThumbnailViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView titleTv;
@@ -152,9 +169,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * Populates the PostThumbnailViewHolder with data for a specific post.
-     * @param viewHolder The ViewHolder representing he PostThumbnail to be populated.
-     * @param position The position of the post in the list of posts in the recyclerviewer.
+     * Populates the PostThumbnailViewHolder with data for a specific post
+     * @param viewHolder The ViewHolder representing he PostThumbnail to be populated
+     * @param position The position of the post in the list of posts in the recyclerviewer
+     * Noah Vendrig
      */
     private void populatePostThumbnails(PostThumbnailViewHolder viewHolder, int position) {
         Post currPost = posts.get(position);
@@ -192,13 +210,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             currPost.toggleLike(CurrentUser.getCurrent().getUserID());
         });
 
-//        viewHolder.shareBt.setOnClickListener(v -> {
-//            currPost.addShare(CurrentUser.getCurrent().getUserID());
-//        });
     }
 
     /**
-     * ViewHolder for the loading indicator in the RecyclerView.
+     * ViewHolder for the loading indicator in the RecyclerView
+     * Noah Vendrig
      */
     private class LoadingViewHolder extends RecyclerView.ViewHolder {
         ProgressBar progressBar;
@@ -209,9 +225,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * Displays the loading view in the RecyclerView.
-     * @param viewHolder The ViewHolder for the loading view.
-     * @param position The position of the loading view in the list.
+     * Displays the loading view in the RecyclerView
+     * @param viewHolder The ViewHolder for the loading view
+     * @param position The position of the loading view in the list
+     * Noah Vendrig
      */
     private void showLoadingView(LoadingViewHolder viewHolder, int position) {
         // Progressbar would be displayed

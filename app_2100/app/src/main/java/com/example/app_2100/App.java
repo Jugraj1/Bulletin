@@ -9,18 +9,16 @@ import android.util.Log;
 
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Noah Vendrig
+ */
 public class App extends Application {
     private static Context mContext;
     private final static String TAG = "App";
@@ -36,6 +34,7 @@ public class App extends Application {
      * Read the lines from the text file
      * @param filename Filename for the textfile to read
      * @return List of each line
+     * Noah Vendrig
      */
     public static List<String> readTextFile(String filename) {
         List<String> lines = new ArrayList<>();
@@ -53,14 +52,15 @@ public class App extends Application {
     /***
      * Used for classes that arent acitivities, in which they need application context
      * @return Context of the application
+     * Noah Vendrig
      */
     public static Context getContext() {
         return mContext;
     }
 
     /***
-     *
      * @return Batch number for how many posts to query from database (Homefeed / Following feed
+     * Noah Vendrig
      */
     public static int getBATCH_NUMBER() {
         return BATCH_NUMBER;
@@ -70,6 +70,7 @@ public class App extends Application {
      * Converts a drawable asset into a bitmap, to be used for profile picture displaying (default pfp)
      * @param drawable Drawable to be converted to bitmap
      * @return The drawable as a bitmap
+     * Noah Vendrig
      */
     public static Bitmap drawableToBitmap(Drawable drawable) {
         Bitmap bitmap;
