@@ -1,12 +1,8 @@
 package com.example.app_2100.search.parser;
 
 /**
- * Abstract class Exp to represent expressions
- * @author dongwookim
- * @author xuyangshen
- *
- * You are not required to implement any function inside this class.
- * Please do not change anything inside this class as well.
+ * This class builds upon codes from lab exercises however overall content has been modified to fit our own requirement.
+ * @author Jinzheng Ren (u7641234) and Jugraj Singh (u7614074)
  */
 public abstract class Exp {
 

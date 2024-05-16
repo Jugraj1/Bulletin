@@ -8,6 +8,9 @@ import static org.junit.Assert.*;
 
 import android.util.Log;
 
+/**
+ * This class builds upon codes from lab exercises and introduces additional tests for deletion.
+ */
 public class AVLTreeTest {
     /*
         For feedback, we have provided you with a visualisation of what your implementation 'should' look like.
@@ -356,25 +359,35 @@ public class AVLTreeTest {
         );
     }
 
+    /**
+     * Test for the delete function
+     * @author Jinzheng Ren (u7641234)
+     */
     @Test(timeout = 1000)
-    public void deleteTest1() {
-        // Test trees come from https://www.javatpoint.com/deletion-in-avl-tree
-        // R0
+    public void deleteTest() {
+        // Test case 1
         AVLTree<Integer> avl1 = new AVLTree<>(20);
         avl1 = avl1.insert(10);
         avl1 = avl1.insert(30);
         avl1 = avl1.insert(5);
         avl1 = avl1.insert(15);
-        System.out.println(avl1.display(1));
-        System.out.println(avl1.getBalanceFactor());
 
+        String avl1String = "10\n" +
+                            "\t├─5\n" +
+                            "\t\t├─null\n" +
+                            "\t\t├─null\n" +
+                            "\t├─20\n" +
+                            "\t\t├─15\n" +
+                            "\t\t\t├─null\n" +
+                            "\t\t\t├─null\n" +
+                            "\t\t├─null";
         System.out.println("avl1 deletes 30");
         avl1 = (AVLTree<Integer>) avl1.delete(30);
-        System.out.println(avl1.display(1));
-        System.out.println(avl1.getBalanceFactor());
+        assertEquals(avl1String, avl1.display(1));
+        assertEquals(-1, avl1.getBalanceFactor());
         System.out.println("avl1 finishes deleting 30");
 
-        // R-1
+        // Test case 2
         AVLTree<Integer> avl2 = new AVLTree<>(50);
         avl2 = avl2.insert(40);
         avl2 = avl2.insert(60);
@@ -382,27 +395,41 @@ public class AVLTreeTest {
         avl2 = avl2.insert(45);
         avl2 = avl2.insert(55);
         avl2 = avl2.insert(10);
-        System.out.println(avl2.display(1));
-        System.out.println(avl2.getBalanceFactor());
-
         System.out.println("avl2 deletes 55");
         avl2 = (AVLTree<Integer>) avl2.delete(55);
-        System.out.println(avl2.display(1));
-        System.out.println(avl2.getBalanceFactor());
+        String avl2String ="40\n" +
+                        "\t├─30\n" +
+                        "\t\t├─10\n" +
+                        "\t\t\t├─null\n" +
+                        "\t\t\t├─null\n" +
+                        "\t\t├─null\n" +
+                        "\t├─50\n" +
+                        "\t\t├─45\n" +
+                        "\t\t\t├─null\n" +
+                        "\t\t\t├─null\n" +
+                        "\t\t├─60\n" +
+                        "\t\t\t├─null\n" +
+                        "\t\t\t├─null";
+        assertEquals(avl2String, avl2.display(1));
+        assertEquals(0, avl2.getBalanceFactor());
         System.out.println("avl2 finishes deleting 55");
 
-        // R1
+        // Test case 3
         AVLTree<Integer> avl3 = new AVLTree<>(50);
         avl3 = avl3.insert(40);
         avl3 = avl3.insert(60);
         avl3 = avl3.insert(45);
-        System.out.println(avl3.display(1));
-        System.out.println(avl3.getBalanceFactor());
-
         System.out.println("avl3 deletes 60");
         avl3 = (AVLTree<Integer>) avl3.delete(60);
-        System.out.println(avl3.display(1));
-        System.out.println(avl3.getBalanceFactor());
+        String avl3String = "45\n" +
+                            "\t├─40\n" +
+                            "\t\t├─null\n" +
+                            "\t\t├─null\n" +
+                            "\t├─50\n" +
+                            "\t\t├─null\n" +
+                            "\t\t├─null";
+        assertEquals(avl3String, avl3.display(1));
+        assertEquals(0, avl3.getBalanceFactor());
         System.out.println("avl3 finishes deleting 60");
 
 
@@ -423,118 +450,9 @@ public class AVLTreeTest {
         System.out.println("Test delete non-existing element");
         AVLTree<Integer> avl5 = new AVLTree<>(50);
         avl5 = (AVLTree<Integer>) avl5.delete(1);
-        System.out.println(avl5.display(1));
-
-    }
-
-    @Test(timeout = 1000)
-    public void searchTest() {
-        AVLTree<Date> datesAVL = new AVLTree<>(new Date(2024 - 1900, Calendar.APRIL, 15)); // April 15, 2024
-        datesAVL = datesAVL.insert(new Date(2024 - 1900, Calendar.APRIL, 20)); // April 20, 2024
-        datesAVL = datesAVL.insert(new Date(2024 - 1900, Calendar.MAY, 1));  // May 1, 2024
-        datesAVL = datesAVL.insert(new Date(2024 - 1900, Calendar.MAY, 10)); // May 10, 2024
-        datesAVL = datesAVL.insert(new Date(2024 - 1900, Calendar.MAY, 15)); // May 15, 2024
-        datesAVL = datesAVL.insert(new Date(2024 - 1900, Calendar.MAY, 25)); // May 25, 2024
-        datesAVL = datesAVL.insert(new Date(2024- 1900, Calendar.JUNE, 5));  // June 5, 2024
-        datesAVL = datesAVL.insert(new Date(2024 - 1900, Calendar.JUNE, 10)); // June 10, 2024
-        System.out.println(datesAVL.display(1));
-
-        // Test searching for dates within a range
-        Date startDate = new Date(2024 - 1900, Calendar.MAY, 1);  // May 1, 2024
-        Date endDate = new Date(2024 - 1900, Calendar.MAY, 20);   // May> 20, 2024
-
-        List<Date> datesInRange = datesAVL.searchByRange(startDate, endDate);
-        System.out.println("Dates within the range:");
-        for (Date date : datesInRange) {
-            System.out.println(date);
-        }
-
-        AVLTree<Integer> avl2 = new AVLTree<>(50);
-        avl2 = avl2.insert(40);
-        avl2 = avl2.insert(60);
-        avl2 = avl2.insert(30);
-        avl2 = avl2.insert(45);
-        avl2 = avl2.insert(55);
-        avl2 = avl2.insert(10);
-        System.out.println(avl2.display(1));
-        System.out.println(avl2.getBalanceFactor());
-
-        int start = 43;
-        int end = 56;
-        List<Integer> list = avl2.searchByRange(start, end);
-        for (int i : list) {
-            System.out.println(i);
-        }
-    }
-
-    @Test(timeout = 1000)
-    public void insertFieldIndexTest() {
-        FieldIndex<Date, Integer> d1 = new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 0);
-        AVLTree<FieldIndex<Date, Integer>> datesAVL = new AVLTree<>(d1);
-        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.MARCH, 1), 2));
-        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.JUNE, 1), 3));
-        System.out.println(datesAVL.display(1));
-
-        System.out.println("Test merge insert");
-        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 1));
-        System.out.println(datesAVL.display(1));
-
-        System.out.println("Test new insert");
-        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.SEPTEMBER, 30), 3));
-        System.out.println(datesAVL.display(1));
-
-        System.out.println(datesAVL.getBalanceFactor());
-    }
-
-    @Test(timeout = 1000)
-    public void findSimilarTextsTest() {
-        // Sample list of texts
-        List<String> texts = new ArrayList<>();
-        texts.add("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
-        texts.add("Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        texts.add("Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
-
-        // Query text
-        String query = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor";
-
-        // Calculate similarity using Levenshtein distance
-        List<SearchUtils.SimilarText> similarTexts = new ArrayList<>();
-        for (String text : texts) {
-            int distance = SearchUtils.levenshteinDistance(query, text);
-            double similarity = 1.0 - ((double) distance / Math.max(query.length(), text.length()));
-            similarTexts.add(new SearchUtils.SimilarText(text, similarity));
-        }
-        // Sort by similarity
-        Collections.sort(similarTexts, Comparator.reverseOrder());
-        // Display top N similar texts
-        int n = 3; // Change this to get different top N results
-        for (int i = 0; i < Math.min(n, similarTexts.size()); i++) {
-            System.out.println("Similarity: " + similarTexts.get(i).similarity + ", Text: " + similarTexts.get(i).text);
-        }
-
-        // Simple usage
-        List<String> result = SearchUtils.findTopNSimilarTexts(query, texts, 4);
-        System.out.println(result);
-    }
-
-    @Test(timeout = 1000)
-    public void getIndexSizeFromTreeRecTest() {
-        FieldIndex<Date, Integer> d1 = new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 0);
-        AVLTree<FieldIndex<Date, Integer>> datesAVL = new AVLTree<>(d1);
-        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.MARCH, 1), 2));
-        datesAVL = datesAVL.insert(new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.JUNE, 1), 3));
-        System.out.println(datesAVL.display(1));
-
-        System.out.println("Test merge insert");
-        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.APRIL, 15), 1));
-        System.out.println(datesAVL.display(1));
-
-        System.out.println("Test new insert");
-        datesAVL = SearchUtils.insertFieldIndex(datesAVL, new FieldIndex<Date, Integer>(new Date(2024 - 1900, Calendar.SEPTEMBER, 30), 3));
-        System.out.println(datesAVL.display(1));
-
-        System.out.println(SearchUtils.getIndexSizeFromTreeRec(datesAVL));
-
-
+        String avl5String = "50\n" +
+                            "\t├─null\n" +
+                            "\t├─null";
+        assertEquals(avl5String, avl5.display(1));
     }
 }
