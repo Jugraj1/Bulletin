@@ -33,6 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
+/**
+ * Adith Iyer
+ * Raj Nitin Gar
+ */
+
 public class ProfileViewer extends AppCompatActivity implements Observer {
     private FirebaseFirestore db;
     private String loggedInUserID;
@@ -44,9 +50,8 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
 
 /**
  * Initializes the activity and sets up UI components and event listeners.
- * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
- *    this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
- *    Note: Otherwise, it is null.
+ * @param savedInstanceState
+ * Adith Iyer
  */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +77,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
         if (userID.equals(loggedInUserID)) {
             followButton.setVisibility(View.GONE); // Hide follow button
             signOutButton.setVisibility(View.VISIBLE); // Show sign out button
-
-            // Set onClickListener for Sign Out button
+            // Set onClickListener for SignOut button
             signOutButton.setOnClickListener(view -> signOut());
 
             // Set tab text for the current user's profile
@@ -105,77 +109,75 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
 
     /**
      * Signs out the current user and navigates to the login screen.
+     * Noah Vendrig
      */
     private void signOut() {
         // Sign out the current user
         FirebaseAuthConnection.getAuth().signOut();
-
-        // Navigate to the login screen
         startActivity(new Intent(ProfileViewer.this, Login.class));
-
-        // Finish the current activity
         finish();
     }
 
     /**
-     * Fetches user data from FireStore based on the provided user ID.
-     * Initializes the user object and performs actions once the user data is loaded.
-     * @param userID The ID of the user to fetch.
+     * Fetches user data from FireStore based on the provided user ID
+     * Initializes the user object and performs actions once the user data is loaded
+     * @param userID The ID of the user to fetch
+     * Adith Iyer
      */
     private void fetchUser(String userID) {
         // Create a new User object with the provided user ID
         user = new User(userID, new FirestoreCallback() {
-            @Override
-            public void onUserLoaded(String fName, String lName, String username, String empty) {
+            @Override //
+            public void onUserLoaded(String fName, String lName, String empty, String username) {
                 // Log a message indicating that the user data has been loaded
-                Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
-
+                Log.d("ProfileViewer", "User loaded:  " + fName + " " + lName);
                 // Update the UI with user data
-                updateUserText();
-
+                updateUserTexts();
                 // Initiate the refresh process for the user's profile
-                initiateRefresh();
-
+                startRefresh();
                 // Update the user's profile picture
                 updateProfilePic();
             }
         });
     }
 
+
     /**
      * Updates the text views with user data.
      * Retrieves the user's first name, last name, and username from the user object
      * and sets them in the corresponding text views.
+     * Adith Iyer
      */
-    private void updateUserText() {
+    private void updateUserTexts() {
         // Find and update the first name text view
-        TextView nameTextView = findViewById(R.id.Name);
-        nameTextView.setText(user.getFirstName());
+        TextView nameView = findViewById(R.id.Name);
+        nameView.setText(user.getFirstName());
 
         // Find and update the last name text view
-        TextView lastNameTextView = findViewById(R.id.LName);
-        lastNameTextView.setText(user.getLastName());
+        TextView lastNameView = findViewById(R.id.LName);
+        lastNameView.setText(user.getLastName());
 
         // Find and update the username text view
-        TextView usernameTextView = findViewById(R.id.username);
-        String formattedUser = "@" + user.getUsername();
-        usernameTextView.setText(formattedUser);
+        TextView usernameView = findViewById(R.id.username);
+        String formatUser = "@" + user.getUsername();
+        usernameView.setText(formatUser);
     }
 
 
     /**
      * Initiates the refresh process for the user's profile.
      * Creates an UpdateProfile instance and attaches the current class as an observer.
+     * Adith Iyer
      */
-    private void initiateRefresh() {
+    private void startRefresh() {
         // Create an UpdateProfile instance and attach this class as an observer
         UpdateProfile updateProfile = new UpdateProfile(user);
         updateProfile.attach(this);
     }
 
     /**
-     * Callback interface for handling post loading events.
-     * Implementations of this interface can be used to perform actions when posts are loaded.
+     * Callback interface for handling post loading events
+     * Implementations of this interface can be used to perform actions when posts are loaded
      */
     private PostLoadCallback postLoadCallback = new PostLoadCallback() {
         @Override
@@ -189,6 +191,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     /**
      * Retrieves posts from FireStore and creates the list of posts to send to update UI with
      * @param tab (Which tab you are on)
+     * Raj Nitin Gar
      */
     private void getPosts(int tab){
         //Clear the layout before populating
@@ -230,6 +233,8 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     /**
      * Update the correct scrollview with the posts
      * @param posts (list of posts)
+     * Adith Iyer
+     * Raj Nitin Gar
      */
     private void updateUIWithPosts(List<Post> posts) {
         // Determine which ScrollView to use
@@ -251,6 +256,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
      * Adds Posts to the ScrollView Layout
      * @param post
      * @param layout
+     * Adith Iyer
      */
     private void addPostToLayout(Post post, ScrollView layout) {
         // Create a LinearLayout to hold the post content
@@ -298,8 +304,8 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
      * Method for displaying the profile's followers
      * @param authorID
      * @param followerScrollView
+     * Adith Iyer
      */
-
     private void showAuthorFollowers(String authorID, ScrollView followerScrollView) {
         this.user.getFollowing(data -> {
             List<String> followers = (List<String>) data;
@@ -324,42 +330,32 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
                                 // Display follower details in a TextView
                                 TextView followerTextView = new TextView(ProfileViewer.this);
                                 followerTextView.setText(firstName + " " + lastName);
-                                followerTextView.setLayoutParams(new ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                                followerTextView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                                // Set text properties
+                                // Set properties for text
                                 followerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18); // Increase text size
                                 followerTextView.setTypeface(followerTextView.getTypeface(), Typeface.BOLD); // Make text bold
-
                                 // Add space between follower details
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                 params.setMargins(0, 16, 0, 16); // Add margins for readability
                                 followerLayout.addView(followerTextView, params);
-
                                 // Important for opening ProfileViewer with the new user as the subject
                                 // OnClickListener for the follower
                                 followerLayout.setOnClickListener(v -> openProfileViewer(followerID));
                                 // Add the followerLayout to the container
                                 followerContainer.addView(followerLayout);
-
                                 // Add space between follower layouts
-                                LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        16); // Space height
+                                LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 16); // Space height
                                 followerContainer.addView(new Space(ProfileViewer.this), spaceParams);
                             })
                             .addOnFailureListener(e -> Toast.makeText(ProfileViewer.this, "Failed to retrieve follower details.", Toast.LENGTH_SHORT).show());
                 }
-                // Add the LinearLayout to the ScrollView
+                // Add the LinearLayout to ScrollView
                 followerScrollView.removeAllViews();
                 followerScrollView.addView(followerContainer);
             }
         });
     }
-
 
     /**
      * Intent to view profile of the clicked user
@@ -375,6 +371,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     /**
      * Intent back to PostView
      * @param post
+     * Noah Vendrig
      */
     private void onItemClick(Post post) {
         Intent postViewIntent = new Intent(ProfileViewer.this, PostViewActivity.class);
@@ -385,6 +382,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     /**
      * Method to follow the profile's Author
      * @param userID
+     * Adith Iyer
      */
     private void followAuthor(String userID) {
         Log.d(TAG, "following starting");
@@ -416,6 +414,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
 
     /**
      * Updates Profile Picture
+     * Adith Iyer
      */
     private void updateProfilePic() {
         // If the profile picture bitmap is null, check local file or download it
@@ -445,6 +444,7 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     /**
      * Updates the profile ImageView
      * @param immutableBitmap The original immutable bitmap to be used for the profile picture
+     * Adith Iyer
      */
     private void updateProfileImageView(Bitmap immutableBitmap) {
         // Create a mutable copy of the bitmap
@@ -471,8 +471,9 @@ public class ProfileViewer extends AppCompatActivity implements Observer {
     }
 
 
-    /***
+    /**
      * Updates when the subject notifies the observer
+     * Noah Vendrig
      */
     @Override
     public <T> void update(T newUser) {

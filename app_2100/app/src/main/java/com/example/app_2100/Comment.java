@@ -7,7 +7,7 @@ import java.util.Date;
 
 
 /**
- * Represents a comment made by a user.
+ * Noah Vendrig
  */
 public class Comment {
     private String authorID;    // ID of the author who made the comment

@@ -42,9 +42,10 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Raj Nitin Gar
+ */
 public class CreateAccount extends AppCompatActivity {
-
-
     private String emailString;
     private String passwordString;
     private String firstNameString;

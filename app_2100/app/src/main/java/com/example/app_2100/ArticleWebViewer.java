@@ -9,16 +9,20 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Adith Iyer
+ */
+
 public class ArticleWebViewer extends AppCompatActivity {
     public static final String TAG = "ArticleWebViewer";
 
     /**
      * Called when the activity is first created.
-     * Sets up the WebView, enables JavaScript, and loads the URL if valid.
+     * Sets up the WebView, enables JavaScript, and loads the URL if valid
      *
      * @param savedInstanceState If the activity is being re-initialized after
      *                           previously being shut down, this Bundle contains
-     *                           the data it most recently supplied. Otherwise, it is null.
+     *                           the data it most recently supplied. Otherwise, it is null
      */
     @SuppressLint("SetJavaScriptEnabled")
     @Override

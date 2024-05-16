@@ -39,8 +39,6 @@ import java.util.Map;
 
 /**
  * Adith Iyer
- * Noah Vendrig
- * Jugraj Singh
  */
 
 public class CreatePost extends AppCompatActivity {
