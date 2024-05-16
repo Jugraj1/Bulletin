@@ -91,10 +91,10 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
             startActivity(new Intent(HomeFeed.this, CreatePost.class));
         });
 
-        Button followingFeedBt = findViewById(R.id.activity_home_feed_bt_following_feed);
-        followingFeedBt.setOnClickListener(v -> {
-            startActivity(new Intent(HomeFeed.this, FollowingFeed.class));
-        });
+//        Button followingFeedBt = findViewById(R.id.activity_home_feed_bt_following_feed);
+//        followingFeedBt.setOnClickListener(v -> {
+//            startActivity(new Intent(HomeFeed.this, FollowingFeed.class));
+//        });
 
         Button searchBt = findViewById(R.id.activity_home_feed_bt_search);
         searchBt.setOnClickListener(v -> {
@@ -143,7 +143,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
     }
 
     /***
-     * populates FollowingFeed with relevant posts
+     * populates HomeFeed with relevant posts
      */
     private void populateFeed() {
         getPosts(loadedPosts -> {});
