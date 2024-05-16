@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * Adith Iyer
+ */
 public class PostViewActivity extends AppCompatActivity implements Observer {
 
     private Post post;
@@ -33,41 +35,53 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
     private FirebaseFirestore firestore;
     private static final String TAG = "PostView";
 
+/**
+ * @param savedInstanceState
+ * Adith Iyer
+ */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_view);
 
+        // Get the intent that started this activity and retrieve the Parcelable "post" object
         Intent intent = getIntent();
         post = intent.getParcelableExtra("post");
-        System.out.println("before");
 
+        // Get reference to the like button
         Button likeButton = findViewById(R.id.activity_home_feed_post_thumbnail_bt_like);
 
+        // Get an instance of Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference postRef = db.collection("posts").document(post.getID());
 
-        initiateRefresh();
+        // Refresh post details
+        refreshPost();
 
+        // Retrieve post details from Firestore and update UI
         postRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     ArrayList<String> likes = (ArrayList<String>) document.get("likes");
                     String currentUserId = CurrentUser.getCurrent().getUserID();
-                    updateLikeButtonUI(likeButton,likes.contains(currentUserId));
+                    updateLikeButtonUI(likeButton, likes.contains(currentUserId));
+                    // Update post likes in Firestore
                     postRef.update("likes", likes);
                 }
             }
         });
 
+        // Display post details if available
         if (post != null) {
             displayPostDetails();
         }
 
+        // Initialize Firestore and comments list
         firestore = FirebaseFirestore.getInstance();
         commentsList = new ArrayList<>();
 
+        // Query comments related to the current post and listen for changes
         CollectionReference commentsRef = firestore.collection("comments");
         commentsRef.whereEqualTo("parentID", post.getID())
                 .orderBy("timeStamp", Query.Direction.DESCENDING)
@@ -77,18 +91,20 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
                         return;
                     }
 
+                    // Clear existing comments list
                     commentsList.clear();
-                    final int[] i = {values.size()};
+                    // Iterate through comments and add them to the list
                     for (QueryDocumentSnapshot document : values) {
                         String commentText = document.getString("text");
-                        String parentID = document.getString("parentID");
-                        Timestamp timeStamp = (Timestamp) document.getData().get("timeStamp");
-
-                        commentsList.add(new Comment(parentID, commentText, timeStamp));
+                        String parentId = document.getString("parentID");
+                        Timestamp timestamp = (Timestamp) document.getData().get("timeStamp");
+                        commentsList.add(new Comment(parentId, commentText, timestamp));
                     }
-                    generateComments();
+                    // Create comments view
+                    createComments();
                 });
 
+        // Initialize add comment button and handle click events
         Button addCommentButton = findViewById(R.id.activity_postView_btn_addCom);
         addCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,13 +112,15 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
                 EditText commentEditText = findViewById(R.id.activity_postView_et_comment);
                 String commentText = commentEditText.getText().toString().trim();
 
+                // Add comment to Firestore if it's not empty
                 if (!commentText.isEmpty()) {
                     addCommentToFirestore(commentText);
                     commentEditText.setText("");
                 }
             }
         });
-        // Like button updates likes in database
+
+        // Handle like button click events
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,69 +128,79 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
             }
         });
 
+        // Initialize view article button and handle click events
         Button viewArticleButton = findViewById(R.id.button3);
-        // Open link in browser when clicked
         viewArticleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Open WebViewActivity and pass the source URL as an extra
                 Intent webViewIntent = new Intent(PostViewActivity.this, ArticleWebViewer.class);
-                Log.d(TAG, "url: "+post.getSourceURL());
+                Log.d(TAG, "url: " + post.getSourceURL());
                 webViewIntent.putExtra("url", post.getSourceURL());
                 startActivity(webViewIntent);
             }
         });
-
-
     }
 
+
+
     /**
-     * Display the comments in the layout
+     * Creates comment views for each comment in the comments list and adds them to the comment layout
+     * Adith Iyer
      */
-    private void generateComments() {
-        LinearLayout commentsLayout = findViewById(R.id.Comments);
-        Log.d(TAG, commentsList.toString());
-        for (Comment comment : commentsList){
-            View commentView = getLayoutInflater().inflate(R.layout.activity_post_view_comment, null);
-
-            TextView textTv = commentView.findViewById(R.id.activity_post_view_comment_tv_text);
-//            TextView authorTv = commentView.findViewById(R.id.activity_post_view_comment_tv_author);
-            TextView dateTv = commentView.findViewById(R.id.activity_post_view_comment_tv_date);
-
-            textTv.setText(comment.getText());
-//            authorTv.setText(comment.getAuthorName());
-            dateTv.setText(comment.getFormattedDateTime());
-
-            commentsLayout.addView(commentView);
-
+    private void createComments() {
+        // Get the comment layout
+        LinearLayout commentLayout = findViewById(R.id.Comments);
+        // Iterate through the list of comments
+        for (Comment comm : commentsList) {
+            // Inflate the comment view layout
+            View commentViews = getLayoutInflater().inflate(R.layout.activity_post_view_comment, null);
+            // Get references to the text and date TextViews in the comment view layout
+            TextView textTv = commentViews.findViewById(R.id.activity_post_view_comment_tv_text);
+            TextView dateTv = commentViews.findViewById(R.id.activity_post_view_comment_tv_date);
+            // Set the text and date for the comment
+            textTv.setText(comm.getText());
+            dateTv.setText(comm.getFormattedDateTime());
+            // Add the comment view to the comment layout
+            commentLayout.addView(commentViews);
         }
     }
 
+
     /**
-     * Setup the Subject which monitors the post updates in firebase, to refresh if theres change
+     * Refreshing Posts
+     * Adith Iyer
      */
-    private void initiateRefresh() {
-        // Create a UpdateProfile instance and attach this class as an observer
-        UpdatePostView r = new UpdatePostView(post);
-        r.attach(this);
+    private void refreshPost() {
+        // Instantiate UpdatePostView and set this class as an observer
+        UpdatePostView updater = new UpdatePostView(post);
+        updater.attach(this);
     }
 
-    /***
-     * Display all the post information on the screen
+
+
+    /**
+     * Displays the details of a post in the activity layout
+     * Adith Iyer
+     * Jugraj Singh
      */
     private void displayPostDetails() {
+        // Find TextViews in the layout by their respective IDs
         TextView titleTextView = findViewById(R.id.activity_postView_tv_Title);
         TextView contentTextView = findViewById(R.id.activity_postView_tv_description);
         TextView authorTextView = findViewById(R.id.activity_postView_tv_author);
+        TextView dateTextView = findViewById(R.id.activity_postView_tv_timestamp);
+
+        // Set click listener for the authorTextView to open the author's profile
         authorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Create an intent to open the profile viewer activity and pass the author's ID
                 Intent openProfile = new Intent(PostViewActivity.this, ProfileViewer.class);
                 openProfile.putExtra("authorID", post.getAuthorID());
                 startActivity(openProfile);
             }
         });
-        TextView dateTextView = findViewById(R.id.activity_postView_tv_timestamp);
 
         titleTextView.setText(post.getTitle());
         contentTextView.setText(post.getBody());
@@ -180,73 +208,106 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
         dateTextView.setText(post.getFormattedDateTime());
     }
 
-    /***
-     * Upload a new comment to the database (postID which the comment belongs to, text of the comment, and the time it was made)
-     * @param commentText
-     */
-    private void addCommentToFirestore(String commentText) {
-        CollectionReference commentsRef = firestore.collection("comments");
-
-        Map<String, Object> commentData = new HashMap<>();
-        commentData.put("parentID", post.getID());
-        commentData.put("text", commentText);
-        commentData.put("timeStamp", new Timestamp(new Date()));
-
-        commentsRef.add(commentData)
-                .addOnSuccessListener(documentReference -> Log.d(TAG, "Comment added with ID: " + documentReference.getId()))
-                .addOnFailureListener(e -> Log.w(TAG, "Error adding comment", e));
-    }
 
     /**
-     * Toggle the like button appearance when clicked/unclicked
-     * @param likeButton The like button
-     * @param isLiked Whether it is currently liked or not, so it can be toggled
+     * Adds a comment to Firestore under the "comments" collection
+     * @param commentText The text content of the comment to be added
+     * Adith Iyer
+     */
+    private void addCommentToFirestore(String commentText) {
+        // Get a reference to the "comments" collection in Firestore
+        CollectionReference commentsRef = firestore.collection("comments");
+
+        // Prepare the data to be added to Firestore
+        Map<String, Object> commentData = new HashMap<>();
+        commentData.put("parentID", post.getID()); // ID of the post to which the comment belongs
+        commentData.put("text", commentText); // Text content of the comment
+        commentData.put("timeStamp", new Timestamp(new Date())); // Timestamp indicating when the comment was added
+
+        // Add the comment data to Firestore
+        commentsRef.add(commentData)
+                .addOnSuccessListener(documentReference -> {
+                    // If the addition is successful, log a success message
+                    Log.d(TAG, "Comment added with ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    // If an error occurs during addition, log a warning with the error details
+                    Log.w(TAG, "Error adding comment", e);
+                });
+    }
+
+
+
+    /**
+     * Updates the appearance of a like button based on whether it is liked or not
+     * @param likeButton The button to update
+     * @param isLiked    A boolean indicating whether the button is currently liked or not
+     * Adith Iyer
      */
     private void updateLikeButtonUI(Button likeButton, boolean isLiked) {
+        // If the button is liked, set its background resource to the liked state drawable
         if (isLiked) {
             likeButton.setBackgroundResource(R.drawable.home_feed_post_thumbnail_like_clickable);
-        } else {
+        }
+        // If the button is not liked, remove its background to reset it to default
+        else {
             likeButton.setBackground(null);
         }
     }
 
+
+
     /**
-     * Add/Remove likes to a post in the database
-     * @param likeButton
-     * @param postId
+     * Updates the likes of a post in Firestore based on user interaction
+     * @param likeButton The button representing the like action
+     * @param postId The ID of the post to update likes for
+     * Adith Iyer
      */
     private void updatePostLikesInFirestore(Button likeButton, String postId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference postRef = db.collection("posts").document(postId);
 
+        // Fetches the current state of the post from Firestore
         postRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
+                    // Retrieves the current list of likes for the post.
                     ArrayList<String> likes = (ArrayList<String>) document.get("likes");
                     if (likes == null) {
                         likes = new ArrayList<>();
                     }
 
+                    // Retrieves the ID of the current user
                     String currentUserId = CurrentUser.getCurrent().getUserID();
+
+                    // Checks if the current user has already liked the post
                     if (!likes.contains(currentUserId)) {
+                        // Adds the user's ID to the list of likes if not already present
                         likes.add(currentUserId);
+                        // Updates the UI to reflect the like action.
                         updateLikeButtonUI(likeButton, true);
-                    } else if (likes.contains(currentUserId)) {
+                    } else {
+                        // Removes the user's ID from the list of likes if already present
                         likes.remove(currentUserId);
+                        // Updates the UI to reflect the unlike action
                         updateLikeButtonUI(likeButton, false);
                     }
 
+                    // Updates the Firestore document with the modified list of likes
                     postRef.update("likes", likes);
                 }
             }
         });
     }
 
+
+
     /**
      * Refresh the post data, when the Subject detects a change in database (since we are observing for those changes)
      * @param post The new post queried from database
      * @param <T>
+     * Noah Vendrig
      */
     @Override
     public <T> void update(T post) {
@@ -255,7 +316,3 @@ public class PostViewActivity extends AppCompatActivity implements Observer {
         displayPostDetails();
     }
 }
-
-
-
-
