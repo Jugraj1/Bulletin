@@ -44,6 +44,7 @@ dependencies {
     implementation("androidx.fragment:fragment:1.6.0")
     implementation("androidx.core:core-ktx:1.1.0")
     implementation("junit:junit:4.12")
+    implementation("androidx.work:work-runtime:2.7.0")
 //    implementation("androidx.camera:camera-core:1.3.3") // for notifications
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

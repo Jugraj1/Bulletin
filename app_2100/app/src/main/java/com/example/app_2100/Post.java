@@ -45,7 +45,7 @@ public class Post implements Parcelable {
     private PostLoadCallback postLoadCallback;
 
     /***
-     * For CreatePost
+     * This constructor is used for CreatePost, since we need a Post object but we dont have an id for it yet
      * @param title
      * @param body
      * @param authorID
@@ -62,6 +62,17 @@ public class Post implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
+    /**
+     * This constructor is when displaying posts from the database
+     * @param ID
+     * @param title
+     * @param body
+     * @param authorID
+     * @param publisher
+     * @param sourceURL
+     * @param timeStamp
+     * @param callback
+     */
     public Post(Object ID, Object title, Object body, Object authorID, Object publisher, Object sourceURL, Object timeStamp, PostLoadCallback callback){
         this.ID = (String) ID;
         this.title = (String) title;

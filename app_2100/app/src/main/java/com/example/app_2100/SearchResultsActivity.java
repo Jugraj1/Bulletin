@@ -4,6 +4,12 @@ package com.example.app_2100;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import com.example.app_2100.callbacks.FirestoreCallback;
 import com.example.app_2100.callbacks.PostLoadCallback;
 import com.example.app_2100.listeners.OnPostsLoadedListener;
 import com.example.app_2100.search.AVLTree;
@@ -27,10 +35,13 @@ import com.example.app_2100.search.parser.Parser;
 import com.example.app_2100.search.tokenizer.Tokenizer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,43 +140,134 @@ public class SearchResultsActivity extends AppCompatActivity {
             String searchedUserName = parseAuthor(searchFieldString);
             db.collection("users")
                     .whereEqualTo("username", searchedUserName)
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                Map<String, Object> currData;
-                                searchedAuthor.setText(searchedUserName+ ": User cannot be found");
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    currData = document.getData();
-//                                posts.add(new Post(
-//                                        document.getId(),
-//                                        currData.get("title"),
-//                                        currData.get("body"),
-//                                        currData.get("author"),
-//                                        currData.get("publisher"),
-//                                        currData.get("sourceURL"),
-//                                        currData.get("timeStamp")
-//                                ));
 
-                                    searchedUser = new User(
-                                            document.getId(),
-                                            (String) currData.get("firstName"),
-                                            (String) currData.get("lastName"));
+                                for (QueryDocumentSnapshot document : task.getResult()) { // todo change this later to ensure only 1 record for user (or we cna imply it from db rules>?)
+//                            Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> userData = document.getData();
+                                    String fName = (String) userData.get("firstName");
+                                    String lName = (String) userData.get("lastName");
+                                    String uName = (String) userData.get("username");
+                                    String pfpLink = (String) userData.get("pfpStorageLink");
 
-//                                Log.d("Query before attempting:", queryTitle);
+//                                If the pfpLink is null, then set it to the default pfp link
+                                    // Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
+
+//                                    searchedUser = new User(
+//                                            document.getId(),
+//                                            (String) userData.get("firstName"),
+//                                            (String) userData.get("lastName"));
+//                                    searchedUser.setPfpLoadedCallback();
+
+                                    searchedUser = new User(document.getId(), new FirestoreCallback() {
+                                        @Override
+                                        public void onUserLoaded(String fName, String lName, String username, String empty) {
+                                            Log.d("ProfileViewer", "User loaded: " + fName + " " + lName);
+
+                                            // Set the text for firstname, lastname
+                                            if (searchedUser.getPfpBitmap() == null){
+                                                if (searchedUser.getLocalPfpFile().exists()){
+                                                    Bitmap immutableBitmap = BitmapFactory.decodeFile(searchedUser.getLocalPfpFile().getAbsolutePath());
+                                                    Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                                                    Canvas canvas = new Canvas(pfpImageBitmap);
+                                                    Paint paint = new Paint();
+                                                    paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
+                                                    canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+                                                    canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+                                                    // get the element
+                                                    ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_searchedAuthorProfile);
+                                                    profileImg.setImageBitmap(pfpImageBitmap);
+                                                } else {
+                                                    Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
+                                                    searchedUser.setPfpBitmap( App.drawableToBitmap(vectorDrawable));
+
+                                                }
+                                                searchedUser.dlProfilePicBitmap(getApplicationContext(), new User.PfpLoadedCallback() {
+                                                    @Override
+                                                    public void onPfpLoaded(Bitmap bitmap) {
+                                                        updateProfileImageView(bitmap);
+                                                    }
+                                                    @Override
+                                                    public void onPfpLoadFailed(Exception e) {
+                                                        Log.e(TAG, "Error with loading pfp");
+                                                    }
+                                                });
+                                            } else {
+                                                updateProfileImageView(searchedUser.getPfpBitmap());
+                                            }
+                                        }
+                                    });
+//                                    firstName = fName;
+//                                    lastName = lName;
+//                                    username = uName;
+//                                    if (pfpLink != null){
+//                                        StorageReference pfpRefe = searchedUser.storage.getReferenceFromUrl(pfpLink);
+//
+//                                        if (userID.equals(CurrentUser.getCurrent().getUserID())){ // saves doing it unneccesarily.
+//                                            initProfilePicBitmap();
+//                                        }
+//
+//                                    } else {
+//                                        Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
+//                                        pfpBitmap = App.drawableToBitmap(vectorDrawable);
+//
+//                                    }
+//                                    callback.onUserLoaded(fName,lName, username, "pfpLink");
                                     searchedUser.setUserID(document.getId());
 
                                     searchedAuthor.setText(searchedUserName);
-
-//                                Log.d("Found user:", searchedUser.getFirstName());
                                 }
 
 
                             } else {
-                                Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+                                Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                         }
+
                     });
+//            db.collection("users")
+//                    .whereEqualTo("username", searchedUserName)
+//                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                            if (task.isSuccessful()) {
+//                                Map<String, Object> currData;
+//                                searchedAuthor.setText(searchedUserName+ ": User cannot be found");
+//                                for (QueryDocumentSnapshot document : task.getResult()) {
+//                                    currData = document.getData();
+////                                posts.add(new Post(
+////                                        document.getId(),
+////                                        currData.get("title"),
+////                                        currData.get("body"),
+////                                        currData.get("author"),
+////                                        currData.get("publisher"),
+////                                        currData.get("sourceURL"),
+////                                        currData.get("timeStamp")
+////                                ));
+//
+//                                    searchedUser = new User(
+//                                            document.getId(),
+//                                            (String) currData.get("firstName"),
+//                                            (String) currData.get("lastName"));
+//
+////                                Log.d("Query before attempting:", queryTitle);
+//                                    searchedUser.setUserID(document.getId());
+//
+//                                    searchedAuthor.setText(searchedUserName);
+//
+////                                Log.d("Found user:", searchedUser.getFirstName());
+//                                }
+//
+//
+//                            } else {
+//                                Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
+//                            }
+//                        }
+//                    });
 
 
 
@@ -277,6 +379,18 @@ public class SearchResultsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void updateProfileImageView(Bitmap immutableBitmap) {
+        Bitmap pfpImageBitmap = immutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(pfpImageBitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#00ffffff")); // 50% opacity grey
+        canvas.drawRect(0, 0, pfpImageBitmap.getWidth(), pfpImageBitmap.getHeight(), paint);
+        canvas.drawBitmap(pfpImageBitmap, 0f, 0f, paint);
+        // get the element
+        ShapeableImageView profileImg = findViewById(R.id.activity_home_feed_sv_searchedAuthorProfile);
+        profileImg.setImageBitmap(pfpImageBitmap);
     }
 
 //    private void getAuthor(final OnPostsLoadedListener listener) {

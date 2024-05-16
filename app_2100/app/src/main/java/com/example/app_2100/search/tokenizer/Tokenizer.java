@@ -5,14 +5,8 @@ import com.example.app_2100.search.parser.CharExp;
 import java.util.Scanner;
 
 /**
- * Welcome to Task 1.
- * In this task your job is to implement the next() method. Just some rules:
- * 1. You may NOT modify any other classes in this task 1 package.
- * 2. You may not modify any of the methods or fields (that already exist) within this class.
- * 3. You may create additional fields or methods to finish you implementation within this class.
- * <p>
- * Tokenization, within the context of this lab, is the process of splitting a string into
- * small units called, 'Tokens', to be passed onto the Parser.
+ * This class builds upon codes from lab exercises however overall content has been modified to fit our own requirement.
+ * @author Jinzheng Ren (u7641234) and Jugraj Singh (u7614074)
  */
 public class Tokenizer {
     private String buffer;          // String to be transformed into tokens each time next() is called.
@@ -69,19 +63,11 @@ public class Tokenizer {
      * save the token to {@code currentToken}.
      */
     public void next() {
-//        buffer = buffer.trim();     // remove whitespace
-
         if (buffer.isEmpty()) {
             currentToken = null;    // if there's no string left, set currentToken null and return
             return;
         }
-
-        /*
-        To help you, we have already written the first few steps in the tokenization process.
-        The rest will follow a similar format.
-         */
         char firstChar = buffer.charAt(0);
-//        StringBuilder word = new StringBuilder(String.valueOf(firstChar));
         if (firstChar == '@')
             currentToken = new Token("@", Token.Type.AT);
         else if (firstChar == ' ') {
@@ -93,16 +79,6 @@ public class Tokenizer {
             currentToken = new Token(")", Token.Type.RBRA);
         else if (CharExp.isCharValid(firstChar)) {
             currentToken = new Token(String.valueOf(firstChar), Token.Type.CHAR);
-//            while ( pos + 1 < buffer.length()) {
-//                if (buffer.charAt((pos + 1)) == ' ' || buffer.charAt((pos + 1)) == ')'
-//                    || buffer.charAt((pos + 1)) == '(') {
-//                    break;
-//                }
-//                word.append(buffer.charAt(pos + 1));
-//                pos ++;
-//            }
-//            pos = 0;
-//            currentToken = new Token(String.valueOf(word), Token.Type.WORD);
         }
         else {
             throw new Token.IllegalTokenException("Invalid input:" + firstChar);

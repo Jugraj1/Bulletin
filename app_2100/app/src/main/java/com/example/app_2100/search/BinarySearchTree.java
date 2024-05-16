@@ -1,9 +1,7 @@
 package com.example.app_2100.search;
 
 /**
- * An AVL tree is actually an extension of a Binary Search Tree
- * with self balancing properties. Hence, our AVL trees will 'extend'
- * this Binary Search tree data structure.
+ *  This class builds upon codes from lab exercises and introduces additional functionalities such as the 'delete()' method.
  */
 public class BinarySearchTree<T extends Comparable<T>> extends Tree<T> {
 
@@ -67,6 +65,13 @@ public class BinarySearchTree<T extends Comparable<T>> extends Tree<T> {
         }
     }
 
+    /**
+     * Delete an element from the tree.
+     *
+     * @author Jinzheng Ren (u7641234)
+     * @param element Element to remove
+     * @return Tree after deletion
+     */
     @Override
     public Tree<T> delete(T element) {
         // This return either an empty tree or a binary search tree.

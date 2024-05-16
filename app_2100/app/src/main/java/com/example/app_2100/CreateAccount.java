@@ -42,8 +42,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
- * Raj Nitin Gar
+ * @author Raj Nitin Gar
  */
 public class CreateAccount extends AppCompatActivity {
 
@@ -78,7 +79,6 @@ public class CreateAccount extends AppCompatActivity {
     /**
      * Run when the activity is first created
      * @param savedInstanceState
-     * Raj Nitin Gar
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +102,8 @@ public class CreateAccount extends AppCompatActivity {
 
 //      This is disabled because it does not work
 ////        Set up the take photo button
+//        ImageButton takePictureButton = findViewById(R.id.activity_create_account_bt_take_photo);
+//        takePictureButton.setOnClickListener(v -> takePhotoButtonPressed());
 
 
 //        Set default profile picture
@@ -120,7 +122,6 @@ public class CreateAccount extends AppCompatActivity {
 
     /**
      * Run when select image button is pressed to select an image from the gallery
-     * Raj Nitin Gar
      */
     private void selectImageButtonPressed(){
         Intent intent = new Intent();
@@ -136,7 +137,6 @@ public class CreateAccount extends AppCompatActivity {
 
     /**
      * Used to select an image from the gallery
-     * Raj Nitin Gar
      */
     // Registers a photo picker activity launcher in single-select mode.
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
@@ -171,7 +171,6 @@ public class CreateAccount extends AppCompatActivity {
     /**
      * Upload the profile picture to the storage
      * The upload picture will use the localURI
-     * Raj Nitin Gar
      */
     private void uploadProfilePicture(){
 //        If default picture, do not upload
@@ -203,7 +202,6 @@ public class CreateAccount extends AppCompatActivity {
 
     /**
      * Update the profile picture with the selected image
-     * Raj Nitin Gar
      */
     private void updateProfileImageView(Bitmap immutableBitmap){
         ShapeableImageView profileImg = findViewById(R.id.activity_create_account_image_view);
@@ -251,7 +249,6 @@ public class CreateAccount extends AppCompatActivity {
 
     /**
      * Download the default profile picture
-     * Raj Nitin Gar
      */
     private void downloadProfilePicture(){
         defaultPfpRef.getFile(localPfpFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>(){
@@ -274,7 +271,6 @@ public class CreateAccount extends AppCompatActivity {
     /**
      * Run when cancel button is pressed
      * Redirect to MainActivity
-     * Raj Nitin Gar
      */
     private void cancelButtonPressed(){
         startActivity(new Intent(this, MainActivity.class));
@@ -285,8 +281,6 @@ public class CreateAccount extends AppCompatActivity {
      * Validate all fields
      * Create account if all fields are valid
      * Redirect to HomeFeed if successful
-     * Raj Nitin Gar
-     * Noah Vendrig
      */
     private void createAccountButtonPressed(){
        if(validateAllFields()){
@@ -314,7 +308,6 @@ public class CreateAccount extends AppCompatActivity {
      * Create account with email and password
      * Redirect to HomeFeed if successful
      * Display error message if unsuccessful
-     * Raj Niting Gar
      */
     private void createAccount(){
 //        Can only create account with email and password.
@@ -329,7 +322,6 @@ public class CreateAccount extends AppCompatActivity {
      * Redirect to HomeFeed if successful
      * Display error message if unsuccessful
      * @return AuthCallback object to be used after account is created
-     * Raj Nitin Gar
      */
     private AuthCallback createAccountCallback (){
         return new AuthCallback() {
@@ -358,7 +350,6 @@ public class CreateAccount extends AppCompatActivity {
     /**
      * Validate all fields
      * @return Account object if all fields are valid, null otherwise
-     * Raj Nitin Gar
      */
     private boolean validateAllFields(){
 //        Get all the fields
@@ -406,8 +397,7 @@ public class CreateAccount extends AppCompatActivity {
      * @param lastName
      * @param num
      * @param listener
-     * @return userName
-     * Raj Nitin Gar
+     * @return
      */
     public String generateUsername(String firstName, String lastName, int num, DataLoadedListener listener){
 //        Random rand = new Random();
