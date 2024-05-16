@@ -58,7 +58,6 @@ public class UpdateFeed implements Subject<List<Post>> {
 //    Map<String, Integer> newPostLikesMap = new HashMap<>();
 
     public UpdateFeed(List<Post> posts, Boolean useFollowingCondition){
-        Log.d(TAG, "created post refresh");
         observers = new ArrayList<>();
         executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -73,8 +72,7 @@ public class UpdateFeed implements Subject<List<Post>> {
     }
 
     private void start() {
-        Log.d("UpdateFeed", "start feed");
-//        executor.scheduleAtFixedRate(this::queryDatabase, 2, REFRESH_TIME, TimeUnit.MILLISECONDS); // use method reference since runnable is functional interface
+        executor.scheduleAtFixedRate(this::queryDatabase, 2, REFRESH_TIME, TimeUnit.MILLISECONDS); // use method reference since runnable is functional interface
         executor.scheduleAtFixedRate(this::getChange, 2, 15000, TimeUnit.MILLISECONDS); // use method reference since runnable is functional interface
     }
 
@@ -138,10 +136,6 @@ public class UpdateFeed implements Subject<List<Post>> {
                         newPosts.clear();
 
                         if (!currPostIDs.equals(newPostIDs)){
-//                            Log.d(TAG, "new: "+newPostIDs.toString());
-                            Log.d(TAG, "new: "+newPostIDs.size());
-//                            Log.d(TAG, "old: "+currPostIDs.toString());
-                            Log.d(TAG, "old: "+currPostIDs.size());
                             notify = true;
                         }
 
@@ -177,8 +171,6 @@ public class UpdateFeed implements Subject<List<Post>> {
             @Override
             public void OnDataLoaded(Object postsToNotify) {
                 Map<String, Integer> posts = (Map<String, Integer>) postsToNotify;
-                Log.d(TAG, "notify: "+posts.toString());
-
                 for (Map.Entry<String, Integer> entry : posts.entrySet()) {
                     String postID = entry.getKey();
                     int diff = entry.getValue();
@@ -201,10 +193,6 @@ public class UpdateFeed implements Subject<List<Post>> {
             public void OnDataLoaded(Object newMap) {
                 Map<String, Integer> newPostLikesMap = (Map<String, Integer>) newMap;
                 Map<String, Integer> newLikes = newPostLikesMap;
-//                Log.d(TAG, "currPost likes map in detect: " + currPostLikesMap);
-//                Log.d(TAG, "new likes in detect: " + newPostLikesMap);
-
-
                 Map<String, Integer> postsToNotify = new HashMap<>();
                 for (Map.Entry<String, Integer> entry : newLikes.entrySet()) {
                     String postID = entry.getKey();
