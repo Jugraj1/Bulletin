@@ -128,8 +128,8 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
 
     private void initiateRefresh() {
         // Create a UpdateProfile instance and attach this class as an observer
-//        UpdateFeed r = new UpdateFeed(posts, false);
-//        r.attach(this);
+        UpdateFeed r = new UpdateFeed(posts, false);
+        r.attach(this);
     }
 
     @Override
@@ -146,13 +146,7 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
      * populates FollowingFeed with relevant posts
      */
     private void populateFeed() {
-        getPosts(loadedPosts -> {
-//            posts.addAll(loadedPosts);
-//            posts.subList(posts.size() - 5, posts.size()).clear();
-//            for (Post p : posts){
-//                Log.d(TAG, p.getID());
-//            }
-        });
+        getPosts(loadedPosts -> {});
     }
     Query query;
     DocumentSnapshot lastVisible = null;
@@ -160,10 +154,6 @@ public class HomeFeed extends AppCompatActivity implements OnItemClickListener, 
     private void getPosts(final OnPostsLoadedListener listener) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        Query query = db.collection("posts")
-//                .orderBy("likes", Query.Direction.DESCENDING)// descending in like count
-//                .limit(10) // 10 posts per batch
-//                .startAfter(postsBatchNum * 10); // start after batch num
 
         // change to score later
         if (lastVisible == null){

@@ -37,7 +37,7 @@ public class UpdateFeed implements Subject<List<Post>> {
     private final int REFRESH_TIME = 500; // time in milliseconds
 
     private Boolean notify = false;
-    public static final String TAG = "UpdateProfile";
+    public static final String TAG = "UpdateFeed";
 
     private Boolean useFollowingCondition;
     private Query currQuery;
@@ -55,7 +55,7 @@ public class UpdateFeed implements Subject<List<Post>> {
     }
 
     private void start() {
-        Log.d("UpdateProfile", "start feed");
+        Log.d("UpdateFeed", "start feed");
         executor.scheduleAtFixedRate(this::queryDatabase, 2, REFRESH_TIME, TimeUnit.MILLISECONDS); // use method reference since runnable is functional interface
     }
 
@@ -87,12 +87,14 @@ public class UpdateFeed implements Subject<List<Post>> {
             // query for following
 //            currQuery = db.collection("posts")
 //                    .orderBy("score", Query.Direction.DESCENDING)// descending in like count
+                        // filter by following
 //                    .limit(App.getBATCH_NUMBER());
         } else{
             currQuery = db.collection("posts")
                     .orderBy("score", Query.Direction.DESCENDING)// descending in like count
                     .limit(App.getBATCH_NUMBER());
         }
+
         currQuery.get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -113,13 +115,20 @@ public class UpdateFeed implements Subject<List<Post>> {
                         }
 
                         newPostIDs = getPostAuthorIDs(newPosts);
+                        currPosts = newPosts;
+                        newPosts.clear();
+
                         if (!currPostIDs.equals(newPostIDs)){
+//                            Log.d(TAG, "new: "+newPostIDs.toString());
+                            Log.d(TAG, "new: "+newPostIDs.size());
+//                            Log.d(TAG, "old: "+currPostIDs.toString());
+                            Log.d(TAG, "old: "+currPostIDs.size());
                             notify = true;
                         }
 
                         if (notify){
                             notify = false;
-                            notifyAllObservers(newPosts);
+                            notifyAllObservers(currPosts);
 
                             // reset current posts info to the changed values
                             currPostIDs = newPostIDs;
