@@ -1,19 +1,5 @@
 # [G63 - RAJ NP] Report
 
-The following is a report template to help your team successfully provide all the details necessary for your report in a structured and organised manner. Please give a straightforward and concise report that best demonstrates your project. Note that a good report will give a better impression of your project to the reviewers.
-
-Note that you should have removed ALL TEMPLATE/INSTRUCTION textes in your submission (like the current sentence), otherwise it hampers the professionality in your documentation.
-
-*Here are some tips to write a good report:*
-
-* `Bullet points` are allowed and strongly encouraged for this report. Try to summarise and list the highlights of your project (rather than give long paragraphs).*
-
-* *Try to create `diagrams` for parts that could greatly benefit from it.*
-
-* *Try to make your report `well structured`, which is easier for the reviewers to capture the necessary information.*
-
-*We give instructions enclosed in square brackets [...] and examples for each sections to demonstrate what are expected for your project report. Note that they only provide part of the skeleton and your description should be more content-rich. Quick references about markdown by [CommonMark](https://commonmark.org/help/)*
-
 ## Table of Contents
 
 1. [Team Members and Roles](#team-members-and-roles)
