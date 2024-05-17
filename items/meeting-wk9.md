@@ -1,7 +1,7 @@
 # [RAJ NP]
 This following is a very simple team meeting template. You should expand it based on the scope and nature of your discussion.
 
-## Team Meeting [3] - Week [9] - [2024-04-01] (21:40 - 23:00)
+## Team Meeting [3] - Week [9] - [2024-05-01] (21:40 - 23:00)
 **Absent:**
 <br>
 **Lead/scribe:** Nitin Gar Raj
