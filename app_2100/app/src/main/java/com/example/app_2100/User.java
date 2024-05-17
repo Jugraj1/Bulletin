@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Noah Vendrig
+ */
 public class User {
     private String firstName;
     private String lastName;
@@ -43,9 +46,6 @@ public class User {
     private String pfpStorageLink;
 
     private String username;
-    private String pfpFileLink;
-    private String defaultpfpStorageLink = "gs://app-f4755.appspot.com/pfp/1.png";
-
     private String pfpLocalLink;
     private String TAG = "User";
     private final FirebaseFirestore db = FirebaseFirestoreConnection.getDb().getInstance();
@@ -58,6 +58,12 @@ public class User {
     FirebaseStorage storage;
     StorageReference pfpRef;
 
+
+    /**
+     * Constructor for User class
+     * @param userID
+     * @param callback
+     */
     public User(String userID, FirestoreCallback callback){
         this.userID = userID;
 
@@ -88,7 +94,12 @@ public class User {
     }
 
 
-
+    /**
+     * Get the Users information from the database
+     * Download the profile picture from the Firestore storage
+     * @param userID The users id to crosscheck with database
+     * @param callback The callback to be called when the data is loaded
+     */
     public void queryUserByID(String userID, FirestoreCallback callback){
         db.collection("users")
                 .whereEqualTo(FieldPath.documentId(), userID)
@@ -112,6 +123,10 @@ public class User {
                                 firstName = fName;
                                 lastName = lName;
                                 username = uName;
+
+
+
+//                                Get the pfp link from the database, if it is null, set it to the default pfp link
                                 if (pfpLink != null){
                                     pfpStorageLink = pfpLink;
                                     pfpRef = storage.getReferenceFromUrl(pfpStorageLink);
@@ -135,6 +150,11 @@ public class User {
                 });
     }
 
+    /**
+     * Check if the username exists in the database
+     * @param username
+     * @param listener
+     */
     public void checkUsernameExists(String username, DataLoadedListener listener) {
 
         CollectionReference usersCollection = db.collection("users");
@@ -159,6 +179,7 @@ public class User {
 
     /***
      * Handle everything for getting pfp bitmap
+     * Check if the profile picture exists locally, if not download it
      */
     public void initProfilePicBitmap(){
         if (localPfpFile.exists()) {
@@ -240,6 +261,11 @@ public class User {
             }
         });
     }
+
+
+
+
+//    All getters and setters below
     public String getFirstName() {
         return firstName;
     }

@@ -51,9 +51,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * Jugraj Singh
+ * Jinzheng
+ */
+
 public class SearchResultsActivity extends AppCompatActivity {
     LinearLayout listView;
-    //    ArrayAdapter arrayAdapter;
     Button load;
     TextView displayInfo;
     TextView searchedAuthor;
@@ -70,8 +75,6 @@ public class SearchResultsActivity extends AppCompatActivity {
     };
     private static final String TAG = "SearchResultsActivity_Screen";
     List<Post> posts = new ArrayList<Post>();
-    //    List<Post> topNPosts = new ArrayList<>();
-//    boolean isLoading = false;
 
     String queryTitle;
     Tree<FieldIndex<Double, String>> simTree;
@@ -104,15 +107,6 @@ public class SearchResultsActivity extends AppCompatActivity {
 //        queryTitle = parseTitle(searchFieldString);
 
         searchedAuthor = findViewById(R.id.activity_search_results_tv_searchedAuthorID);
-//        searchedAuthorUN = (String) searchedAuthor.getText();
-
-
-
-
-
-
-
-//        Log.d("Printing user", searchedUser.getFirstName());
 
         load = findViewById(R.id.activity_searchResults_btn_more);
         try {
@@ -147,21 +141,11 @@ public class SearchResultsActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
 
                                 for (QueryDocumentSnapshot document : task.getResult()) { // todo change this later to ensure only 1 record for user (or we cna imply it from db rules>?)
-//                            Log.d(TAG, document.getId() + " => " + document.getData());
                                     Map<String, Object> userData = document.getData();
                                     String fName = (String) userData.get("firstName");
                                     String lName = (String) userData.get("lastName");
                                     String uName = (String) userData.get("username");
                                     String pfpLink = (String) userData.get("pfpStorageLink");
-
-//                                If the pfpLink is null, then set it to the default pfp link
-                                    // Log.d(TAG, "pfpLink: "+ pfpLink); // "gs://app-f4755.appspot.com/pfp/1.png"
-
-//                                    searchedUser = new User(
-//                                            document.getId(),
-//                                            (String) userData.get("firstName"),
-//                                            (String) userData.get("lastName"));
-//                                    searchedUser.setPfpLoadedCallback();
 
                                     searchedUser = new User(document.getId(), new FirestoreCallback() {
                                         @Override
@@ -201,22 +185,6 @@ public class SearchResultsActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-//                                    firstName = fName;
-//                                    lastName = lName;
-//                                    username = uName;
-//                                    if (pfpLink != null){
-//                                        StorageReference pfpRefe = searchedUser.storage.getReferenceFromUrl(pfpLink);
-//
-//                                        if (userID.equals(CurrentUser.getCurrent().getUserID())){ // saves doing it unneccesarily.
-//                                            initProfilePicBitmap();
-//                                        }
-//
-//                                    } else {
-//                                        Drawable vectorDrawable = VectorDrawableCompat.create(App.getContext().getResources(), R.drawable.baseline_person_24, null);
-//                                        pfpBitmap = App.drawableToBitmap(vectorDrawable);
-//
-//                                    }
-//                                    callback.onUserLoaded(fName,lName, username, "pfpLink");
                                     searchedUser.setUserID(document.getId());
 
                                     searchedAuthor.setText(searchedUserName);
@@ -229,60 +197,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                         }
 
                     });
-//            db.collection("users")
-//                    .whereEqualTo("username", searchedUserName)
-//                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            if (task.isSuccessful()) {
-//                                Map<String, Object> currData;
-//                                searchedAuthor.setText(searchedUserName+ ": User cannot be found");
-//                                for (QueryDocumentSnapshot document : task.getResult()) {
-//                                    currData = document.getData();
-////                                posts.add(new Post(
-////                                        document.getId(),
-////                                        currData.get("title"),
-////                                        currData.get("body"),
-////                                        currData.get("author"),
-////                                        currData.get("publisher"),
-////                                        currData.get("sourceURL"),
-////                                        currData.get("timeStamp")
-////                                ));
-//
-//                                    searchedUser = new User(
-//                                            document.getId(),
-//                                            (String) currData.get("firstName"),
-//                                            (String) currData.get("lastName"));
-//
-////                                Log.d("Query before attempting:", queryTitle);
-//                                    searchedUser.setUserID(document.getId());
-//
-//                                    searchedAuthor.setText(searchedUserName);
-//
-////                                Log.d("Found user:", searchedUser.getFirstName());
-//                                }
-//
-//
-//                            } else {
-//                                Log.w(TAG+": Firestore READ error", "Error getting documents in 'posts' collection; ", task.getException());
-//                            }
-//                        }
-//                    });
-
-
 
             profileView = findViewById(R.id.activity_search_results_ll_profile);
-
-
-
-//        System.out.println("Waiting for 1 second...");
-//        try {
-//            // Make the current thread sleep for 1 second (1000 milliseconds)
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("Done waiting!");
 
             profileView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -299,15 +215,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             searchedAuthor.setText("Author name not provided");
-//            displayInfo.setText("Invalid input");
-//            displayInfo.setVisibility(View.VISIBLE);
-//            load.setVisibility(View.INVISIBLE);
         }
-
-
-
-
-        //load more posts
 
         load.setOnClickListener(new View.OnClickListener() {
 
@@ -393,10 +301,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         profileImg.setImageBitmap(pfpImageBitmap);
     }
 
-//    private void getAuthor(final OnPostsLoadedListener listener) {
-//        parseAuthor()
-//    }
-
 
     private void onItemClick(Post post) {
         Intent postViewIntent = new Intent(SearchResultsActivity.this, PostViewActivity.class);
@@ -420,15 +324,6 @@ public class SearchResultsActivity extends AppCompatActivity {
                             Map<String, Object> currData;
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 currData = document.getData();
-//                                posts.add(new Post(
-//                                        document.getId(),
-//                                        currData.get("title"),
-//                                        currData.get("body"),
-//                                        currData.get("author"),
-//                                        currData.get("publisher"),
-//                                        currData.get("sourceURL"),
-//                                        currData.get("timeStamp")
-//                                ));
 
                                 Post curPost = new Post(
                                         document.getId(),
@@ -441,7 +336,6 @@ public class SearchResultsActivity extends AppCompatActivity {
                                         postLoadCallback
                                 );
 
-//                                Log.d("Query before attempting:", queryTitle);
 
                                 double titleSimilarity = SearchUtils.getTextsSimilarity((String) currData.get("title"), queryTitle);
                                 FieldIndex<Double, String> simIndex = new FieldIndex<Double, String>(titleSimilarity, document.getId());
@@ -472,8 +366,6 @@ public class SearchResultsActivity extends AppCompatActivity {
 
     private List<Post> retrieveTopNPostsFromTree(int topN) {
         List<Post> topNPosts = new ArrayList<Post>();
-
-//        int curNumPosts = 0;
 
         if (simTree == null) {
             displayInfo.setText("No results found");
@@ -579,9 +471,6 @@ public class SearchResultsActivity extends AppCompatActivity {
             }
         }, tmTo, tmFrom);
     }
-
-
-
 
 }
 
