@@ -33,38 +33,69 @@ The key area(s) of responsibilities for each member
 
 
 ## Summary of Individual Contributions
+Summary of Individual contributions:
+u7527120, Nitin Gar Raj I have 20% contribution, as follows:
+Code Contribution in the final App
+Implementation of Singleton classes
+CreateAccount.java
+Handling profile picture displaying and generation
+Others
+Setting up and managing Firebase Auth, Firestore and Cloud functions
+Suggested implementations for all design patterns
+Report writing
+Generation of art
+Design skeleton and overall app architecture
 
-Specific details of individual contribution of each member to the project.
+u7645880, Noah Vendrig I have 20% contribution, as follows:
+Code Contribution in the final App
+Homefeed: Homefeed.java, RecyclerViewAdapter.java
+Logging into app: Login.java
+Handling profile picture displaying and generation
+Notifications 
+Implemented Factory and Observer patterns
+Refresh on database state change
+Others
+Post ranking formula
+Generate 2500 data instances
 
-Each team member is responsible for writing **their own subsection**.
+u7641234, Jinzheng Ren I have 20% contribution, as follows:
+Code Contribution in the final App
+I have successfully implemented a fully functional AVL Tree with the delete feature, based on the lab exercise. Additionally, I created an additional class that stores information of our data into the tree for search purposes. To complement this, I conducted specific tests tailored to the delete method's functionality. In order to facilitate the search for the most relevant information within a given text, I developed a text similarity algorithm based on Levenshtein distance. This algorithm generates a similarity value when comparing two texts. Furthermore, I conducted tests to ensure that the similarity algorithm effectively retrieves the most relevant texts from the database. AVLTree.class
+SearchUtils.class (Pair programmed with u7614074, Jugraj Singh)
+Pair programming with Jugraj Singh (u7614074):  Together, we designed and implemented the tokenizer and parser, building upon the lab exercise with numerous modifications to suit our specific content requirements. Subsequently, we tested these components to ensure their correctness. Additionally, we jointly designed and implemented the user interface for both the search functionality and the search results page. 
+SearchActivity  (Pair programmed with u7614074, Jugraj Singh)
+SearchResultsActivity (Pair programmed with u7614074, Jugraj Singh)
 
-A generic summary will not be acceptable and may result in a significant lose of marks.
 
-*[Summarise the contributions made by each member to the project, e.g. code implementation, code design, UI design, report writing, etc.]*
+Others
 
-*[Code Implementation. Which features did you implement? Which classes or methods was each member involved in? Provide an approximate proportion in pecentage of the contribution of each member to the whole code implementation, e.g. 30%.]*
 
-*you should ALSO provide links to the specified classes and/or functions*
-Note that the core criteria of contribution is based on `code contribution` (the technical developing of the App).
 
-*Here is an example: (Note that you should remove the entire section (e.g. "others") if it is not applicable)*
+u7614074, Jugraj Singh I have 20% contribution, as follows:
+Code Contribution in the final App
+PostView : Started the xml (Scroll view and stuff) and then taken over by Adith Iyer(u7623871)
+Pair programming with Jinzheng Ren (u7641234):  Together, we designed and implemented the tokenizer and parser, building upon the lab exercise with numerous modifications to suit our specific content requirements. Subsequently, we tested these components to ensure their correctness. Additionally, we jointly designed and implemented the user interface for both the search functionality and the search results page.
+SearchActivity  (Pair programmed with with Jinzheng Ren (u7641234))
+SearchResultsActivity (Pair programmed with with Jinzheng Ren (u7641234))
+SearchUtils.class (Pair programmed with Jinzheng Ren (u7641234))
+Others
 
-1. **UID1, Name1**  I have 30% contribution, as follows: <br>
-  - **Code Contribution in the final App**
-    - Feature A1, A2, A3 - class Dummy: [Dummy.java](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java)
-    - XYZ Design Pattern -  class AnotherClass: [functionOne()](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43), [function2()](the-URL)
-    - ... (any other contribution in the code, including UI and data files) ... [Student class](../src/path/to/class/Student.java), ..., etc.*, [LanguageTranslator class](../src/path/to/class/LanguageTranslator.java): function1(), function2(), ... <br><br>
 
-  - **Code and App Design** 
-    - [What design patterns, data structures, did the involved member propose?]*
-    - [UI Design. Specify what design did the involved member propose? What tools were used for the design?]* <br><br>
 
-  - **Others**: (only if significant and significantly different from an "average contribution") 
-    - [Report Writing?] [Slides preparation?]*
-    - [You are welcome to provide anything that you consider as a contribution to the project or team.] e.g., APK, setups, firebase* <br><br>
+u7623871, Adith Rajesh Iyer I have 20% contribution, as follows:
+Code Contribution in the final App
+ProfileViewer.java
+PostViewActivity.java (took over from Jugraj Singh u7614074)
+Comments feature in Postview
+CreatePost.java
+Others
+Led team discussions, organised regular meetings and in person working bees.
+Monitored progress of team throughout the project
+Handled integration of Posts and Comments in the Firebase Firestore database
+Refactored code and added docstrings for majority of code
 
-2. **UID2, Name2**  I have xx% contribution, as follows: <br>
-  - ...
+
+
 
 
 
