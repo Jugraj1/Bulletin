@@ -136,23 +136,58 @@ This is an important section of your report and should include all technical dec
 
 ### Data Structures
 
-*[What data structures did your team utilise? Where and why?]*
+[What data structures did your team utilise? Where and why?]
 
-Here is a partial (short) example for the subsection `Data Structures`:*
+Here is a partial (short) example for the subsection Data Structures:*
 
-*I used the following data structures in my project:*
+I used the following data structures in my project:
 
-1. *LinkedList*
-   * *Objective: used for storing xxxx for xxx feature.*
-   * *Code Locations: defined in [Class X, methods Z, Y](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43) and [class AnotherClass, lines l1-l2](url); processed using [dataStructureHandlerMethod](url) and ...
-   * *Reasons:*
-      * *It is more efficient than Arraylist for insertion with a time complexity O(1)*
-      * *We don't need to access the item by index for xxx feature because...*
-      * For the (part), the data ... (characteristics) ...
+1. AVLTree
+    * Objective: To store similarities among titles and unique post IDs.
+    * *Code Locations: AVLTree class, the codes are adapted from the labs. There are helper functions related to AVLTree in the SearchUtils class: getIndexSizeFromTreeRec() method, insertFieldIndex() method.
+    * Reasons:
+        * Maintain a balanced structure, ensuring efficient search, insertion, and deletion operations with a time complexity of O(log n)
+        * AVL trees support range-based operations efficiently, facilitating tasks such as finding elements within a specific range or performing range queries, which can be further extended to more features in the future such as filter by dates
 
-2. ...
+2. HashMaps
+    * Objective: store the full content of the posts returned from the database.
+    * *Code Locations: SearchResultsActivity class.
+    * Reasons:
+        * HashMaps offer fast access to elements based on their keys, providing a constant-time complexity of O(1) for average-case operations like insertion, retrieval, and deletion.
+        * HashMaps allow storing key-value pairs, enabling efficient data retrieval based on unique keys
+        * HashMaps dynamically resize to maintain an optimal load factor, ensuring efficient space utilisation while accommodating varying numbers of elements
 
-3. ...
+3. ArrayList
+    * Objective: To store the most relevant posts for displaying.
+    * *Code Locations: SearchResultsActivity class.
+    * Reasons:
+        * ArrayLists automatically resize themselves as elements are added or removed. This is important since the number of posts is dynamic.
+        * HashMaps allow storing key-value pairs, enabling efficient data retrieval based on unique keys
+        * HashMaps dynamically resize to maintain an optimal load factor, ensuring efficient space utilisation while accommodating varying numbers of elements
+
+Summary
+Data structures play a crucial role in efficiently searching for posts. When a user inputs a 'title' and specific dates of interest, the resulting page aims to display posts with the most
+relevance. Our search process begins by querying the database for posts falling within the
+date range specified by the user, effectively narrowing down the pool of resources.
+Subsequently, we employ a HashMap<String, Post> to store the retrieved posts from the
+database. Each post is uniquely identified by its ID, serving as the key, while the full content
+of the post constitutes the corresponding value.
+To prioritise the most relevant posts, we compute the similarity of the input title with each
+post title retrieved from the database. This computation yields a series of similarity values,
+indicating the relevance of each post. Simultaneously, an AVL tree is utilised to organise
+these similarities and their corresponding posts. Each node within the AVL tree comprises a
+key-value pair, with the key representing the similarity and the value containing a set of
+unique post IDs. For instance, a node with {key: 0.6, value: {1, 2}} signifies that both post ID
+1 and post ID 2 exhibit a similarity of 0.6 concerning the user-provided title.
+Upon the user's search, the results page initially showcases the top three most relevant
+posts by retrieving the top 3 post IDs from the AVL tree. Subsequently, the full content of
+these posts is accessed from the HashMap using their respective IDs. After retrieving these
+three posts, they will be stored in an ArrayList for display purposes, and their information will
+be promptly removed from the AVL tree to optimise resource utilisation Moreover, if
+additional relevant titles exist, users can click the "more" button to unveil the subsequent
+three posts. In this scenario, our tree is updated by removing the displayed posts, ensuring
+the continuous refinement of search results.
+
 
 <hr>
 
@@ -229,34 +264,134 @@ l> ::= <some output>
 *List all features you have completed in their separate categories with their featureId. THe features must be one of the basic/custom features, or an approved feature from Voice Four Feature.*
 
 ### Basic Features
-1. [LogIn]. Description of the feature ... (easy)
-   * Code: [Class X, methods Z, Y](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43) and Class Y, ...
-   * Description of feature: ... <br>
-   * Description of your implementation: ... <br>
+1. Login:
 
-2. [DataFiles]. Description  ... ... (...)
-   * Code to the Data File [users_interaction.json](link-to-file), [search-queries.xml](link-to-file), ...
-   * Link to the Firebase repo: ...
+   * Users are able to login through the login page. Our app uses an instance of the Firebase connection. When the users click on the login button, the app connects to firebase and uses the existing firebase sign in method. Heavily relying on callbacks, if authentication is a success, then the user is redirected to the home page, otherwise it will fail, and tell the user ‘Authentication failed’
+2. Datafiles:
 
-3. ...
+
+2. LoadShowData:
+
+   * Loading and displaying data is central to interacting with our app, involving activities like creating accounts, uploading profile pictures, creating posts, following users, commenting on posts, and liking posts. Most app activities revolve around displaying user-generated data.
+
+   * HomeFeed: Displays posts from various users.
+ProfileViewer: Shows user details, followers, and their posts.
+PostView: Loads post content, author details, and comments.
+Given the extensive Firebase interactions required during these activities, we decided to enhance readability by creating separate helper methods for data and UI interactions within the onCreate method. This approach reduces complexity and improves maintainability.
+
+
+
+```
+
+protected void onCreate(Bundle savedInstanceState) {
+   super.onCreate(savedInstanceState);
+   setContentView(R.layout.activity_profile_viewer); // Set activity layout
+   db = FirebaseFirestore.getInstance(); // Initialize FireStore
+   userID = getIntent().getStringExtra("authorID"); // Get authorID from Intent
+   loggedInUserID = FirebaseAuthConnection.getAuth().getUid(); // Get logged-in user's ID
+
+
+   fetchUser(userID); // Fetch user details from FireStore
+
+
+   // Set onClickListener for Home Button to navigate to HomeFeed activity
+   findViewById(R.id.homeButton).setOnClickListener(view -> {
+       startActivity(new Intent(ProfileViewer.this, HomeFeed.class));
+   });
+       // Set onClickListener for Follow button
+       followButton.setOnClickListener(view -> followAuthor(userID));
+   }
+}
+```
+In this code snippet for profileviewer, even though this is a data-heavy activity, the onCreate doesn't deal with the data retrieval from firestore and the I updates directly. All are done through helper methods. It just sets the instances for Firestore and sets the listeners.
+
+
+3. DataStream:
+   * HomeFeed, PostView, and ProfileViewer are updated every 500ms if there is a change in the database state. This is achieved using the Observer design pattern, in which the Subjects (UpdateFeed, UpdatePostView, UpdateProfile) are constantly querying the database. If there is a change to the current state, e.g.  post ranking changes, user information changes, etc, the relevant Activity will be notified, and it will update its UI to match the new database state.
+
+   * This is efficient because the UI is only updated when there is a change in the database state, meaning that there aren't unnecessary refreshes to the page they’re viewing. If there is no change after 500ms (the time period), then nothing will be updated.
+
+
+
+
+4. Search:
+   * Users have the option to input a title they wish to search for. Additionally, two buttons are available, enabling users to specify the type of data and the desired date range for searching posts. Moreover, users can append a username at the end of their search query, enhancing the results page to also display the profile of the specified user, if it exists.
+   * On the results page, the top three most relevant posts matching the user-provided title will be displayed initially. By clicking the "More" button, users can access the next three relevant posts.
+
+
    <br>
 
 ### Custom Features
-Feature Category: Privacy <br>
-1. [Privacy-Request]. Description of the feature  (easy)
-   * Code: [Class X, methods Z, Y](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43) and Class Y, ...
-   * Description of your implementation: ... <br>
-     <br>
+Search-Invalid:
+If a user enters text in the search bar that doesn't adhere to our grammar, such as 'sport article @@(adith)' (where double '@' symbols are not allowed), the results page will indicate that the input is invalid. Similarly, if the date provided by the user for 'date-from' is later than the one provided for 'date-to', we will also expect the input to be invalid.
 
-2. [Privacy-Block]. Description ... ... (medium)
-   ... ...
-   <br><br>
 
-Feature Category: Firebase Integration <br>
-3. [FB-Auth] Description of the feature (easy)
-   * Code: [Class X, entire file](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43) and Class Y, ...
-   * [Class B](../src/path/to/class/file.java#L30-85): methods A, B, C, lines of code: 30 to 85
-   * Description of your implementation: ... <br>
+
+
+
+
+
+
+
+
+Search-Filter:
+Our search results can be filtered by the date range specified by the user, using 'date-from' and 'date-to' parameters. This ensures that only posts within the specified dates are displayed. Additionally, our parser extracts the username from the text if provided, and the profile of that user is displayed on the results page.
+UI-Layout
+The UI layout for the login page was straightforward with mainly using editTexts for inputs, textViews, and buttons. To ensure that the app is responsive in both portrait and landscape modes, 2 layouts were used to have different layouts in landscape and portrait. In landscape mode, a Linear layout was added to divide the screen into two parts. The welcome text and the login user inputs. With a constraint layout within it. Another linear layout was used for the input section, and a constraint layout within it to place all the input text fields, and buttons appropriately.
+The screenshots below show the component tree of the login page, and the corresponding view in a landscape view.
+
+
+For the create account page, a similar method was used to ensure responsiveness in both portrait and landscape mode. However, This time a scroll view was added to help the user scroll through all the text inputs, as there were a significant amount of them. And a shape view is used to display the profile picture throughout the application. 
+The home feed was a bit more challenging and was divided into three parts. The top profile and search bar, the bottom navigation bar, and the main posts view. The top bar included a ‘Trending’ Textview, a search button, and a profile picture imageview with a listener that sends the user to their profile page when clicked on it. The bottom navigation bar uses two buttons to navigate. One for home feed, and the other to create a new post. The main posts view used a recycler view to display all the posts. The recycler view helped us create an infinite scroll for the user, so that their immersion is not broken and they have an infinite data stream of content.
+
+
+The profile viewer used textviews and imageviews to display user information. A tab layout to divide the posts created by the user, and all of the people that the user is following, and only one is shown at a time.
+
+
+Data-Profile:
+
+Our android application has a page to view the profile of every user created. The profile page shows all the relevant information about the user (first name, last name, username) in a text view. It has an imageview to show the users profile picture. The page uses tab layout to also show the users posts and the people they follow. The profile page access the firestore storage to access the images of all the users. The images are stored as ‘[userid].jpg’ in the storage, under the ‘pfp’ folder. Once they are downloaded, the bitmap is used to display the image. Furthermore, if the profile page is showing the current users, profile, it will also display a button to sign them out, and if the profile page is showing other users, it will instead display a button to follow them.
+
+FB-Auth:
+The firebase authentication is used to sign the users in, and it uses callbacks to carry out actions if it fails or succeeds to sign the users in.
+private void signIn(String email, String password) {
+   FirebaseAuthConnection.getInstance().signIn(email, password, new AuthCallback() {
+       @Override
+       public void onAuthentication(boolean success) {
+           if (success) {
+               // Authentication succeeded
+               Log.d(TAG, "signInWithEmail:success");
+               Toast.makeText(Login.this, "Authentication succeeded.", Toast.LENGTH_LONG).show();
+
+
+               // We are logged in, so we can access currently logged in user using Firebase
+               FirebaseUser currUser = FirebaseAuthConnection.getInstance().getAuth().getCurrentUser();
+               if (currUser != null) {
+                   startActivity(new Intent(Login.this, HomeFeed.class)); // Go to home page since login is validated
+                   finish();
+               } else {
+                   Log.w(TAG, "signInWithEmail: logged-in account is null");
+               }
+           } else {
+               // Authentication failed
+               Log.w(TAG, "signInWithEmail:failure");
+               Toast.makeText(Login.this, "Authentication failed.", Toast.LENGTH_LONG).show();
+           }
+       }
+   });
+}
+
+
+FB-Persist:
+
+
+Interact-Micro:
+Bulletin enables users to comment on and like posts created by themselves or others, implementing the Interact-Micro functionality. This feature is integrated into both the HomeFeed and PostViewer, allowing users to engage with content directly and easily. By enabling these interactions, Bulletin fosters a dynamic and engaging user experience where users can actively participate and express their preferences. The interactions are clearly displayed within the PostView class allowing Posts to act like items to be interacted with.
+
+
+Interact-Follow:
+Additionally, Bulletin allows users to follow other users, which is implemented in the ProfileViewer activity. Users can view their following list within the ProfileViewer itself, displayed as a linear layout within a ScrollView.The following list is a section dedicated to only the items (Users) being followed and is stored in memory as a separate field within the user document.  This setup meets the requirements for the Follow functionality, providing users with a straightforward way to keep track of and access the profiles they are interested in. 
+
 
 
 <br> <hr>
