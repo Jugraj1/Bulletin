@@ -112,8 +112,11 @@ Build your academic network by following other users. Connect with peers and men
 
 ### Application UML
 
-![ClassDiagramExample](media/_examples/ClassDiagramExample.png) <br>
-*[Replace the above with a class diagram. You can look at how we have linked an image here as an example of how you can do it too.]*
+*Overall UML*
+![Overall UML](media/overall_uml.svg)
+
+*Search UML*
+![Search UML](media/search_uml.svg)
 
 <hr>
 
