@@ -84,13 +84,6 @@ Note that the core criteria of contribution is based on `code contribution` (the
 
 ## Application Description
 
-*[What is your application, what does it do? Include photos or diagrams if necessary]*
-
-*Here is a pet specific application example*
-
-*PetBook is a social media application specifically targetting pet owners... it provides... certified practitioners, such as veterians are indicated by a label next to their profile...*
-
-
 Bulletin is a dynamic social media platform tailored for students, scholars, and anyone passionate about the educational side of current affairs. Combining the features of a news feeder and a discussion forum, Bulletin is designed to foster intellectual engagement and facilitate the sharing of knowledge.
 
 Academic Posts: 
@@ -293,48 +286,52 @@ Feature Category: Firebase Integration <br>
    * [Class B](../src/path/to/class/file.java#L30-85): methods A, B, C, lines of code: 30 to 85
    * Description of your implementation: ... <br>
 
-<hr>
-
-### Surprise Features
-
-- If implemented, explain how your solution addresses the task (any detail requirements will be released with the surprise feature specifications).
-- State that "Suprised feature is not implemented" otherwise.
 
 <br> <hr>
 
 ## Summary of Known Errors and Bugs
 
-*[Where are the known errors and bugs? What consequences might they lead to?]*
-*List all the known errors and bugs here. If we find bugs/errors that your team does not know of, it shows that your testing is not thorough.*
 
-*Here is an example:*
 
-1. *Bug 1:*
-   - *A space bar (' ') in the sign in email will crash the application.*
-   - ...
+1. After searching and clicking on the button to view more posts, the new posts loaded can't be clicked on to view them.
+1. User profile image sometimes does not show up
+1. App has untested behaviour if the user clicks on the sign up button multiple times
+1. The app may try to create multiple accounts and fail
+1. Loading posts takes too long
+1. If the profile picture is not downloaded, it will not show up in the image view
+1. When the user signs out then tries to sign back in, it does not sign in
+1. When search results do not have results, and user tries searching again, it loads the posts, and also the ‘no results found’ text on top
+1. When commenting, it sometimes has multiple comment entries
 
-2. *Bug 2:*
-3. ...
+
+
 
 <br> <hr>
 
 
 ## Testing Summary
 
-*[What features have you tested? What is your testing coverage?]*
-*Please provide some screenshots of your testing summary, showing the achieved testing coverage. Feel free to provide further details on your tests.*
+* Tests for Parser:
+	* Code: ParserTest class in com.example.app_2100.search.parser package.
+	* Test cases:
+		1. Texts include only valid titles.
+		2. Texts include both valid titles and author username.
+		3. Texts include an invalid author username.
+		
+* Tests for AVL Tree deletion:
+	* Code: AVLTreeTest class in com.example.app_2100.search package.
+	* Test cases:
+		1. Three possible deletion operations that will produce an invalid imbalance factor.
+		2. Deletion from an empty tree.
 
-*Here is an example:*
+* Tests for SearchUtils:
+	* SearchUtilsTest in com.example.app_2100.search package.
+	* Test cases:
+		1. Test whether search in the tree works properly by searching a range of values.
+		2. Test whether inserting a post-related object into the tree works properly.
+		3. Test whether our similarity measurement of texts works as expected.
+		4. Test whether we can get the total number of posts in an AVL tree storing post-related objects.
 
-1. Tests for Search
-   - Code: [TokenizerTest Class, entire file](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java) for the [Tokenizer Class, entire file](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43)
-   - *Number of test cases: ...*
-   - *Code coverage: ...*
-   - *Types of tests created and descriptions: ...*
-
-2. xxx
-
-...
 
 <br> <hr>
 
@@ -342,24 +339,17 @@ Feature Category: Firebase Integration <br>
 ## Team Management
 
 ### Meetings Records
-* Link to the minutes of your meetings like above. There must be at least 4 team meetings.
-  (each commited within 2 days aftre the meeting)
-* Your meetings should also have a reasonable date spanning across Week 6 to 11.*
 
-
-- *[Team Meeting 1](meeting-template.md)*
-- ...
-- ...
-- [Team Meeting 4](link_to_md_file.md)
-- ... (Add any descriptions if needed) ...
+- [Team Meeting 1](meeting-wk7.md)
+- [Team Meeting 2](meeting-wk8.md)
+- [Team Meeting 3](meeting-wk9.md)
+- [Team Meeting 4](meeting-wk10.md)
 
 <hr>
 
 ### Conflict Resolution Protocol
-*[Write a well defined protocol your team can use to handle conflicts. That is, if your group has problems, what is the procedure for reaching consensus or solving a problem?
-(If you choose to make this an external document, link to it here)]*
 
-This shall include an agreed procedure for situations including (but not limited to):
-- e.g., if a member fails to meet the initial plan and/or deadlines
-- e.g., if your group has issues, how will your group reach consensus or solve the problem?
-- e.g., if a member gets sick, what is the solution? Alternatively, what is your plan to mitigate the impact of unforeseen incidents for this 6-to-8-week project? 
+* If a member fails to meet deadlines, an informal meeting will be conducted to figure out the root of the problem.
+   * possible solutions including rearranging the roles, taking them off that task and giving them soemthing more suitable, pushing them to finish it
+
+* If a member is sick, others will band together to prioritize the more important work first, with the fewer people working on the project.
