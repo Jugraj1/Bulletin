@@ -1,4 +1,4 @@
-# [G0 - Team Name] Report
+# [G63 - RAJ NP] Report
 
 The following is a report template to help your team successfully provide all the details necessary for your report in a structured and organised manner. Please give a straightforward and concise report that best demonstrates your project. Note that a good report will give a better impression of your project to the reviewers.
 
@@ -28,7 +28,7 @@ Note that you should have removed ALL TEMPLATE/INSTRUCTION textes in your submis
 10. [Conflict Resolution Protocol](#conflict-resolution-protocol)
 
 ## Administrative
-- Firebase Repository Link: <insert-link-to-firebase-repository>
+- Firebase Repository Link: <https://console.firebase.google.com/project/app-f4755/overview>
    - Confirm: I have already added comp21006442@gmail.com as a Developer to the Firebase project prior to due date.
 - Two user accounts for markers' access are usable on the app's APK (do not change the username and password unless there are exceptional circumstances. Note that they are not real e-mail addresses in use):
    - Username: comp2100@anu.edu.au	Password: comp2100
@@ -39,10 +39,11 @@ The key area(s) of responsibilities for each member
 
 | UID   |  Name  |   Role |
 |:------|:------:|-------:|
-| [uid] | [name] | [role] |
-| [uid] | [name] | [role] |
-| [uid] | [name] | [role] |
-| [uid] | [name] | [role] |
+| u7527120| Nitin Gar Raj | [role] |
+| u7623871 | Adith Iyer   | [role] |
+| u7641234 | Jinzheng Ren | [role] |
+| u7614074 | Jugraj Singh | [role] |
+| u7645880 | Noah Vendrig | [role] |
 
 
 ## Summary of Individual Contributions
@@ -88,6 +89,34 @@ Note that the core criteria of contribution is based on `code contribution` (the
 *Here is a pet specific application example*
 
 *PetBook is a social media application specifically targetting pet owners... it provides... certified practitioners, such as veterians are indicated by a label next to their profile...*
+
+
+Bulletin is a dynamic social media platform tailored for students, scholars, and anyone passionate about the educational side of current affairs. Combining the features of a news feeder and a discussion forum, Bulletin is designed to foster intellectual engagement and facilitate the sharing of knowledge.
+
+Academic Posts: 
+Users can create posts that reference articles, academic papers, or any educational content. Each post allows users to share their insights, fostering a rich environment of knowledge exchange.
+
+
+
+Academic Discussion Platform
+Engage in thoughtful discussions in the comment sections of posts. Bulletin promotes a collaborative learning environment where ideas and opinions can be freely exchanged.
+
+
+
+
+
+Academic Events and Articles publicising: 
+Highlight significant events in academia by referencing and discussing them on the platform, making Bulletin a hub for the latest in educational developments. The app’s algorithm curates a smart feed for the user, ensuring that the most relevant and intriguing content is always at the forefront.
+
+
+
+
+
+Academic Networking: 
+Build your academic network by following other users. Connect with peers and mentors and stay updated on their latest contributions and insights.
+
+
+
 
 ### Application Use Cases and or Examples
 
@@ -165,35 +194,67 @@ Here is a partial (short) example for the subsection `Data Structures`:*
 ### Design Patterns
 *[What design patterns did your team utilise? Where and why?]*
 
-1. *xxx Pattern*
+. *xxx Pattern*
    * *Objective: used for storing xxxx for xxx feature.*
    * *Code Locations: defined in [Class X, methods Z, Y](https://gitlab.cecs.anu.edu.au/comp2100/group-project/ga-23s2/-/blob/main/items/media/_examples/Dummy.java#L22-43) and [class AnotherClass, lines l1-l2](url); processed using [dataStructureHandlerMethod](url) and ...
    * *Reasons:*
       * ...
+
+1. *Singleton*
+   * In our android project, we implemented a Firebase connection to handle database operations, such as writing to the database, reading data from the database, and editing data in the database. To ensure efficient use of resources to access the firebase, we implemented a singleton design pattern by creating a Firebase Connection class. This design choice was made to ensure that a single connection to the firebase database will be used in the app, and all the different activities will call on the same connection whenever they need to access the database. 
+
+   * We note that Firebase already has some form of Singleton pattern (managed behind the scenes), however we believe this is a good design choice, as we will be able to maintain a singular connection to the database if our app moved away from Firebase, and to another database service that didn’t handle its own Singleton pattern internally.
+
+   * This choice made the code easier to read and understand, and improved the performance of the app as the user does not have to wait for a new connection every time they go to a new page. It also improved scalability and maintainability as every new page simply has to call the same connection, instead of rewriting the same code again. 
+
+2. *Factory*
+   * Our android project also implemented the Factory design pattern to handle notifications. The factory design pattern allows us to create different types of notifications. This can help us differentiate between notifications from your post being liked to your post being created. The factory design pattern means that we can scale up and add different types of notifications for future development, such as a notification when a user you follow creates a new post etc.
+
+   * The factory design pattern was implemented with a notification class, and a notification data interface. To create the different notification types, they extend the notification class and call on a related instance of the notification data interface (that holds all the information about the specific notification, such as the number of likes) to fill the notification with the appropriate data. All the different notifications are then handled in the NotificationFactory to call on the appropriate notification type.
+
+3. Observer
+   * In order to periodically refresh the UI with new information from the database, the Observer design pattern was suitable, since it ensured that the UI is only updated when there is a change in the monitored state in the database.
+
+   * When a change is detected by the Subject (UpdateFeed / UpdatePostView / UpdateProfile), the relevant Observer (HomeFeed / PostView / ProfileView) is notified, and given the new state to update the UI with. 
+
+   * The Observer and Subject interfaces use a Generic parameter so that the Observer can update itself with whatever information is sent to it. The HomeFeed is notified with a new list of posts to display; The PostView is notified with a new Post to display; The Profile view is notified with a new User to display. Since different types are being used, the Generic parameter was used.
+
+   * By using the Observer design pattern, we have essentially created a database trigger, allowing us to efficiently refresh the app, as required for the Datastreams feature.
+
+
 
 <hr>
 
 ### Parser
 
 ### <u>Grammar(s)</u>
-*[How do you design the grammar? What are the advantages of your designs?]*
-*If there are several grammars, list them all under this section and what they relate to.*
 
-Production Rules:
+Production Rules
+```
+<search>  ::= <title> <author> | <title>
+<title>   ::= <word> space <title> | <word>
+<author>  ::= @ LBRA <name> RBRA
+<name>    ::= <word> space <name> | <word>
+<word>    ::= char <word> | char 
 
-    <Non-Terminal> ::= <some output>
-    <Non-Terminal> ::= <some output>
+``` 
+Here, 'char' is an element in the set {a, ..., z, A, ..., Z} and the set of special characters (see further details in the CharExp class under the com.example.app_2100.search.parser package). Note that '@' is excluded because it is used as an identifier for the author.
+
+Our grammar defines the validity of the content provided in the search bar by the user. It accepts either a title followed by an authorID, where the authorID is identified through '@()', or just the title alone. If the input does not satisfy this grammar, a message will pop up to inform the user.
+
+
+
 
 
 ### <u>Tokenizers and Parsers</u>
 
-*[Where do you use tokenisers and parsers? How are they built? What are the advantages of the designs?]*
 
-<hr>
+* The Tokenizer class will be responsible for dividing the input sentence into tokens. The token types are as follows: CHAR, SPACE, AT, LBRA, RBRA. Here, CHAR represents any character, while SPACE accounts for spaces between words. AT, LBRA, and RBRA correspond to '@()', which are responsible for identifying the author ID.
 
-### Others
+* Our parser provides the flexibility of searches that allow searching both authors and titles. Given an input search content in the format of a title followed by an authorID, the parser will output the title and authorID. Then, information related to that authorID will be displayed on the result page, as well as posts that are relevant to the titles. If the user does not exist, relevant posts will still be displayed, but the author will no longer be shown.
 
-*[What other design decisions have you made which you feel are relevant? Feel free to separate these into their own subheadings.]*
+* We followed the recursive definition of tokenizers and parsers from the lab exercises instead of using regular expressions. This is because such recursive definitions provide a clear correspondence to the definition of the grammar and can be easily extended if we want to include more features.
+l> ::= <some output>
 
 <br>
 <hr>
