@@ -54,10 +54,10 @@ declaration: >-
       [x] using online resources (e.g., Stackoverflow, blogs)
 
 2. If not completed by yourself only, how did the use of Gen AI tools (and which ones), contribute to completing this assignment?
-  - Tool(s): used Stable diffusion for the app icon, and Photopea to edit the icon.
+  - Tool(s): used Stable diffusion for the app icon, and Photopea to edit the icon. ChatGPT used for assisting with the generation of comments and debugging.
   
 3. How did they contribute to the completion of this assignment?
-  - <your answer here>
+  - Allowed for a more efficient development process.
 
 4. How long did it take to complete this assignment (approximately, in hours)?
   - <your answer here> hours
@@ -68,8 +68,8 @@ declaration: >-
 members:
   - name: Nitin Gar Raj
     uid: u7527120
-  - name:
-    uid: 
+  - name: Noah Vendrig
+    uid: u7645880
   - name:
     uid:
   - name:
