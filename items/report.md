@@ -25,11 +25,11 @@ The key area(s) of responsibilities for each member
 
 | UID   |  Name  |   Role |
 |:------|:------:|-------:|
-| u7527120| Nitin Gar Raj | [role] |
-| u7623871 | Adith Iyer   | [role] |
-| u7641234 | Jinzheng Ren | [role] |
-| u7614074 | Jugraj Singh | [role] |
-| u7645880 | Noah Vendrig | [role] |
+| u7527120| Nitin Gar Raj | Firebase account |
+| u7623871 | Adith Iyer   | Profile page |
+| u7641234 | Jinzheng Ren | Tokeniser |
+| u7614074 | Jugraj Singh | Search |
+| u7645880 | Noah Vendrig | UI design patters |
 
 
 ## Summary of Individual Contributions
