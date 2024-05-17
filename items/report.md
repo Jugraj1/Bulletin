@@ -84,6 +84,13 @@ Note that the core criteria of contribution is based on `code contribution` (the
 
 ## Application Description
 
+*[What is your application, what does it do? Include photos or diagrams if necessary]*
+
+*Here is a pet specific application example*
+
+*PetBook is a social media application specifically targetting pet owners... it provides... certified practitioners, such as veterians are indicated by a label next to their profile...*
+
+
 Bulletin is a dynamic social media platform tailored for students, scholars, and anyone passionate about the educational side of current affairs. Combining the features of a news feeder and a discussion forum, Bulletin is designed to foster intellectual engagement and facilitate the sharing of knowledge.
 
 Academic Posts: 
@@ -112,32 +119,15 @@ Build your academic network by following other users. Connect with peers and men
 
 
 ### Application Use Cases and or Examples
+* Educational Resource: Students and educators can use the platform to find and share academic articles for coursework, assignments, and personal study, enhancing the learning experience.
 
-*[Provide use cases and examples of people using your application. Who are the target users of your application? How do the users use your application?]*
+* Academic Networking: There is a real argument to be made here. Scholars and researchers can connect with others in their field, share their latest publications, and collaborate on projects or research initiatives. This is an app with an intent to be educational and catering towards scholars, so it stays clear of recreational social media use.
 
-*Here is a pet training application example*
+* Research Promotion: Potentially, authors can promote their latest research papers, increasing visibility and potentially boosting citations and academic impact.
 
-*Molly wants to inquiry about her cat, McPurr's recent troublesome behaviour*
-1. *Molly notices that McPurr has been hostile since...*
-2. *She makes a post about... with the tag...*
-3. *Lachlan, a vet, writes a reply to Molly's post...*
-4. ...
-5. *Molly gives Lachlan's reply a 'tick' response*
+* Cross-Disciplinary Collaboration: Because of the feed design, researchers from different fields can be encouraged to view articles outside their usual scope. Fostering interdisciplinary collaborations and innovations.
 
-*Here is a map navigation application example*
 
-*Targets Users: Drivers*
-
-* *Users can use it to navigate in order to reach the destinations.*
-* *Users can learn the traffic conditions*
-* ...
-
-*Target Users: Those who want to find some good restaurants*
-
-* *Users can find nearby restaurants and the application can give recommendations*
-* ...
-
-*List all the use cases in text descriptions or create use case diagrams. Please refer to https://www.visual-paradigm.com/guide/uml-unified-modeling-language/what-is-use-case-diagram/ for use case diagram.*
 
 <hr> 
 
